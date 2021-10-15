@@ -1,0 +1,217 @@
+.\"
+.\" N2PK Vector Network Analyzer Library
+.\" Copyright © 2021 D Scott Guthridge <pdx_scooter@yahoo.com>
+.\"
+.\" This program is free software: you can redistribute it and/or modify
+.\" it under the terms of the GNU General Public License as published
+.\" by the Free Software Foundation, either version 3 of the License, or
+.\" (at your option) any later version.
+.\"
+.\" This program is distributed in the hope that it will be useful,
+.\" but WITHOUT ANY WARRANTY; without even the implied warranty of
+.\" MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+.\" General Public License for more details.
+.\"
+.\" You should have received a copy of the GNU General Public License
+.\" along with this program.  If not, see <http://www.gnu.org/licenses/>.
+.\"
+.TH WFSYN 1 "OCT 2021" Linux
+.SH NAME
+n2pkvna \- control N2PK vector network analyzers
+.SH SYNOPSIS
+\fBn2pkvna\fP [\fB-a\fP \fIattenuation\fP] [\fB-N\fP \fIname\fP] [\fB-U\fP \fIunit\fP] [\fIcommand opts...\fP]
+.SH DESCRIPTION
+The \fBn2pkvna\fP command controls N2PK vector network analyzers (VNAs).
+The \s-2N2PK VNA\s+2 is an open hardware electronic test and measurement
+device used to measure the scattering parameters of an unknown device
+under test (DUT).
+The \fBn2pkvna\fP command provides several subcommands.  If a subcommand
+is given on the argument list, it runs just the single subcommand;
+otherwise, it enters a command line interpreter that takes any number
+of subcommands.
+.\"
+.SS "N2PK VNA Subcommands"
+.IP "\fBa\fP|\fBattenuate\fP \fIattenuation_dB\fP" 4n
+Set the attenuator to the specified value.  Valid values are 0, 10, 20,
+30, 40, 50, 60, and 70.
+.\"
+.IP "\fBcal\fP|\fBcalibrate\fP [\fB-lL\fP] [\fB-D\fP \fIdescription\fP] [\fB-f\fP \fIfMin\fP:\fIfMax\fP]" 4n
+[\fB-n\fP \fIfrequencies\fP] [\fB-s\fP \fIsetup\fP] [\fB-S\fP \fIstd1\fP,\fIstd2\fP,... ] \fIname\fP
+.TS
+tab(@);
+l l.
+\fB-D\fP|\fB--description\fP@description of the calibration
+\fB-f\fP|\fB--frequency-range\fP=\fIfMin\fP:\fIfMax\fP@frequency range to use
+\fB-l\fP|\fB--linear\fP@use linear frequency spacing
+\fB-L\fP|\fB--log\fP@use logarithmic spacing
+\fB-n\fP|\fB--frequencies\fP=\fIfrequencies\fP@number of frequency points
+\fB-s\fP|\fB--setup\fP=\fIsetup\fP@hardware setup, .e.g. dual_2x2
+\fB-S\fP|\fB--standards\fP=\fIstd1\fP,\fIstd2\fP,...@list of standards (default SOLT)
+.TE
+.sp 1
+Calibrate the vector network analyzer using known calibration standards.
+The \fIdescription\fP option is a short textual description of the conditions
+of the calibration such as the probe cable length and set up that is
+saved with the calibration.
+The \fIfMin\fP and \fPfMax\fP parameters are the minimum and maximum
+frequencies in MHz used in the calibration, and \fIfrequencies\fP is
+the number of frequency points.
+If not given, \fIfMin\fP and \fIfMax\fP default to 0.05 and 60,
+respectively, and \fIfrequencies\fP defaults to 50.
+The \fIsetup\fP option is the hardware setup of the VNA, e.g. selecting
+between the classic reflection bridge configuration that measures
+only S11 and S21, the full S-parameter test set, and the RF IV
+module.
+In version 0.0.0, this option is ignored and only the classic reflection
+bridge setup is supported.
+The \fIstandards\fP option is a comma-separated list of calibration names.
+Built-in names include the one-port standards S (short), O (open),
+and M (match), the two-port standards such as S-O (short-open),
+S-M (short-match), O-S (open-short), etc., T (through), and short-hand
+names SOLT and TOSL for common sequences of standards.
+User-defined standards based on measured values can also be given.
+In version 0.0.0, this option is ignored \- only SOLT is available.
+.\"
+.IP "\fBcf\fP [\fB-f\fP \fIfrequency_MHz\fP]" 4n
+.TS
+tab(@);
+l l.
+\fB-f\fP|\fB--frequency\fP@test frequency in MHz to generate
+.TE
+.sp 1
+Calibrate the VNA time-base.
+The \fIfrequency_MHz\fP argument gives the frequency to generate in MHz.
+If not given, \fIfrequency_MHz\fP defaults to 10.
+The command then prompts for a measured frequency.
+The user next measures the VNA output frequency with a trusted frequency
+counter and enters the measured frequency in MHz.
+Basaed on the measurement, \fBn2pkvna\fP recomputes the frequency scaling
+constant and saves it to the VNA configuration file.
+.\"
+.IP "\fBgen\fP|\fBgenerate\fP \fIRF-MHz\fP [[\fILO-MHz\fP] [\fIphase-deg\fP]]" 4n
+Use the VNA as an RF frequency generator.
+The \fIRF-MHz\fP parameter specifies the frequency to generate on the
+RF output port in MHz.
+The optional \fILO-MHz\fP parameter gives the frequency to generate on
+the local oscillator (LO) port; if not given, it defaults to \fIRF-MHz\fP.
+The optional \fIphase-deg\fP gives the phase in degrees of the LO
+output relative to that of the RF output.
+The \fIphase-deg\fP option is most useful when \fILO-MHz\fP is either
+equal to or a small rational fraction of \fIRF-MHz\fP.
+.\"
+.IP "\fIm\fP|\fImeasure\fP [\fB-lL\fP] \fB-c\fP \fIcalibration\fP [\fB-f\fP \fifMin\fP:\fIfMax\fP [\fB-n\fP \fIfrequencies\fP]" 4n
+[\fB-o\fP \fIoutput-file\fP] [\fB-p\fP \fIparameters\fP]
+.TS
+tab(@);
+l l.
+\fB-c\fP|\fB--calibration\fP=\fIcalibration\fP@select the calibration to use
+\fB-f\fP|\fB--frequency-range\fP=\fifMin\fP:\fIfMax\fP@frequency range to use
+\fB-l\fP|\fB--linear\fP@use linear frequency spacing
+\fB-L\fP|\fB--log\fP@use logarithmic frequency spacing
+\fB-n\fP|\fB--frequencies\fP=\fIfrequencies\fP@number of frequency points
+\fB-o\fP|\fB--output\fP=\fIfilename\fP@output file
+\fB-p\fP|\fB--parameters\fP=\fIparameters\fP@save parameter format
+.TE
+.sp 1
+Measure a device under test and save the measurements to a file.
+The \fIcalibration\fP parameter specifies which calibration name to use.
+This parameter is required.
+The \fIfMin\fP and \fIfMax\fP parameters are the minimum and maximum
+frequencies in MHz used, which must lie within the calibration frequency
+range.  The \fIfrequencies\fP parameter is
+the number of frequency points in the measurement, and the linear and
+log options determine whether linear or logarithmic frequency spacing
+is used.
+The parameters all default to those given in the calibration if not
+specified.
+The output \fIfilename\fP is the name of the save file.
+If \fIfilename\fP has an extension of \fB.s2p\fP, the parameters are
+saved in Touchstone version 1 format; if it has an extension of \fB.ts\fP,
+the parameters are saved in Touchstone version 2 format; if it has an
+extension of \fB.npd\fP, the parameters are saved in awk and gnuplot
+friendly network parameter data format (NPD).
+If the extension is not unrecognized, \fBn2pkvna\fP uses NPD format.
+If no output file is given, \fBn2pkvna\fP uses a default name based
+on the current date and time in Touchstone version 1 format.
+.IP "" 4n
+The \fIparameters\fP option is a comma-separated case-insensitive list
+of the following specifiers:
+.sp
+.TS
+l l.
+S[ri|ma|dB]	scattering parameters
+T[ri|ma|dB]	scattering-transfer parameters
+Z[ri|ma]	impedance parameters
+Y[ri|ma]	admittance parameters
+H[ri|ma]	hybrid parameters
+G[ri|ma]	inverse-hybrid parameters
+A[ri|ma]	ABCD parameters
+B[ri|ma]	inverse ABCD parameters
+Zin[ri|ma]	impedance looking into each port
+PRC	Zin as parallel resistance and capacitance
+PRL	Zin as parallel resistance and inductance
+SRC	Zin as series resistance and capacitance
+SRL	Zin as series resistance and inducatance
+IL	insertion loss (dB)
+RL	return loss (dB)
+VSWR	voltage standing wave ratio
+.TE
+.sp
+where the ri, ma or dB suffix is an optional coordinate system modifier:
+.TS
+l l.
+ri	real, imaginary
+ma	magnitude, angle
+dB	decibels, angle
+.TE
+.sp
+In the Touchstone file formats, only one specifier may be given and it
+must be restricted to one of the s, z, y, h or g variants.
+.\"
+.IP "\fBsw\fP|\fBswitch\fP [0-3]"
+Set the VNA switch outputs to the given value.
+Value must be in the range 0..3.
+.\"
+.IP "\fBq\fP|\fBquit\fP"
+.in -4n
+\fBx\fP|\fBexit\fP
+.in +4n
+Exit the CLI.
+.\"
+.SH OPTIONS
+.IP "\fB-a\fP|\fB--attenuation\fP=\fIattenuation\fP"
+Set the attenuation control to \fIattenuation\fP in dB.
+Valid values are 0, 10, 20, 30, 40, 50, 60, or 70.
+.\"
+.IP "\fB-N\fP|\fB--name\fP=\fIname\fP"
+Specify the name of the directory containing configuration files for
+the \s-2N2PK VNA\s+2 device.
+If \fIname\fP contains any slash characters, it's interpreted as a
+pathname to the configuration directory.  If \fIname\fP does not contain
+slash characters, and if the \s-2HOME\s+2 environment variable is defined,
+\fIn2pkvna\fP uses \s-2$HOME\s+2/.n2pkvna/\fIname\fP.
+If the name option isn't given and there's only one \s-2N2PK VNA\fP device in
+the system, the \fBn2pkvna\fP command provides a default; thus this option is
+usually needed only when there are multiple \s-2N2PK VNA\fP devices in the
+system.
+.\"
+.IP "\fB-U\fP|\fB--unit\fP=\fIunit\fP"
+Specify the hardware unit address of the VNA.  This option selects devices
+by USB vendor and product by setting \fIunit\fP to two four-character
+long hexadecimal strings separated by a colon, e.g. "0547:100b", or by
+USB bus and device by separating them with a dot, e.g. "2.3", or by USB
+bus and port by separating them with a slash, e.g. "2/1". The \fIunitf\fP
+parameter may also be given as a comma-separated list of these, or parts
+thereof, e.g. "0547:,2/1", meaning vendor 0x0547, bus 2, port 1, with
+product and device unspecified.  The bus.device form always identifies a
+device uniquely, but its value changes whenever the device is disconnected
+and reconnected, so it's not durable over reconfigurations.  If the
+unit option isn't given and there's only one \s-2N2PK VNA\s+2 device
+with a standard vendor and product code, \fBn2pkvna\fP determines the
+unit address automatically; thus this option is usually needed only when
+there are multiple \s+2N2PK VNA\s-2 devices in the system.  Currently,
+\fBn2pkvna\fP supports only USB devcies; however, the \fIunit\fP syntax
+may be extended in future versions to support other bus types such as
+the parallel port.
+.SH "SEE ALSO"
+.BR libn2pkvna "(3)"

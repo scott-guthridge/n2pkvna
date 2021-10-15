@@ -1,0 +1,79 @@
+N2PKVNA: Library and Utilities for the N2PK Vector Network Analyzer
+Copyright © 2021 D Scott Guthridge <scott-guthridge@rompromity.net>
+
+Prerequisites:
+    - You'll need a C99 level C compiler such as gcc or clang.
+
+    - libusb_1.0 and libyaml
+
+	Fedora, RedHat, Centos
+	    sudo yum install libusbx-devel libyaml-devel
+
+	Debian, Ubuntu
+	    sudo apt-get install libusb-1.0-0-dev libyaml-dev
+
+	Libyaml can also be built from source:
+	    https://pyyaml.org/wiki/LibYAML
+
+    - libvna
+	Build from source:
+	    https://github.com/scott-guthridge/libvna
+
+
+Build, Test and Install:
+    ./bootstrap		# If building from git; skip if building from tarball.
+    ./configure
+    make
+    sudo make install
+
+    The files are installed in /usr/local/ 
+	/usr/local/include/*.h
+	/usr/local/lib/libn2pkvna.so.*
+	/usr/local/share/doc/n2pkvna/*
+	/usr/local/share/man/man3/*.3
+
+    The example programs and README-EXAMPLES files are copied into
+    /usr/local/share/doc/n2pkvna.  The README-EXAMPLES is worded
+    for someone building the example programs by hand after the library
+    has been installed on the system.  After running a make all here,
+    though the examples will already be built in the src/ directory.
+
+
+Fixing library path problems:
+    Some Linux distros (such as Fedora 31) don't include /usr/local/lib
+    in the default dyanamic library search path.  If you get an error like
+    the following when trying to run a program you linked against n2pkvna:
+
+	error while loading shared libraries: n2pkvna.so.0: cannot open
+	shared object file: No such file or directory
+
+    Add /usr/local/lib to the default library search path:
+
+    	sudo echo "/usr/local/lib" > /etc/ld.so.conf.d/local.conf
+	sudo chmod 644 /etc/ld.so.conf.d/local.conf
+	sudo ldconfig
+
+
+To build PDF versions of the man pages (requries pdfroff):
+    make pdfman
+
+    The .pdf files appear in src/
+
+
+To build RPM files:
+    make srcrpm
+    make rpm
+
+    The source RPM appears in rpm/n2pkvna-*.src.rpm.  Binary RPMs appear
+    in an architecture-specific subdirectory, e.g. rpm/x86-64/.
+
+    When installing from RPM, the installed files go into the normal
+    system directories such as /usr/include, /usr/lib64, /usr/share/doc,
+    and /usr/share/man instead of /usr/local/
+
+
+The code is still undergoing some final development.  While the version
+remains at 0.0.x, there may be a few compatiblity breaks.
+
+Please make suggestions for how this software could be improved.  And if
+you'd like to help, please contact scott-guthridge@rompromity.net.

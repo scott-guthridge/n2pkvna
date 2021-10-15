@@ -1,0 +1,105 @@
+The n2pkvna library is complete and stable.  The n2pkvna command, however,
+is currently a rough first cut that supports only the two detector v5
+model with reflection bridge, and no support for the full S parameter
+test set or V-I measurements.
+
+
+== Support for Full S Parameter Test Set ==
+
+Next step is to add support for the full S parameter test set.  Plan is
+to add hardware configuration options to the "config" YAML file and
+generalize the dialog to automatically change switches and prompt the
+user is manual steps are needed.  A suggestion for the hardware config
+entries is this:
+
+    configurations:
+	dual_2x1:				# S11, S21 measurements only
+	    type: S				# S-parameters (not V-I)
+	    dimensions: 2x1			# cal matrix dimensions
+	    steps:
+		- detectors: [ m11, m21 ]	# m11 on 1st det; m21 on 2nd
+		  switch: ~			# no switches used
+
+	dual_2x2:				# full S-parameters
+	    type: S				# S-parameters (not V-I)
+	    dimensions: 2x2			# cal matrix dimensions
+	    steps:
+		- detectors: [ m11, m21 ]	# m11 on 1st det; m21 on 2nd
+		  switch: 0			# switch value = 0
+		- detectors: [ m12, m22 ]	# m12 on 1st det; m22 on 2nd
+		  switch: 1			# switch value = 1
+
+where m11, m21, etc. are the raw (uncorrected) S-parameter measurements.
+
+One can manually add the YAML code above to the VNA config file, e.g.
+~/.n2pkvna/n2pkvna-v5-100mA/config, or can add it through an interactive
+dialog through the yet to be written n2pkvna config command.
+
+
+== GUI Support ==
+
+A simple approach to GUI support would be to write the GUI in a scripting
+language such as perl, tcl or python, and have it run on top of the CLI.
+To support that, the CLI might offer an option to make its input and
+output more program friendly, i.e. a "terse" option.
+
+Alternatively, a GUI could be written in C, borrowing code from the CLI.
+
+If you're interested in helping here, it would be welcomed.
+
+
+== V-I Support ==
+
+Proposed YAML to describe the VI setup:
+
+    configurations:
+	IV_2x2:
+	    type: IV
+	    dimensions: 2x2
+	    steps:
+		- detectors: [ v11 s21 ]	# v11 on det1; through on det2
+		  switch: 0
+		- detectors: [ i11 s21 ]	# i11 on det1; through on det2
+		  switch: 2
+		- detectors: [ v22 s12 ]	# v22 on det1; through on det2
+		  switch: 3
+		- detectors: [ i12 s12 ]	# v22 on det1; through on det2
+		  switch: 1
+
+Calibration support is needed for V-I.  libvna doesn't yet cover it.
+
+
+== Legacy Model (single detector or parallel port) Support
+
+Currently, there's no support for legacy models.  Parallel port support
+can be added to the library without any API changes, e.g. it could be
+modified to accept unit strings such as "P(0x378)" for parallel port on
+port address 0x378.  Manual steps such as preparing the VNA for reflection
+vs. transmission can be added to the hardware configuration YAML as:
+
+    configurations:
+	single_2x2:				# single detector, full S switch
+	    type: S				# S-parameters (not V-I)
+	    dimensions: 2x2			# cal matrix dimensions
+	    steps:
+		- detectors: [ m11 ]		# detector measures m11
+		  switch: 0			# switch for forward
+		  manualStep: reflection	# prompt for reflection
+		- detectors: [ m22 ]		# detector measures m22
+		  switch: 1			# switch for reverse
+		  manualStep: reflection	# still in reflection
+		- detectors: [ m12 ]		# detector measures m12
+		  switch: 1			# switch still in reverse
+		  manualStep: transmission	# prompt for trnsmission
+		- detectors: [ m21 ]		# detector measures m21
+		  switch: 0			# switch for forward
+		  manualStep: transmission	# still in transmission
+
+We can prioritize this based on how much people actually ask for it.
+
+
+== Other Possible Directions ==
+
+TRL support
+    Line standard at 10-60 MHz would be about a 6 meter long
+    roll of coax.  Is this useful?

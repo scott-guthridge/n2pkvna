@@ -1,0 +1,385 @@
+.\"
+.\" N2PK Vector Network Analyzer Library
+.\" Copyright © 2017 D Scott Guthridge <pdx_scooter@yahoo.com>
+.\"
+.\" This program is free software: you can redistribute it and/or modify
+.\" it under the terms of the GNU General Public License as published
+.\" by the Free Software Foundation, either version 3 of the License, or
+.\" (at your option) any later version.
+.\"
+.\" This program is distributed in the hope that it will be useful,
+.\" but WITHOUT ANY WARRANTY; without even the implied warranty of
+.\" MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+.\" General Public License for more details.
+.\"
+.\" You should have received a copy of the GNU General Public License
+.\" along with this program.  If not, see <http://www.gnu.org/licenses/>.
+.\"
+.TH LIBN2PKVNA 3 "JULY 2017" Linux
+.SH NAME
+n2pkvna_error_t, n2pkvna_open, n2pkvna_scan, n2pkvna_generate, n2pkvna_switch, n2pkvna_reset, n2pkvna_get_directory, n2pkvna_get_address, n2pkvna_get_reference_frequency, n2pkvna_set_reference_frequency, n2pkvna_save, n2pkvna_close, n2pkvna_free_config_vector \- control N2PK vector network analyzers
+.\"
+.SH SYNOPSIS
+.B #include <n2pkvna.h>
+.\"
+.PP
+.BI "typedef void n2pkvna_error_t(const char *" message ", void *" arg );
+.\"
+.PP
+.BI "n2pkvna_t *n2pkvna_open(const char *" name ", bool " create ,
+.ie t \{\
+.BI "const char *" unit ,
+.in +4n
+.BI "n2pkvna_config_t ***" config_vector ,
+.BI "n2pkvna_error_t *" error_fn ", void *" error_arg ");"
+.in -4n
+.\}
+.el \{\
+.in +4n
+.BI "const char *" unit ", n2pkvna_config_t ***" config_vector ,
+.br
+.BI "n2pkvna_error_t *" error_fn ", void *" error_arg ");"
+.in -4n
+.\}
+.\"
+.PP
+.BI "int n2pkvna_reset(n2pkvna_t *" vnap );
+.\"
+.PP
+.ie t \{\
+.BI "int n2pkvna_scan(n2pkvna_t *" vnap ,
+.in +4n
+.BI "unsigned int " n ", double " f0 ", double " ff ", bool " linear ", \
+double *" frequency_vector ,
+.br
+.BI "double complex *" detector1_vector ", \
+double complex *" detector2_vector );
+.in -4n
+.\}
+.el \{\
+.BI "int n2pkvna_scan(n2pkvna_t *" vnap ", double " f0 ", double " ff ,
+.in +4n
+.BI "unsigned int " n ", bool " linear ", double *" frequency_vector ,
+.br
+.BI "double complex *" detector1_vector ,
+.br
+.BI "double complex *" detector2_vector );
+.in -4n
+.\}
+.\"
+.PP
+.ie t \{\
+.BI "int n2pkvna_generate(n2pkvna_t *" vnap ", double " rf_frequency ,
+.BI "double " lo_frequency ", double " phase ");"
+.\}
+.el \{\
+.BI "int n2pkvna_generate(n2pkvna_t *" vnap ", double " rf_frequency ,
+.in +4n
+.BI "double " lo_frequency ", double " phase ");"
+.in -4n
+.\}
+.\"
+.PP
+.BI "int n2pkvna_switch(n2pkvna_t *" vnap ", int " switch_value ,
+.if n \{\
+.in +4n
+.\}
+.BI "int " attenuator_value ", double " delay_time );
+.if n \{\
+.in -4n
+.\}
+.\"
+.PP
+.BI "const char *n2pkvna_get_directory(n2pkvna_t *" vnap );
+.\"
+.PP
+.BI "const n2pkvna_address_t *n2pkvna_get_address(n2pkvna_t *" vnap );
+.\"
+.PP
+.BI "double n2pkvna_get_reference_frequency(n2pkvna_t *" vnap );
+.\"
+.PP
+.BI "int n2pkvna_set_reference_frequency(n2pkvna_t *" vnap ,
+.ie t \{\
+.BI double " frequency );
+.\}
+.el \{\
+.in +4n
+.BI "double " frequency );
+.in -4n
+.\}
+.\"
+.PP
+.BI "int n2pkvna_save(n2pkvna_t *" vnap );
+.\"
+.PP
+.BI "void n2pkvna_close(n2pkvna_t *" vnap );
+.\"
+.PP
+.BI "void n2pkvna_free_config_vector(n2pkvna_identification_t **" vector );
+.\"
+.PP
+Link with \fI-ln2pkvna\fP \fI-lusb-1.0\fP \fI-lyaml\fP \fI-lm\fP.
+.sp
+.\"
+.SH DESCRIPTION
+This library controls N2PK vector network analyzers
+(see \fIhttp://www.makarov.ca/vna.htm/\fP).
+.PP
+\fBn2pkvna_open\fP() opens an N2PK VNA device and returns a pointer to
+an opaque \fBn2pkvna_t\fP object used by the other library functions.
+The \fIname\fP parameter specifies the directory containing configuration
+and calibration files for the VNA.
+If \fIname\fP is non-\s-2NULL\s+2 and contains any slash characters,
+it's interpreted as a pathname to the configuration directory.
+If \fIname\fP is non-\s-2NULL\s+2 and doesn't contain slash characters,
+and if the \s-2HOME\s+2 environment variable is defined, the library
+uses $\s-2HOME\s+2/.n2pkvna/\fIname\fP.
+If \fIname\fP is \s-2NULL\s+2 and the pattern
+$\s-2HOME\s+2/.n2pkvna/*/config, matches only one directory, the library
+uses the matched directory.
+If no configuration directory exists, one VNA device was found,
+$\s-2HOME\s+2 is defined, the \fIcreate\fP flag is true, and the device
+is one of the standard models, then a default name is provided.
+If the \fIcreate\fP flag is given, \fBn2pkvna_open\fP() creates the
+configuration directory if it doesn't exist.
+The \fIunit\fP and \fIconfig_vector\fP parameters are used to filter
+and enumerate, respectively, VNA devices when there's more than one.
+Both parameters can be given as \s-2NULL\s+2 if the system has only one
+VNA device.
+See the Managing Multiple N2PK VNA Devices section below for details on
+these parameters.
+The \fIerror_fn\fP and \fIerror_arg\fP parameters are used for error
+reporting.
+If \fIerror_fn\fP is non-\s-2NULL\s+2, then on error, the library
+calls the supplied function with a single-line message (without newline
+character) describing the error.
+If \s-2NULL\s+2, the library silently sets \fBerrno\fP and returns failure,
+but doesn't print messages.
+Finally, \fIerror_arg\fP is a pointer to arbitrary user-defined data
+passed to \fIerror_fn\fP, which can be \s-2NULL\s+2.
+.\"
+.PP
+\fBn2pkvna_reset\fP() disables the LO and RF outputs and returns the
+VNA hardware to a known state.
+.\"
+.PP
+\fBn2pkvna_scan\fP() sweeps over the given frequency range and measures
+the complex amplitude of the reflected and through signals for each
+frequency.
+The \fIf0\fP, \fIff\fP and \fIn\fP parameters give the starting and
+ending frequencies, and number of steps in the scan, respectively.
+If \fIlinear\fP is true, the scan frequencies are linearly spaced;
+if false, the frequencies are exponentially spaced (i.e. linear on a log
+scale).
+The \fIfrequency_vector\fP, \fIdetector1_vector\fP, and
+\fIdetector2_vector\fP are pointers to caller-allocated vectors into
+which the frequencies and measured detector values are stored.
+Passing \s-2NULL\s+2 suppresses the return of the corresponding vector.
+.\"
+.PP
+\fBn2pkvna_generate\fP() generates signals of given frequencies and
+phase relationship.
+The \fIlo_frequency\fP and \fIrf_frequency\fP parameters set the
+frequencies of the LO and RF outputs in Hz, respectively.
+Valid range is 50 kHz through 60 MHz, or zero to disable the given output.
+The \fIphase\fP parameter sets the phase of the LO output relative to
+that of the RF output in degrees.
+This parameter is most useful when the two frequencies are either equal,
+or related by a small rational fraction.
+.\"
+.PP
+\fBn2pkvna_switch\fP() sets the switch and/or attenuator outputs of the
+N2PK VNA and delays for \fIdelay_time\fP seconds to let the new settings
+stabilize.  \fIswitch_value\fP must be in the range 0..3, or -1 for no
+change; \fIattenuator\fP must be in the range 0..7, or -1 for no change.
+.\"
+.PP
+\fBn2pkvna_get_directory\fP() returns the N2PK VNA configuration
+directory name.
+.\"
+.PP
+\fBn2pkvna_get_address\fP() returns a pointer to a structure containing
+hardware address information about the open device.
+The structure contains at least the following members:
+.sp
+.in +4n
+.nf
+.ft CW
+    uint32_t adr_type;
+    uint16_t adr_usb_vendor;
+    uint16_t adr_usb_product;
+    uint8_t  adr_usb_bus;
+    uint8_t  adr_usb_port;
+    uint8_t  adr_usb_device;
+.ft R
+.fi
+.in -4n
+.sp
+The \fBadr_type\fP field is currently always \s-2N2PKVNA_ADR_USB\s+2,
+and the other fields contain USB-specific device identification and
+addressing information.
+.\"
+.PP
+\fBn2pkvna_get_reference_frequency\fP() and
+\fBn2pkvna_set_reference_frequency\fP() get and set the value the
+library uses as the N2PK VNA's internal reference oscillator frequency.
+When the device is opened, any previously saved value is automatically
+loaded from the VNA configuration file.
+By setting this value to the actual frequency of the N2PK VNA's reference
+oscillator, the library compensates for reference frequency error.
+.\"
+.PP
+\fBn2pkvna_save\fP() saves the reference frequency and information
+identifying the device into the device's configuration file.
+The configuration directory is created if it doesn't already exist.
+.\"
+.PP
+\fBn2pkvna_close\fP() closes an N2PK VNA device and frees resources
+allocated in \fBn2pkvna_open\fP().
+.\"
+.SS "Managing Multiple N2PK VNA Devices"
+If the system has more than one N2PK device, or if it cannot automatically
+discover a particular device, for example, if the device has non-standard
+USB vendor and product codes, then it's necessary to supply additional
+information to \fBn2pkvna_open\fP() to identify the device.
+.PP
+The \fIunit\fP parameter is used to select one device out of many.
+Because only \s-2USB\s+2 devices are currently supported, the \fIunit\fP
+parameter contains only \s-2USB\s+2 addressing information.
+You can filter devices by USB vendor and product by setting unit to
+two 4-character long hexadecimal strings separated by a colon, e.g.
+"0547:100b", or by bus and device by separating them with a dot, e.g. "2.3",
+or by bus and port by separating them with a slash, e.g. "2/1".
+The \fIunit\fP parameter may also be given as a comma-separated list of
+these, or parts thereof, e.g. "0547:,2/1", meaning vendor 0x0547, bus 2,
+port 1, with product and device unspecified.
+The bus.device form always identifies a device uniquely, but its value
+changes whenever the device is disconnected and reconnected, thus it's
+not durable over reconfigurations.
+.PP
+You can receive a list of all existing configuration directories
+and matching devices by passing the address of a variable of type
+\fBn2pkvna_config_t **\fP as the \fIconfig_vector\fP argument to
+\fBn2pkvna_open\fP().
+On return from the open function, the user's variable points to a
+\s-2NULL\s+2-terminated vector of pointers to the following structure:
+.sp
+.in +4n
+.nf
+.ft CW
+typedef struct n2pkvna_config {
+    char               *nc_directory;
+    n2pkvna_address_t **nc_addresses;
+    size_t              nc_count;
+} n2pkvna_config_t;
+.ft R
+.fi
+.in -4n
+.sp
+or \s-2NULL\s+2 on error.
+.PP
+The \fBnc_directory\fP member is a pathname to a matching configuration
+directory for the VNA; \fBnc_addresses\fP is an \fBnc_count\fP long
+vector of pointers to matching \fBn2pkvna_address_t\fP structures.
+The caller can free the entire returned data structure by a call to
+\fBn2pkvna_free_config_vector\fP().
+Note that whenever the pointer returned through \fIconfig_vector\fP is
+non-\s-2NULL\s+2, the memory must be freed, even if \fBn2pkvna_open\fP()
+returns an error code.
+For example, if multiple devices match the given \fIname\fP and
+\fIunit\fP arguments, \fBn2pkvna_open\fP() fails due to more than
+one device matched, but it still returns the list of matching devices.
+.\"
+.SH "RETURN VALUE"
+\fBn2pkvna_open\fP() returns a pointer to an opaque \fBn2pkvna_t\fP
+structure on success or \s-2NULL\s+2 on failure.
+\fBn2pkvna_get_address\fP() returns a pointer to \fBn2pkvna_address_t\fP.
+\fBn2pkvna_scan\fP(), \fBn2pkvna_generate\fP(), \fBn2pkvna_switch\fP(),
+\fBn2pkvna_reset\fP(), \fBn2pkvna_set_reference_frequency\fP(),
+and \fBn2pkvna_save\fP() return zero on success or -1 on error.
+\fBn2pkvna_get_directory\fP() returns a pathname to the VNA's
+configuration directory.
+\fBn2pkvna_get_reference_frequency\fP() returns the current reference
+frequency in Hz.
+.\"
+.SH ERRORS
+All n2pkvna library functions call the error reporting function (if one
+was provided via \fBn2pkvna_open\fP()'s \fBe\fP option), set \fIerrno\fP
+and return \s-2NULL\s+2 or -1 on failure.
+Common errno values that may be returned are:
+.IP \fBEINVAL\fP
+.br
+An invalid parameter was given to a function.
+.IP \fBEIO\fP
+.br
+An error occurred when communicating with the device, e.g. the USB
+cable was unplugged.
+.IP \fBENOENT\fP
+.br
+No matching N2PK VNA devices were found.
+.IP \fBENOMEM\fP
+.br
+A memory allocation failure occurred.
+.IP \fBERANGE\fP
+.br
+More than one matching N2PK VNA device was found.
+.\"
+.SH FILES
+.IP "${\s-2HOME\s+2}/.n2pkvna/\fIname\fP/config"
+default location of the N2PK VNA configuration file
+.\"
+.SH EXAMPLES
+.nf
+.ft CW
+.ft R
+#include <stdlib.h>
+#include <string.h>
+#include <errno.h>
+#include <stdio.h>
+#include "n2pkvna.h"
+
+void print_error(const char *msg, void *arg)
+{
+    (void)fprintf(stderr, "n2pkvna-test: %s\\n", msg);
+}
+
+int main(int argc, char **argv)
+{
+    n2pkvna_t *vnap = NULL;
+    double frequency_vector[100];
+    double complex detector1_vector[100];
+    double complex detector2_vector[100];
+
+    vnap = n2pkvna_open(/*name*/NULL, /*create*/true, /*unit*/NULL,
+	    /*config_vector*/NULL, &print_error, /*error_arg*/NULL);
+    if (vnap == NULL) {
+        exit(1);
+    }
+    if (n2pkvna_scan(vnap, 50.0e+3, 60.0e+6, 100, /*linear*/false,
+                frequency_vector, detector1_vector, detector2_vector) == -1) {
+        exit(2);
+    }
+    for (int i = 0; i < 100; ++i) {
+        (void)printf("%13.7e %14.7e %14.7e %14.7e %14.7e\\n",
+                frequency_vector[i],
+                creal(detector1_vector[i]), cimag(detector1_vector[i]),
+                creal(detector2_vector[i]), cimag(detector2_vector[i]));
+    }
+    n2pkvna_close(vnap);
+    vnap = NULL;
+
+    exit(0);
+    /*NOTREACHED*/
+}
+.fi
+.\"
+.SH "SEE ALSO"
+.BR n2pkvna "(1),"
+.BR n2pkvna-cal "(1),"
+.BR n2pkvna-cal-freq "(1),"
+.BR vnacal "(3),"
+.BR vnaconv "(3),"
+.BR vnadata "(3)."
+.\" None known.
+.\" .SH BUGS

@@ -1,0 +1,7 @@
+== N2PKNVA Examples ==
+
+The example programs from the man pages are included here.
+
+libn2pkvna-example.c:
+    Simple program to do a VNA scan and print the raw uncalibrated
+    measurements.
