@@ -99,13 +99,13 @@ output relative to that of the RF output.
 The \fIphase-deg\fP option is most useful when \fILO-MHz\fP is either
 equal to or a small rational fraction of \fIRF-MHz\fP.
 .\"
-.IP "\fIm\fP|\fImeasure\fP [\fB-lL\fP] \fB-c\fP \fIcalibration\fP [\fB-f\fP \fifMin\fP:\fIfMax\fP [\fB-n\fP \fIfrequencies\fP]" 4n
+.IP "\fIm\fP|\fImeasure\fP [\fB-lL\fP] \fB-c\fP \fIcalibration\fP [\fB-f\fP \fIfMin\fP:\fIfMax\fP [\fB-n\fP \fIfrequencies\fP]" 4n
 [\fB-o\fP \fIoutput-file\fP] [\fB-p\fP \fIparameters\fP]
 .TS
 tab(@);
 l l.
 \fB-c\fP|\fB--calibration\fP=\fIcalibration\fP@select the calibration to use
-\fB-f\fP|\fB--frequency-range\fP=\fifMin\fP:\fIfMax\fP@frequency range to use
+\fB-f\fP|\fB--frequency-range\fP=\fIfMin\fP:\fIfMax\fP@frequency range to use
 \fB-l\fP|\fB--linear\fP@use linear frequency spacing
 \fB-L\fP|\fB--log\fP@use logarithmic frequency spacing
 \fB-n\fP|\fB--frequencies\fP=\fIfrequencies\fP@number of frequency points
@@ -190,9 +190,9 @@ If \fIname\fP contains any slash characters, it's interpreted as a
 pathname to the configuration directory.  If \fIname\fP does not contain
 slash characters, and if the \s-2HOME\s+2 environment variable is defined,
 \fIn2pkvna\fP uses \s-2$HOME\s+2/.n2pkvna/\fIname\fP.
-If the name option isn't given and there's only one \s-2N2PK VNA\fP device in
+If the name option isn't given and there's only one \s-2N2PK VNA\s+2 device in
 the system, the \fBn2pkvna\fP command provides a default; thus this option is
-usually needed only when there are multiple \s-2N2PK VNA\fP devices in the
+usually needed only when there are multiple \s-2N2PK VNA\s+2fP devices in the
 system.
 .\"
 .IP "\fB-U\fP|\fB--unit\fP=\fIunit\fP"
@@ -209,7 +209,7 @@ and reconnected, so it's not durable over reconfigurations.  If the
 unit option isn't given and there's only one \s-2N2PK VNA\s+2 device
 with a standard vendor and product code, \fBn2pkvna\fP determines the
 unit address automatically; thus this option is usually needed only when
-there are multiple \s+2N2PK VNA\s-2 devices in the system.  Currently,
+there are multiple \s-2N2PK VNA\s+2 devices in the system.  Currently,
 \fBn2pkvna\fP supports only USB devcies; however, the \fIunit\fP syntax
 may be extended in future versions to support other bus types such as
 the parallel port.

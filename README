@@ -57,7 +57,7 @@ Fixing library path problems:
 To build PDF versions of the man pages (requries pdfroff):
     make pdfman
 
-    The .pdf files appear in src/
+    The .pdf files appear in src/*/
 
 
 To build RPM files:
