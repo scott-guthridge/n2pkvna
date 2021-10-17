@@ -109,7 +109,6 @@ int measure_main(int argc, char **argv)
     vnacal_t *vcp = NULL;
     int c_rows, c_columns;
     double f_min, f_max;
-    int i_temp;
     vnadata_t *vdp = NULL;
     double *frequency_vector = NULL;
     double complex *m[2][2] = {{ NULL, NULL }, { NULL, NULL }};

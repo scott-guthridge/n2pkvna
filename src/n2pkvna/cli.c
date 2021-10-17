@@ -38,7 +38,7 @@ typedef struct scan {
     int	        ss_buffer_length;	/* current command length */
     int		ss_buffer_size;		/* buffer allocation */
     int	       *ss_arg_index;		/* vector of argument indices */
-    int		ss_arg_alloc;		/* allocated slots in arg_index */
+    int		ss_arg_slots;		/* allocated slots in arg_index */
     int		ss_argc;		/* number of arguments */
     char      **ss_argv;		/* argument vector */
     int		ss_state;		/* scanner quote state */
@@ -93,14 +93,14 @@ static void scan_add_char(scan_t *ssp, char c)
  */
 static void scan_start_word(scan_t *ssp)
 {
-    if (ssp->ss_argc >= ssp->ss_arg_alloc) {
-	if (ssp->ss_arg_alloc == 0) {
-	    ssp->ss_arg_alloc = 16;
+    if (ssp->ss_argc >= ssp->ss_arg_slots) {
+	if (ssp->ss_arg_slots == 0) {
+	    ssp->ss_arg_slots = 16;
 	} else {
-	    ssp->ss_arg_alloc *= 2;
+	    ssp->ss_arg_slots *= 2;
 	}
 	if ((ssp->ss_arg_index = realloc(ssp->ss_arg_index,
-			ssp->ss_arg_alloc)) == NULL) {
+			ssp->ss_arg_slots * sizeof(char *))) == NULL) {
 	    (void)fprintf(stderr, "%s: realloc: %s\n",
 		    progname, strerror(errno));
 	    exit(N2PKVNA_EXIT_SYSTEM);

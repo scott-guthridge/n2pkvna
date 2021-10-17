@@ -79,7 +79,6 @@ int calibrate_main(int argc, char **argv)
     char opt_l = '\000';
     int opt_n = 50;
     char c_temp;
-    int i_temp;
     char *filename = NULL;
     vnacal_t *vcp = NULL;
     vnacal_new_t *vnp = NULL;
