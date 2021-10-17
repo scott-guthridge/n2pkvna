@@ -4,13 +4,14 @@ Copyright © 2021 D Scott Guthridge <scott-guthridge@rompromity.net>
 Prerequisites:
     - You'll need a C99 level C compiler such as gcc or clang.
 
-    - libusb_1.0 and libyaml
+    - libusb_1.0, libyaml, and fxload:
 
 	Fedora, RedHat, Centos
-	    sudo yum install libusbx-devel libyaml-devel
+	    sudo yum install libusbx-devel libyaml-devel fxload
 
 	Debian, Ubuntu
-	    sudo apt-get install libusb-1.0-0-dev libyaml-dev
+	    sudo apt-get update
+	    sudo apt-get install libusb-1.0-0-dev libyaml-dev fxload
 
 	Libyaml can also be built from source:
 	    https://pyyaml.org/wiki/LibYAML
@@ -24,7 +25,7 @@ Build, Test and Install:
     ./bootstrap		# If building from git; skip if building from tarball.
     ./configure
     make
-    sudo make install
+    sudo sh -c 'umask 022 && make install'
 
     The files are installed in /usr/local/ 
 	/usr/local/include/*.h
@@ -62,7 +63,7 @@ To build PDF versions of the man pages (requries pdfroff):
 
 To build RPM files:
     make srcrpm
-    make rpm
+    ( umask 022 && make rpm )
 
     The source RPM appears in rpm/n2pkvna-*.src.rpm.  Binary RPMs appear
     in an architecture-specific subdirectory, e.g. rpm/x86-64/.
@@ -72,8 +73,8 @@ To build RPM files:
     and /usr/share/man instead of /usr/local/
 
 
-The code is still undergoing some final development.  While the version
-remains at 0.0.x, there may be a few compatiblity breaks.
+The code is still undergoing development.  While the version remains at
+0.x.x, there may be a few compatiblity breaks.
 
 Please make suggestions for how this software could be improved.  And if
 you'd like to help, please contact scott-guthridge@rompromity.net.
