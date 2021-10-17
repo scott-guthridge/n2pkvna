@@ -34,7 +34,6 @@
 /*
  * n2pkvna cf options
  */
-char *progname;
 static const char short_options[] = "h:f:";
 static const struct option long_options[] = {
     { "frequency",		1, NULL, 'f' },

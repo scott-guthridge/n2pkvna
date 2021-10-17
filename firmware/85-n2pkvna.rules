@@ -1,2 +1,0 @@
-SUBSYSTEM=="usb" ATTR{idVendor}=="0547" ATTR{idProduct}=="100a" ACTION=="add" RUN+="/sbin/fxload -t fx2 -I /lib/firmware/n2pkvna/n2pkvna-v5.hex -D %N"
-SUBSYSTEMS=="usb" ATTRS{idVendor}=="0547" ATTRS{idProduct}=="100b" ACTION=="add" GROUP="n2pkvna" MODE="0660" SYMLINK+="n2pkvna%n"
