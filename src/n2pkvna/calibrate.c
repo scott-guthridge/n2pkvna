@@ -231,11 +231,8 @@ int calibrate_main(int argc, char **argv)
      */
     (void)printf("Connect VNA probe 1 to the short standard.\n");
     (void)printf("Connect VNA probe 2 to a terminator.\n");
-    (void)printf("Enter when ready> ");
-    while ((i_temp = getchar()) != '\n') {
-	if (i_temp == EOF) {
-	    goto out;
-	}
+    if (prompt_for_ready() == -1) {
+	goto out;
     }
     (void)printf("Measuring...\n");
     if (n2pkvna_scan(vnap, f_min, f_max, opt_n, opt_l == 'l', frequency_vector,
@@ -248,8 +245,8 @@ int calibrate_main(int argc, char **argv)
 	rc = N2PKVNA_EXIT_SYSTEM;
 	goto out;
     }
-    if (vnacal_new_add_single_reflect_m(vnp, &m[0][0],
-		2, 1, VNACAL_SHORT, 1) == -1) {
+    if (vnacal_new_add_single_reflect_m(vnp, &m[0][0], 2, 1, VNACAL_SHORT,
+		1) == -1) {
 	rc = N2PKVNA_EXIT_SYSTEM;
 	goto out;
     }
@@ -258,11 +255,8 @@ int calibrate_main(int argc, char **argv)
      * Perform open calibration.
      */
     (void)printf("Connect VNA probe 1 to the open standard.\n");
-    (void)printf("Enter when ready> ");
-    while ((i_temp = getchar()) != '\n') {
-	if (i_temp == EOF) {
-	    goto out;
-	}
+    if (prompt_for_ready() == -1) {
+	goto out;
     }
     (void)printf("Measuring...\n");
     if (n2pkvna_scan(vnap, f_min, f_max, opt_n, opt_l == 'l', NULL,
@@ -281,11 +275,8 @@ int calibrate_main(int argc, char **argv)
      * Perform match calibration.
      */
     (void)printf("Connect VNA probe 1 to the load standard.\n");
-    (void)printf("Enter when ready> ");
-    while ((i_temp = getchar()) != '\n') {
-	if (i_temp == EOF) {
-	    goto out;
-	}
+    if (prompt_for_ready() == -1) {
+	goto out;
     }
     (void)printf("Measuring...\n");
     if (n2pkvna_scan(vnap, f_min, f_max, opt_n, opt_l == 'l', NULL,
@@ -304,11 +295,8 @@ int calibrate_main(int argc, char **argv)
      * Perform through calibration.
      */
     (void)printf("Connect VNA probes 1 & 2 to the through standard.\n");
-    (void)printf("Enter when ready> ");
-    while ((i_temp = getchar()) != '\n') {
-	if (i_temp == EOF) {
-	    goto out;
-	}
+    if (prompt_for_ready() == -1) {
+	goto out;
     }
     (void)printf("Measuring...\n");
     if (n2pkvna_scan(vnap, f_min, f_max, opt_n, opt_l == 'l', NULL,

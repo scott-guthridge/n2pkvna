@@ -230,6 +230,22 @@ int parse_attenuation(const char *arg)
 }
 
 /*
+ * prompt_for_ready: ask user to hit enter when ready
+ */
+int prompt_for_ready()
+{
+    int i;
+
+    (void)printf("Enter when ready> ");
+    while ((i = getchar()) != '\n') {
+	if (i == EOF) {
+	    return -1;
+	}
+    }
+    return 0;
+}
+
+/*
  * command_t: command code
  */
 typedef enum {

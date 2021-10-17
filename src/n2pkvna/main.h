@@ -48,6 +48,7 @@ extern void print_libvna_error(vnaerr_category_t category,
 	const char *message, void *arg);
 extern void print_usage(const char *command, const char *const *usage,
 	const char *const *help);
+extern int prompt_for_ready();
 extern int run_command(int argc, char **argv);
 
 #endif /* MAIN_H */

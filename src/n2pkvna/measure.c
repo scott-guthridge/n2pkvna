@@ -350,11 +350,8 @@ int measure_main(int argc, char **argv)
      */
     (void)printf("Connect VNA probe 1 to DUT port 1\n");
     (void)printf("Connect VNA probe 2 to DUT port 2\n");
-    (void)printf("Enter when ready> ");
-    while ((i_temp = getchar()) != '\n') {
-	if (i_temp == EOF) {
-	    goto out;
-	}
+    if (prompt_for_ready() == -1) {
+	goto out;
     }
     (void)printf("Measuring...\n");
     if (n2pkvna_scan(vnap, f_min, f_max, opt_n, opt_l == 'l',
@@ -365,11 +362,8 @@ int measure_main(int argc, char **argv)
     (void)printf("done\n\n");
     (void)printf("Connect VNA probe 1 to DUT port 2\n");
     (void)printf("Connect VNA probe 2 to DUT port 1\n");
-    (void)printf("Enter when ready> ");
-    while ((i_temp = getchar()) != '\n') {
-	if (i_temp == EOF) {
-	    goto out;
-	}
+    if (prompt_for_ready() == -1) {
+	goto out;
     }
     (void)printf("Measuring...\n");
     if (n2pkvna_scan(vnap, f_min, f_max, opt_n, opt_l == 'l',
