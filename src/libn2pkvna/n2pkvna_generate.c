@@ -116,5 +116,8 @@ int n2pkvna_generate(n2pkvna_t *vnap, double rf_frequency, double lo_frequency,
 		lo_code, rf_code, _n2pkvna_phase_to_code(phase)) < 0) {
 	return -1;
     }
+    if (_n2pkvna_read_status(vnap, 0x55, 0, NULL) < 0) {
+	return -1;
+    }
     return 0;
 }

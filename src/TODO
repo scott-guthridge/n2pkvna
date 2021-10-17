@@ -3,6 +3,12 @@ is currently a rough first cut that supports only the two detector v5
 model with reflection bridge, and no support for the full S parameter
 test set or V-I measurements.
 
+Next Steps:
+    - Add a call to _n2pkvna_read_status in generate to noticed if
+      the power is off.  It's probably not needed in n2pkvna_switch
+      as that function probably actually works on USB power alone.
+    DONE
+
 
 == Support for Full S Parameter Test Set ==
 
