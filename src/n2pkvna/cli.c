@@ -55,7 +55,7 @@ static void scan_init(scan_t *ssp)
 }
 
 /*
- * scan_free: free resources of teh scan_t structure
+ * scan_free: free resources of the scan_t structure
  */
 static void scan_free(scan_t *ssp)
 {
@@ -116,15 +116,20 @@ static void scan_start_word(scan_t *ssp)
 static int scan(scan_t *ssp)
 {
     /*
-     * Process the newline from the previous line.  We defer this to
-     * the next command so that we don't do an extra getchar after
-     * reading the newline.
+     * Process the newline from the previous line.  For interactive
+     * input, we don't want to read past the newline character until
+     * the next command; otherwise the user would have to hit return
+     * twice to get the command to run.
      */
     if (ssp->ss_cur == '\n') {
 	ssp->ss_cur = getchar();
 	ssp->ss_buffer_length = 0;
 	ssp->ss_argc = 0;
     }
+
+    /*
+     * Run Duff's device state machine to parse words and quotes.
+     */
     for (;;) {
 	switch (ssp->ss_state) {
 	case 0:	/* not in word */
@@ -177,7 +182,7 @@ static int scan(scan_t *ssp)
 		ssp->ss_state = 0;
 		continue;
 
-	    case '\n':			/* backslash newline: empty string */
+	    case '\n':			/* backslash newline: ignore */
 		ssp->ss_cur = getchar();
 		ssp->ss_state = 0;
 		continue;
@@ -261,7 +266,7 @@ static int scan(scan_t *ssp)
 	    }
 	    break;
 
-	case 4: /* in word, single quote */
+	case 4: /* in word, in single quote */
 	    switch (ssp->ss_cur) {
 	    case EOF:
 		(void)fprintf(fp_err, "%s: warning: unexpected EOF "
@@ -281,7 +286,7 @@ static int scan(scan_t *ssp)
 	    }
 	    break;
 
-	case 5: /* in word, double quote */
+	case 5: /* in word, in double quote */
 	    switch (ssp->ss_cur) {
 	    case EOF:
 		(void)fprintf(fp_err, "%s: warning: unexpected EOF "
@@ -306,7 +311,7 @@ static int scan(scan_t *ssp)
 	    }
 	    break;
 
-	case 6: /* in word, double quote, backslash */
+	case 6: /* in word, in double quote, after backslash */
 	    switch (ssp->ss_cur) {
 	    case EOF:
 		(void)fprintf(fp_err, "%s: warning: unexpected EOF "
@@ -319,7 +324,7 @@ static int scan(scan_t *ssp)
 		ssp->ss_state = 5;
 		continue;
 
-	    case '$':			/* quoted under backslash */
+	    case '$':			/* these are quoted under backslash */
 	    case '`':
 	    case '\"':
 	    case '\\':
@@ -344,7 +349,8 @@ static int scan(scan_t *ssp)
     }
 
     /*
-     * Now that ss_buffer has settled into its final address, build argv.
+     * Now that ss_buffer has settled into its final address (after
+     * reallocs), build argv.
      */
     free((void *)ssp->ss_argv);
     if ((ssp->ss_argv = calloc(ssp->ss_argc + 1, sizeof(char *))) == NULL) {
