@@ -1,0 +1,564 @@
+<html>
+<head>
+<link rel="stylesheet" href="../style.css"/>
+<style>
+.switch      { width: 1in; }
+.detector    { width: 2in; }
+</style>
+<title>N2PK VNA Setup</title>
+</head>
+<body>
+<h1>N2PK VNA Setup</h1>
+
+<text id="toc_container">
+<p class="toc_title">Contents</p>
+<ol class="toc_list">
+<li class="nn"><a href="#add_users">Add Users to the n2pkvna Group</a></li>
+<li class="nn"><a href="#cal_frequency">Calibrate the Reference Frequency</a></li>
+<li class="nn"><a href="#setup_identify">Identify the Hardware Configuration</a>
+    <ol>
+    <li class="nn"><a href="#rb_1x1">Reflection Bridge 1x1</a></li>
+    <li class="nn"><a href="#rb_2x1">Reflection Bridge 2x1</a></li>
+    <li class="nn"><a href="#s_2x2">S-Parameter Test Set 2x2</a></li>
+    <li class="nn"><a href="#rfiv_2x1">RF-IV Detector 2x1</a></li>
+    <li class="nn"><a href="#rb_s_1x2">Reflection Bridge With Single Detector and Switch 1x2</a></li>
+    <li class="nn"><a href="#rb_s_2x1">Reflection Bridge With Single Detector and Switch 2x1</a></li>
+    <li class="nn"><a href="#rfiv_2x2">Dual RF-IV Detectors 2x2</a></li>
+    <li class="nn"><a href="#rb_ref_2x2">Full S-Parameters with Reference Measurements 2x2</a></li>
+    </ol>
+</li>
+<li class="nn"><a href="#setup_create">Creating the Setup</a></li>
+</ol>
+</text>
+
+<h2 id="add_users">Add Users to the n2pkvna Group</h2>
+<p>Users must be members of the <b>n2pkvna</b> group in order to access
+the N2PK VNA device.  Use the usermod command to add users to the group.
+Example: to add users rufferto and krypto, use:
+
+<code><pre>
+    sudo usermod -aG n2pkvna rufferto
+    sudo usermod -aG n2pkvna krypto
+</pre></code>
+
+<p>The new permission goes into effect on the user's next login.
+
+<h2 id="cal_frequency">Calibrate the Reference Frequency</h2>
+
+<p>You can correct for errors in the VNA's reference oscillator
+by connecting the VNA to a trusted frequency counter and using the
+<text class="button">Calibrate Frequency</text> button under the VNA
+Application's Setup tab.  During the calibration, the VNA generates a
+test frequency (10 MHz by default) and prompts the user to type in the
+actual measured frequency.  The software then corrects the frequency
+coefficient and saves the updated value to the VNA's configuration file.
+
+<p>Initially, the software assumes the VNA uses the Connor Winfield
+reference oscillator with a frequency of 156.25 MHz.  If you know that
+the VNA uses a different reference frequency and don't have a trusted
+frequency counter, you can still use the frequency calibration procedure
+to correct the frequency coefficient.  For example, if the VNA uses
+the Valpey oscillator at 148.344 MHz, run the frequency calibration,
+accept the default of 10 MHz then enter a measured value of 9.494016 MHz.
+You can also edit the VNA configuration file ($HOME/.n2pkvna/*/config)
+directly using a text editor and update the referenceFrequency attribute
+given in Hz.  The file is stored in YAML format.
+
+<h2 id="setup_identify">Identify the Hardware Configuration</h2>
+
+<p>Before the VNA software can create calibrations or perform measurements
+of a DUT, it has to know the hardware setup in which it's operating.
+The next section will detail how to create a "setup" in the software.
+Before doing that, let's look at a few important concepts.
+
+<p><u>Setup Dimensions:</u> The setup dimensions (and equivalently the
+calibration dimensions) are simply the dimensions of the S-parameter
+matrix the VNA can measure <em>without</em> manual swaps of the DUT ports
+at the reference plane.  For example, if the VNA measures reflection on
+one port only (S11), then the dimensions are simply 1x1.  If the VNA
+measures reflection on port 1 (S11) and transmission on port 2 (S21),
+then it has dimensions 2x1.  It can generate signal on both ports but can
+only measure the signal received on port 1 (S11 and S12), then it has
+dimensions 1x2.  Finally, if it measures all four S parameters without
+manual port swaps, then the dimension is 2x2.  Another way of looking
+at the dimensions is that the number of rows is the number of ports on
+which the VNA measures received signals, and the number of columns is
+the number of ports on which VNA transmits signal.
+
+<p><u>Switches</u>: The N2PK VNA has two digital switch outputs that
+can be used to operate relays or solid-state RF switches to change what
+the VNA detectors measure and how it drives signal to the DUT.  Not all
+setups use the switch outputs.  If they do, however, then the software
+needs to know how to drive them.
+
+<p><u>Manual Steps</u>: In addition to automatic switch outputs, the
+VNA software can optionally ask the user to operate manual switches or
+change cables, etc.  In this context, manual steps do not include
+DUT port swaps at the reference plane.
+
+<p><u>Detector Measurements</u>: Within each manual step and switch
+combination, there are sixteen possible different measurements each
+detector can make.  These correspond to the elements of the following
+four matrices:
+
+<p>
+<table border>
+<tr>
+    <td>
+	<table width="100px">
+	    <tr>
+		<td>a11</td>
+		<td>a12</td>
+	    </tr>
+	    <tr>
+		<td>a21</td>
+		<td>a22</td>
+	    </tr>
+	</table>
+    </td>
+    <td>
+	<table width="100px">
+	    <tr>
+		<td>b11</td>
+		<td>b12</td>
+	    </tr>
+	    <tr>
+		<td>b21</td>
+		<td>b22</td>
+	    </tr>
+	</table>
+    </td>
+</tr>
+<tr>
+    <td>
+	<table width="100px">
+	    <tr>
+		<td>i11</td>
+		<td>i12</td>
+	    </tr>
+	    <tr>
+		<td>i21</td>
+		<td>i22</td>
+	    </tr>
+	</table>
+    </td>
+    <td>
+	<table width="100px">
+	    <tr>
+		<td>v11</td>
+		<td>v12</td>
+	    </tr>
+	    <tr>
+		<td>v21</td>
+		<td>v22</td>
+	    </tr>
+	</table>
+    </td>
+</tr>
+</table>
+
+<p>The <b>a</b> matrix describes the incident signals from the VNA
+onto the DUT.  High end VNA's typically have dedicated detectors for
+the <b>a</b> measurements; the N2PK VNA, doesn't have them.  The <a
+href="#rb_ref_2x2">last hardware setup example</a> below shows how
+<b>a</b> parameters can be measured for the N2PK VNA, but in most
+configurations here, the <b>a</b> matrix is not measured and is simply
+assumed to be the identity matrix.
+
+<p>The <b>b</b> matrix describes the reflected signals from the DUT
+back to the VNA.  The numbering of the elements is as follows: b11
+is the reflected signal received on VNA probe 1 during the forward
+measurement; b21 is through signal received on VNA probe 2 during
+the forward measurement; b12 is through signal received on VNA probe 1
+during the reverse measurement, and finally, b22 is the reflected signal
+received on VNA probe 2 during the reverse measurement.  The elements
+of the other matrices follow the same numbering pattern.
+
+<p>In some hardware configurations, one or both of the directional
+couplers is replaced with an RF-IV detector.  The first column of the
+<b>i</b> matrix describes the currents flowing toward the DUT in each
+VNA probe plane during the forward measurement; the
+second column describes the corresponding currents flowing into the DUT
+during the reverse measurement.  The <b>v</b> matrix similarly describes
+the voltages at each DUT port.
+
+<p>Following are several examples of hardware setups, their dimensions
+and the values each detector measures.
+
+<h3 id="rb_1x1">Reflection Bridge 1x1</h3>
+<p><img src="s_RB_1x1.svg">
+
+<p>This configuration measures reflection only on one port using a
+directional coupler or reflection bridge.  The single detector measures
+the reflected signal from the DUT.
+
+<p>
+<table border>
+<tr>
+    <th class="detector">Detector 1</th>
+</tr>
+<tr>
+    <td>b11</td>
+</tr>
+</table>
+
+
+<hr>
+<h3 id="rb_2x1">Reflection Bridge 2x1</h3>
+<p>
+<img src="d_RB_2x1.svg">
+
+<p>In this configuration, detector 1 uses a directional coupler or
+reflection bridge to measure the reflected signal from probe 1, while
+detector 2 measures the through signal received on probe 2.
+
+<p>
+<table border>
+<tr>
+    <th class="detector">Detector 1</th>
+    <th class="detector">Detector 2</th>
+</tr>
+<tr>
+    <td>b11</td>
+    <td>b21</td>
+</tr>
+</table>
+
+<hr>
+<h3 id="s_2x2">S-Parameter Test Set 2x2</h3>
+<p>
+<img src="d_S_2x2.svg">
+
+<p>The S-Parameter Test Set uses two directional couplers and a switch
+to measure all four S-parameters of a two-port DUT.  Switch 0 selects
+between the forward (shown) and reverse measurements.
+
+<p>
+<table border>
+<tr>
+    <th class="switch">Switch 1</th>
+    <th class="switch">Switch 0</th>
+    <th class="detector">Detector 1</th>
+    <th class="detector">Detector 2</th>
+</tr>
+<tr>
+    <td>X</td>
+    <td>0</td>
+    <td>b11</td>
+    <td>b21</td>
+</tr>
+<tr>
+    <td>X</td>
+    <td>1</td>
+    <td>b12</td>
+    <td>b22</td>
+</tr>
+</table>
+
+<hr>
+<h3 id="rfiv_2x1">RF-IV 2x1</h3>
+<p><img src="d_RFIV_2x1.svg">
+
+<p>The RF-IV 2x1 configuration is similar to the Reflection Bridge 2x1
+example above except that the directional coupler behind probe 1 has
+been replaced with an RF-IV detector.  The RF-IV detector measures
+the impedance into a DUT port more accurately than the directional
+coupler when the impedance is far away from the reference impedance of
+50 ohms.  Detector 1 measures voltage or current, depending on the switch
+value; detector 2 measures the through signal received from probe 2
+independent of the switch setting.  Notice that b21 is measured twice;
+the VNA software averages the two b21 measurements.
+
+<p>
+<table border>
+<tr>
+    <th class="switch">Switch 1</th>
+    <th class="switch">Switch 0</th>
+    <th class="detector">Detector 1</th>
+    <th class="detector">Detector 2</th>
+</tr>
+<tr>
+    <td>X</td>
+    <td>0</td>
+    <td>v11</td>
+    <td>b21</td>
+</tr>
+<tr>
+    <td>X</td>
+    <td>1</td>
+    <td>i11</td>
+    <td>b21</td>
+</tr>
+</table>
+
+<hr>
+<h3 id="rb_s_1x2">Reflection Bridge With Single Detector and Switch 1x2</h3>
+<p><img src="s_RB_1x2.svg">
+
+<p>Using a single detector and switch, this configuration measures
+reflection from probe 1 and transmission from probe 2 to probe 1.
+Since the VNA generates signal on either probe but detects it only
+on probe 1, the dimensions of the setup are 1x2.
+
+<p>Note that it's important to use a high quality switch and for the RF
+out port to have good impedance match with the terminating resistors in
+this configuration because none of the available calibration methods can
+correct for errors here.
+
+<p>
+<table border>
+<tr>
+    <th class="switch">Switch 1</th>
+    <th class="switch">Switch 0</th>
+    <th class="detector">Detector 1</th>
+</tr>
+<tr>
+    <td>X</td>
+    <td>0</td>
+    <td>b11</td>
+</tr>
+<tr>
+    <td>X</td>
+    <td>1</td>
+    <td>b12</td>
+</tr>
+</table>
+
+<hr>
+<h3 id="rb_s_2x1">Reflection Bridge With Single Detector and Switch 2x1</h3>
+<p><img src="s_RB_2x1.svg">
+
+<p>Using a single detector and switch, this configuration forms the 2x1
+dual of the previous configuration where it generates signal on probe
+1 only but detects signal from either port.
+
+<p>As with the previous configuration, it's important to use a high
+quality switch and for the detector port to have good impedance match
+with the terminating resistors because none of the available calibration
+methods can correct for errors here.
+
+<p>
+<table border>
+<tr>
+    <th class="switch">Switch 1</th>
+    <th class="switch">Switch 0</th>
+    <th class="detector">Detector 1</th>
+</tr>
+<tr>
+    <td>X</td>
+    <td>0</td>
+    <td>b11</td>
+</tr>
+<tr>
+    <td>X</td>
+    <td>1</td>
+    <td>b21</td>
+</tr>
+</table>
+
+<hr>
+<h3 id="rfiv_2x2">Dual RF-IV Detectors 2x2</h3>
+<p><img src="d_RFIV_2x2.svg">
+
+<p>This configuration is similar to the S-Parameter Test Set above except
+that both directional couplers have been replaced with RF-IV detectors.
+Switch 0 selects between the forward and reverse measurements while
+switch 1 selects between voltage and current.  This setup is well-suited
+for measuring Y and Z parameters.
+
+<p>
+<table border>
+<tr>
+    <th class="switch">Switch 1</th>
+    <th class="switch">Switch 0</th>
+    <th class="detector">Detector 1</th>
+    <th class="detector">Detector 2</th>
+</tr>
+<tr>
+    <td>0</td>
+    <td>0</td>
+    <td>v11</td>
+    <td>v21</td>
+</tr>
+<tr>
+    <td>0</td>
+    <td>1</td>
+    <td>v12</td>
+    <td>v22</td>
+</tr>
+<tr>
+    <td>1</td>
+    <td>0</td>
+    <td>i11</td>
+    <td>i21</td>
+</tr>
+<tr>
+    <td>1</td>
+    <td>1</td>
+    <td>i12</td>
+    <td>i22</td>
+</tr>
+</table>
+
+<hr>
+<h3 id="rb_ref_2x2">Full S-Parameters With Reference Measurements 2x2</h3>
+<p><img src="s_RB_ref_2x2.svg">
+
+<p>This configuration is like the S-Parameter Test Set above except that
+it measures transmitted signal into the DUT in addition to reflected
+signal received from the DUT.  In all prior examples, we assumed that
+the incident signal on probes 1 and 2 were 1.0 and 0.0, respectively,
+in the forward measurement direction, and 0.0 and 1.0, respectively,
+in the reverse measurement direction.  With knowledge of the incident
+signal, the VNA can correct for variations in the VNA output amplitude
+level and errors introduced by the forward/reverse switch, removing
+the necessity to use a calibration method that corrects for the
+forward/reverse switch.  It's important, however, to use high quality
+switches for the incident/reflected switch because none of the available
+calibration methods can correct for errors introduced in these switches.
+Without care, errors introduced in the incident/reflected switches
+may potentially outweigh any benefits of measuring the incident signal.
+
+<p>
+<table border>
+<tr>
+    <th class="switch">Switch 1</th>
+    <th class="switch">Switch 0</th>
+    <th class="detector">Detector 1</th>
+    <th class="detector">Detector 2</th>
+</tr>
+<tr>
+    <td>0</td>
+    <td>0</td>
+    <td>b11</td>
+    <td>b21</td>
+</tr>
+<tr>
+    <td>0</td>
+    <td>1</td>
+    <td>b12</td>
+    <td>b22</td>
+</tr>
+<tr>
+    <td>1</td>
+    <td>0</td>
+    <td>a11</td>
+    <td>a21</td>
+</tr>
+<tr>
+    <td>1</td>
+    <td>1</td>
+    <td>a12</td>
+    <td>a22</td>
+</tr>
+</table>
+
+<h2 id="setup_create">Creating the Setup</h2>
+<img src="setup-menu.png"/>
+
+<p>Five of the buttons on the Setup tab:
+<text class="button">Configure Reflection Bridge</text>,
+<text class="button">Configure S Parameter Test Set</text>,
+<text class="button">Configure RF-IV</text>,
+<text class="button">Create Custom</text>,
+and <text class="button">Edit</text>,
+open the same switch and detector edit screen that describes the switch
+settings and detector measurements.  The difference between these buttons
+is only in how the switch and detector screen is initially filled in.
+
+<p>The <text class="button">Configure Reflection Bridge</text>
+button opens the switch and detector edit screen with typical default
+values for the <a href="#rb_2x1">Reflection Bridge 2x1</a> setup.
+For the <a href="#rb_1x1">Reflection Bridge 1x1</a>, use this option
+and change the dimensions to 1x1.  For the single detector variants: <a
+href="#rb_s_1x2">Single Detector 1x2</a> and <a href="#rb_s_2x1">Single
+Detector 2x1</a>, use this option, fix the dimensions, select 1 detector,
+either check the <text class="button">use switch</text> button or set
+two manual steps, and fill in the table entries.  You if you have more
+than one of these configurations, give each a different name, e.g. RB_1x1
+and RB_2x1.
+
+<p>The <text class="button">Configure S Parameter Test Set</text>
+button opens the edit screen with typical defaults for the <a
+href="#s_2x2">S-Parameter Test Set</a>.
+
+<p>The <text class="button">Configure RF-IV</text> opens the edit screen
+with typical defaults for the <a href="rfiv_2x1">RF-IV</a> detector.
+
+<p>The <text class="button">Create Custom</text> opens the edit
+screen with a blank slate.  Use the setup examples shown in <a
+href="#setup_identify">Identify the Hardware Configuration</a> section
+above for guidance on creating custom configurations.
+
+<p>Use the <text class="button">Edit</text> button to modify existing setups.
+
+<h3>Switch and Detector Edit Screen</h3>
+<img src="setup-edit-dialog.png"/>
+
+<p>The first field on the edit screen is a short name for the VNA setup.
+The built-in setups supply a suggested name -- you can change it if
+desired.  If you're edited an existing setup and change the name, this
+doesn't rename the old setup but rather saves the modified setup under
+the new name.  Think of it as "save as" instead of "save".
+<!-- TODO: revisit -->
+<i>There currently isn't a delete setup -- it's easy to add, just
+isn't there yet.  You can delete setups manually by editing the VNA
+configuration file.</i>
+
+<p>The <text class="button">Hide</text> check box causes the Setup to be
+hidden from new Calibrations.  You can later edit and unhide.  This can
+be useful for temporarily disabling experimental setups and decluttering
+the calibration screen.
+
+<p>The dimensions menu describes what subset of the S parameters
+the VNA measures <em>without</em> physically swapping DUT ports.
+Rows describes how many VNA ports measure signal from the DUT; columns
+describes how many VNA ports drive signal into the DUT.
+
+<p>The Frequency Range fields describe the frequency range of the VNA
+setup.  If you're using a transverter, fill in the shifted frequency
+range and also enter local oscillator frequency of the transverter into
+the fOsc field; if not using a transverter, leave fOsc blank.
+<!-- TODO: revisit -->
+<i>Note: transverter support in the software is currently completely
+untested and probably broken.  Contact the author if you would like
+to help or be a tester for this feature.</i>
+
+<p>With the <text class="button">Number of Manual Steps</text> spin
+button, it's possible to add manual steps in addition to automatic
+switch outputs.  For example, suppose that the VNA uses a manual switch
+to select between forward and reverse measurements instead of using
+the electronic switch output.  Then two manual steps can be selected,
+one for forward and one for the reverse.  Setting the number of manual
+steps to 1 will cause the VNA software to always prompt the user before
+making measurements.  Normally, however, this field is set to zero.
+In many VNA configurations, it's necessary to manually swap DUT ports at
+the reference plane in order to measure the full S parameters of the DUT.
+Don't include those swaps here.  This setting applies only to manual
+steps on the VNA side of the reference plane.
+
+<p>Use the Number of Detectors <text class="button">1</text> and
+<text class="button">2</text> radio buttons to select whether the
+current setup uses one or two detectors.  Similarly, check the <text
+class="button">use switch</text>, <text class="button">use RFIV</text>
+and <text class="button">use references</text> boxes as needed in the
+setup.  These buttons simply add and remove choices in the table below
+to eliminate inapplicable choices.
+
+<p>Fill in the measurements table with the manual steps, switch settings
+and what each detector measures.  The table automatically removes unneeded
+columns based on the check buttons above.
+
+<p>When the table is filled correctly, press <text class="button">Save</text>
+to save the setup.
+
+<!-- TODO: revisit -->
+<p><i>Note: When using manual steps, the Edit Custom Text button is
+meant to let you enter a custom message that will be shown to the user
+when measuring.  This button is not yet implemented.</i>
+
+<hr>
+<a href="calibrate.html">Next: Calibration</a>
+
+</body>
+</html>

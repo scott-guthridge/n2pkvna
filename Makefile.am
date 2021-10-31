@@ -1,7 +1,7 @@
 ACLOCAL_AMFLAGS= -I m4
 libn2pkvna_ladir= $(libdir)
 
-SUBDIRS= firmware src rpm
+SUBDIRS= doc firmware src rpm
 
 dist_doc_DATA= COPYING README-EXAMPLES
 dist_noinst_SCRIPTS= bootstrap

@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!-- Creator: fig2dev Version 3.2.7b-dev -->
+<!-- CreationDate: 2022-04-15 16:13:11 -->
+<!-- Magnification: 1 -->
+<svg	xmlns="http://www.w3.org/2000/svg"
+	xmlns:xlink="http://www.w3.org/1999/xlink"
+	width="256px" height="256px"
+	viewBox="0 0 1200 1200">
+<g fill="none">
+<!-- Line -->
+<rect x="0" y="0" width="1200" height="1200" fill="#ffff00"
+	stroke="#000000" stroke-width="8px"/>
+<!-- Arc -->
+<path d="M 1188,744 A 1072 1072 0 0 0 430 1058"
+	stroke="#708090" stroke-width="8px"/>
+<!-- Arc -->
+<path d="M 1188,744 A 1072 1072 0 0 1 430 430"
+	stroke="#708090" stroke-width="8px"/>
+<!-- Arc -->
+<path d="M 1188,744 A 444 444 0 0 0 744 1188"
+	stroke="#708090" stroke-width="8px"/>
+<!-- Arc -->
+<path d="M 1188,744 A 444 444 0 0 1 744 300"
+	stroke="#708090" stroke-width="8px"/>
+<!-- Arc -->
+<path d="M 1188,744 A 184 184 0 0 0 1058 1058"
+	stroke="#708090" stroke-width="8px"/>
+<!-- Arc -->
+<path d="M 1188,744 A 184 184 0 0 1 1058 430"
+	stroke="#708090" stroke-width="8px"/>
+<!-- Circle -->
+<circle cx="744" cy="744" r="444"
+	stroke="#708090" stroke-width="8px"/>
+<!-- Circle -->
+<circle cx="855" cy="744" r="333"
+	stroke="#708090" stroke-width="8px"/>
+<!-- Circle -->
+<circle cx="966" cy="744" r="222"
+	stroke="#708090" stroke-width="8px"/>
+<!-- Circle -->
+<circle cx="1077" cy="744" r="111"
+	stroke="#708090" stroke-width="8px"/>
+<!-- Line -->
+<polyline points=" 300,744 1188,744"
+	stroke="#708090" stroke-width="8px"/>
+<!-- Text -->
+<text xml:space="preserve" x="30" y="288" fill="#0000ff" font-family="Times" font-style="normal" font-weight="normal" font-size="360" text-anchor="start">N2PK</text>
+<!-- Text -->
+<text xml:space="preserve" x="30" y="528" fill="#000000" font-family="Times" font-style="normal" font-weight="normal" font-size="288" text-anchor="start">VNA</text>
+</g>
+</svg>

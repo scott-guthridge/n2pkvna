@@ -44,12 +44,15 @@ LT_INIT
 AC_CONFIG_HEADERS([config.h])
 AC_CONFIG_FILES([
     Makefile
+    doc/Makefile
+    doc/html/Makefile
     firmware/85-n2pkvna.rules
     firmware/Makefile
-    src/Makefile
-    src/libn2pkvna/Makefile
-    src/n2pkvna/Makefile
     rpm/Makefile
     rpm/n2pkvna.spec
+    src/libn2pkvna/Makefile
+    src/Makefile
+    src/n2pkvna-gui/Makefile
+    src/n2pkvna/Makefile
 ])
 AC_OUTPUT

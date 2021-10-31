@@ -1,0 +1,74 @@
+<html>
+<head>
+<link rel="stylesheet" href="../style.css"/>
+<title>Using the Signal Generator</title>
+</head>
+<body>
+<h1>Using the Signal Generator</h1>
+
+<text id="toc_container">
+<p class="toc_title">Contents</p>
+<ol class="toc_list">
+<li class="nn"><a href="#gen_quadrature">Generating Two Signals in Quadrature</a></li>
+<li class="nn"><a href="#gen_mult_freq">Generating Multiple Frequencies</a></li>
+</ol>
+</text>
+
+<h2 id="gen_quadrature">Generating Two Signals in Quadrature</h2>
+
+<p>Under the Generate tab, we can use the N2PK VNA as a signal generator.
+Click <text class="button">Master Enable</text> to enable the output.  
+
+<p>The fields on the main screen are not editable directly.  Click the
+<text class="button">Edit</text> button to open an edit dialog to modify
+the values.  Only the fields into which you enter values are changed.
+
+<p><img src="gen_quadrature_edit.png">
+
+<p>For example, here we change the phase to 90 degress and click <text
+class="button">Apply</text> to put the outputs into quadrature.
+
+<p><img src="gen_quadrature_main.png">
+
+<p>Back on the main screen, we can see that frequencies are unchanged
+but phase is now 90&#176;.
+
+<p><img src="gen_quadrature_waveforms.jpg">
+
+<p>Oscilloscope channel 1 is RF Out and channel 2 is LO-DDS-1 out.
+We can see that LO-DDS-1 leads in phase by 90&#176;.
+
+<p>Two details: First, notice that the amplitude on RF out is about
+twice that of LO-DDS-1.  Second, it's not shown here, but if we use
+the LO-DDS-2 output instead of LO-DDS-1, we'll see that the two LO-DDS
+outputs are 180&#176; out of phase with respect to LO-DDS-1.  Both are
+explained if you look at the N2PK VNA schematic.  The DDS chips have
+complementary outputs.  For the LO-DDS, each is routed to a separate
+external output; for the RF-DDS, however, the two outputs are combined
+through a transformer.
+
+<h2 id="gen_xy">Generating Multiple Frequencies</h2>
+
+<p>To generate two different frequencies, press <text
+class="button">Edit</text>, and uncheck <text class="button">Lock to
+RF</text> then set RF Frequency and LO Frequency.
+
+<p><img src="gen_xy_main.png">
+
+<p>When we change the frequencies or phase, the N2PK VNA synchronizes
+the DDS's so that they start up with a consistent phase relationship.
+Even when we're generating two different frequencies, the phase
+relationship can be meaningful, especially if the two frequencies are
+related by small integer ratios.
+In this example, we generate 3 MHz on RF out and 4 MHz on LO-DDS-1.
+If we start out with a 90 degree phase difference and display on the
+oscilloscope in X-Y mode, we get this:
+
+<p><img src="gen_xy_90.jpg">
+
+<p>But if we change the phase to 0, we get a pretzel:
+
+<p><img src="gen_xy_0.jpg">
+
+</body>
+</html>

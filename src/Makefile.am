@@ -1,7 +1,7 @@
 ACLOCAL_AMFLAGS= -I m4
 libn2pkvna_ladir= $(libdir)
 
-SUBDIRS= libn2pkvna n2pkvna
+SUBDIRS= libn2pkvna n2pkvna n2pkvna-gui
 
 pdfman:
 	for dir in ${SUBDIRS}; do \

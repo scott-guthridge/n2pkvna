@@ -1,0 +1,362 @@
+#!/usr/bin/perl
+use Graphics::Fig;
+use Math::Trig;
+use strict;
+use warnings;
+
+my $LEFT_MARGIN = 0.5;
+my $TOP_MARGIN  = 0.5;
+my $EBOX_BORDER_LR = 0.125;
+my $EBOX_BORDER_UD = 0.25;
+my $DUT_BORDER  = 0.25;
+my $ED12_EM21   = 0.5;
+my $X1 = 1.0;
+my $X2 = 2.5;
+my $X3 = 3.75;
+my $X4 = 4.75;
+my $Y1 = 1;
+my $Y2 = 2;
+my $Y3 = 3;
+my $TERMINAL_RADIUS = .05;
+my $DOT_RADIUS = 0.03;
+
+sub drawArrowLine {
+    my $fig       = shift;
+    my $points    = shift;
+    my $fraction  = shift;
+    my $label     = shift;
+    my $fliplabel = shift;
+    my $options   = shift;
+    my $offset = 0.062085;	# (inches) put center of arrow on point
+
+    # Uncomment for LaTeX output
+    #$label =~ s/([A-Za-z]+)(\d+)/\$\\mathit{$1}_{\\mathrm{$2}}\$/;
+
+    my $dx = $points->[1][0] - $points->[0][0];
+    my $dy = $points->[1][1] - $points->[0][1];
+    my $length = sqrt($dx*$dx + $dy*$dy);
+    my $angle = -atan2($dy, $dx) / pi * 180.0;
+    $length *= $fraction;
+
+    $fig->begin($options);
+    $fig->moveto($points->[0]);
+    $fig->lineto($length + $offset, $angle, { arrowMode => "forw" });
+    $fig->moveto($points->[0]);
+    $fig->moveto($length, $angle);
+    $fig->lineto($points->[1]);
+    $fig->begin();
+    $fig->moveto($points->[0]);
+    $fig->moveto($length, 0);
+    my $label_off = 0;
+    if ((abs($angle) > 90) ^ !!$fliplabel) {
+	$label_off = 0.1;
+    }
+    $fig->moveto(0.085 + $label_off, $fliplabel ? -90 : 90);
+    $fig->text($label, { rotation => abs($angle) > 90 ? 180 : 0,
+			 textJustification => "center" });
+    $fig->moveto($points->[0]);
+    $fig->rotate($angle);
+    $fig->end();
+    $fig->end();
+}
+
+sub drawDot {
+    my $fig   = shift;
+    my $point = shift;
+
+    $fig->circle({ center => $point, r => $DOT_RADIUS, areaFill => "black" });
+}
+
+sub draw_calibration {
+    my $rows          = shift;
+    my $cols          = shift;
+    my $leakage       = shift;	# none, ed or all
+    my $system        = shift;	# "", "1" or "2"
+    my $name	      = shift;
+    my $leakage_style = shift;
+
+    my $prefix = "";
+    if ($system ne "") {
+	$prefix = $system . "_";
+    }
+    if (!defined($leakage_style)) {
+	$leakage_style = "solid";
+    }
+    my ($x1, $x2, $y1, $y2);
+    my $f;
+
+    my $fig = Graphics::Fig->new({
+	arrowHeight => "0.1",
+	arrowStyle => "filled-triangle",
+	arrowWidth => ".1",
+	#fontFlags => "+special",	# don't quote LaTeX $S_11$
+	lineThickness => "2pt",		# thick lines
+	styleVal => ".0375",		# dash spacing
+
+    });
+
+    #
+    # Draw the a and b terminals.
+    #
+    if ($system ne "2") {
+	$fig->circle({ center => [ 0,   0 ], r => $TERMINAL_RADIUS });
+    }
+    $fig->circle({ center => [ 0, $Y1 ], r => $TERMINAL_RADIUS });
+    if ($cols > 1 || $system eq "2") {
+	$fig->circle({ center => [ 0, $Y2 ], r => $TERMINAL_RADIUS });
+    }
+    if ($rows > 1) {
+	$fig->circle({ center => [ 0, $Y3 ], r => $TERMINAL_RADIUS });
+    }
+
+    $x1 = $X1 - $ED12_EM21 - $EBOX_BORDER_LR;
+    $y1 =   0 - $EBOX_BORDER_UD;
+    $x2 = $X2 + $ED12_EM21 + $EBOX_BORDER_LR;
+    if ($rows == 1 && $cols == 1) {
+	$y2 = $Y1 + $EBOX_BORDER_UD;
+    } else {
+	$y2 = $Y3 + $EBOX_BORDER_UD;
+    }
+    $fig->box([[ $x1, $y1 ], [ $x2, $y2 ]], { lineThickness => "1pt" });
+
+    $x1 = ($X1 + $X2) / 2;
+    $y1 = - 1.5 * $DUT_BORDER;
+    $fig->text("Error Box", {
+	position          => [ $x1, $y1 ],
+	textJustification => "center" });
+
+    $x1 = $X3 - $DUT_BORDER;
+    if ($rows == 1 && $cols == 1) {
+	$y1 =     - $DUT_BORDER;
+	$x2 = $X3 + $DUT_BORDER;
+	$y2 = $Y1 + $DUT_BORDER;
+    } else {
+	$y1 = $Y1 - $DUT_BORDER;
+	$x2 = $X4 + $DUT_BORDER;
+	$y2 = $Y2 + $DUT_BORDER;
+    }
+    $fig->box([[ $x1, $y1 ], [ $x2, $y2 ]], { lineThickness => "1pt" });
+
+    if ($rows == 1 && $cols == 1) {
+	$x1 = $X3;
+	$y1 =     - 1.5 * $DUT_BORDER;
+    } else {
+	$x1 = ($X3 + $X4) / 2;
+	$y1 = $Y1 - 1.5 * $DUT_BORDER;
+    }
+    #$fig->text("\\textrm{DUT}", { position => [ $x1, $y1 ], textJustification => "center" });
+    $fig->text("DUT", {
+	position          => [ $x1, $y1 ],
+	textJustification => "center"
+    });
+
+    #
+    # Draw black dots for the connections.
+    #
+    if ($system ne "2") {
+	&drawDot($fig, [ $X1,   0 ]);
+    }
+    &drawDot($fig, [ $X2,   0 ]);
+    if ($rows == 1 && $cols == 1) {
+	&drawDot($fig, [ $X3,   0 ]);
+    }
+    &drawDot($fig, [ $X1, $Y1 ]);
+    &drawDot($fig, [ $X2, $Y1 ]);
+    &drawDot($fig, [ $X3, $Y1 ]);
+    if ($rows != 1 || $cols != 1) {
+	&drawDot($fig, [ $X4, $Y1 ]);
+    }
+    if ($rows > 1 || $cols > 1) {
+	if ($cols > 1 || $system eq "2") {
+	    &drawDot($fig, [ $X1, $Y2 ]);
+	}
+	&drawDot($fig, [ $X2, $Y2 ]);
+	&drawDot($fig, [ $X3, $Y2 ]);
+	&drawDot($fig, [ $X4, $Y2 ]);
+	if ($rows > 1) {
+	    &drawDot($fig, [ $X1, $Y3 ]);
+	}
+	&drawDot($fig, [ $X2, $Y3 ]);
+    }
+
+    #
+    # Draw input and output arrows.
+    #
+    $x1 = $TERMINAL_RADIUS;
+    $f = ($ED12_EM21 + $EBOX_BORDER_LR + 0.1875) / ($X1 - $TERMINAL_RADIUS);
+    if ($system ne "2") {
+	&drawArrowLine($fig, [[ $x1,   0 ], [ $X1,   0 ]], 1-$f, "a1", 0, {});
+    }
+    &drawArrowLine($fig, [[ $X1, $Y1 ], [ $x1, $Y1 ]], $f, "b1", 0, {});
+    if ($cols > 1 || $system eq "2") {
+	&drawArrowLine($fig, [[ $x1, $Y2 ], [ $X1, $Y2 ]], 1-$f, "a2", 0, {});
+    }
+    if ($rows > 1) {
+	&drawArrowLine($fig, [[ $X1, $Y3 ], [ $x1, $Y3 ]], $f, "b2", 0, {});
+    }
+
+    #
+    # ET
+    #
+    if ($system ne "2") {
+	if ($system ne "1") {
+	    &drawArrowLine($fig, [[ $X1,   0 ], [ $X2,   0 ]], 0.50,
+		    $prefix . "Et11", 0, { color => "green3" });
+	} else {
+	    &drawArrowLine($fig, [[ $X1,   0 ], [ $X2,   0 ]], 0.50,
+		    "1", 0, { color => "green3" });
+	}
+    }
+    if ($rows > 1 || $cols > 1) {
+	if ($cols > 1 && $leakage eq "all") {
+	    &drawArrowLine($fig, [[ $X1, $Y2 ], [ $X2,   0 ]], 0.75,
+		    $prefix . "Et12", 0,
+		    { color => "green3", lineStyle => $leakage_style});
+	}
+	if ($leakage eq "all") {
+	    &drawArrowLine($fig, [[ $X1,   0 ], [ $X2, $Y2 ]], 0.25,
+		    $prefix . "Et21", 0,
+		    { color => "green3", lineStyle => $leakage_style});
+	}
+	if ($cols > 1 || $system eq "2") {
+	    if ($system ne "2") {
+		&drawArrowLine($fig, [[ $X1, $Y2 ], [ $X2, $Y2 ]], 0.75,
+			$prefix . "Et22", 0,
+			{ color => "green3" });
+	    } else {
+		&drawArrowLine($fig, [[ $X1, $Y2 ], [ $X2, $Y2 ]], 0.75,
+			"1", 0,
+			{ color => "green3" });
+	    }
+	}
+    }
+
+    #
+    # ER
+    #
+    &drawArrowLine($fig, [[ $X2, $Y1 ], [ $X1, $Y1 ]], 0.75,
+	    $prefix . "Er11", 0, { color => "blue" });
+    if ($rows > 1 || $cols > 1) {
+	if ($leakage eq "all") {
+	    &drawArrowLine($fig, [[ $X2, $Y3 ], [ $X1, $Y1 ]], 0.25,
+		    $prefix . "Er12", 0,
+		    {  color => "blue", lineStyle => $leakage_style});
+	}
+	if ($rows > 1 && $leakage eq "all") {
+	    &drawArrowLine($fig, [[ $X2, $Y1 ], [ $X1, $Y3 ]], 0.75,
+		    $prefix . "Er21", 0,
+		    { color => "blue", lineStyle => $leakage_style});
+	}
+	if ($rows > 1) {
+	    &drawArrowLine($fig, [[ $X2, $Y3 ], [ $X1, $Y3 ]], 0.50,
+		    $prefix . "Er22", 0,
+		    { color => "blue" });
+	}
+    }
+
+    #
+    # ED
+    #
+    if ($system ne "2") {
+	&drawArrowLine($fig, [[ $X1,   0 ], [ $X1, $Y1 ]], 0.50,
+		$prefix . "Ed11", 0, { color => "orange" });
+    }
+    if ($rows > 1 || $cols > 1) {
+	if (($cols > 1 || $system eq "2") &&
+		($leakage eq "all" || $leakage eq "ed")) {
+	    &drawArrowLine($fig, [[ $X1, $Y2 ], [ $X1, $Y1 ]], 0.50,
+		    $prefix . "Ed12", 0,
+		    {  color => "orange", lineStyle => $leakage_style});
+	}
+	if ($rows > 1 && ($leakage eq "all" || $leakage eq "ed") &&
+		$system ne "2") {
+	    $x1 = $X1 - $ED12_EM21;
+	    $y1 = $Y1 / 2.0;
+	    $x2 = $X1 - $ED12_EM21;
+	    $y2 = ($Y2 + $Y3) / 2.0;
+	    $fig->polyline([[ $X1,   0 ], [ $x1, $y1 ]],
+		    { color => "orange", lineStyle => $leakage_style });
+	    &drawArrowLine($fig, [[ $x1, $y1 ], [ $x2, $y2 ]], 0.50,
+		    $prefix . "Ed21", 0,
+		    { color => "orange", lineStyle => $leakage_style });
+	    $fig->polyline([[ $x2, $y2 ], [ $X1, $Y3 ]],
+		    { color => "orange", lineStyle => $leakage_style });
+	}
+	if ($rows > 1 && ($cols > 1 || $system eq "2")) {
+	    &drawArrowLine($fig, [[ $X1, $Y2 ], [ $X1, $Y3 ]], 0.50,
+		    $prefix . "Ed22", 0, { color => "orange" });
+	}
+    }
+
+    #
+    # EM
+    #
+    &drawArrowLine($fig, [[ $X2, $Y1 ], [ $X2,   0 ]], 0.50,
+	    $prefix . "Em11", 0, { color => "purple" });
+    if ($rows > 1 || $cols > 1) {
+	if ($leakage eq "all") {
+	    &drawArrowLine($fig, [[ $X2, $Y1 ], [ $X2, $Y2 ]], 0.50,
+		    $prefix . "Em12", 0,
+		    {  color => "purple", lineStyle => $leakage_style });
+	    $x1 = $X2 + $ED12_EM21;
+	    $y1 = ($Y2 + $Y3) / 2.0;
+	    $x2 = $X2 + $ED12_EM21;
+	    $y2 = $Y1 / 2.0;
+	    $fig->polyline([[ $X2, $Y3 ], [ $x1, $y1 ]],
+		    { color => "purple", lineStyle => $leakage_style });
+	    &drawArrowLine($fig, [[ $x1, $y1 ], [ $x2, $y2 ]], 0.50,
+		    $prefix . "Em21", 0,
+		    { color => "purple", lineStyle => $leakage_style });
+	    $fig->polyline([[ $x2, $y2 ], [ $X2,   0 ]],
+		    { color => "purple", lineStyle => $leakage_style });
+	}
+	&drawArrowLine($fig, [[ $X2, $Y3 ], [ $X2, $Y2 ]], 0.50,
+		$prefix . "Em22", 0, { color => "purple" });
+    }
+
+    $f = ($ED12_EM21 + $EBOX_BORDER_LR + 0.1875) / ($X3 - $X2);
+    if ($rows == 1 && $cols == 1) {
+	$f = ($ED12_EM21 + $EBOX_BORDER_LR + 0.1875) / ($X3 - $X2);
+	&drawArrowLine($fig, [[ $X2,   0 ], [ $X3,   0 ]], $f, "x1",  0, {});
+    } else {
+	&drawArrowLine($fig, [[ $X2,   0 ], [ $X3,   0 ]], $f, "x1",  0, {});
+	$fig->polyline([[ $X3,   0 ], [ $X4,   0 ], [ $X4, $Y1 ]]);
+    }
+    &drawArrowLine($fig, [[ $X3, $Y1 ], [ $X2, $Y1 ]], 1-$f, "y1",  0, {});
+    if ($rows > 1 || $cols > 1) {
+	&drawArrowLine($fig, [[ $X2, $Y2 ], [ $X3, $Y2 ]], $f, "x2",  0, {});
+	$fig->polyline([[ $X4, $Y2 ], [ $X4, $Y3 ], [ $X3, $Y3 ]]);
+	&drawArrowLine($fig, [[ $X3, $Y3 ], [ $X2, $Y3 ]], 1-$f, "y2",  0, {});
+
+    }
+    if ($rows == 1 && $cols == 1) {
+	&drawArrowLine($fig, [[ $X3, 0 ], [ $X3, $Y1 ]], 0.50, "S11",  1, {});
+    } else {
+	&drawArrowLine($fig, [[ $X4, $Y1 ], [ $X3, $Y1 ]], 0.50, "S11",  1, {});
+    }
+    if ($rows > 1 || $cols > 1) {
+	&drawArrowLine($fig, [[ $X3, $Y2 ], [ $X3, $Y1 ]], 0.50, "S12",  0, {});
+	&drawArrowLine($fig, [[ $X4, $Y1 ], [ $X4, $Y2 ]], 0.50, "S21",  0, {});
+	&drawArrowLine($fig, [[ $X3, $Y2 ], [ $X4, $Y2 ]], 0.50, "S22",  1, {});
+    }
+
+    $fig->translate([ $LEFT_MARGIN, $TOP_MARGIN ]);
+    $fig->export($name . ".svg");
+}
+
+&draw_calibration(2, 2, "all", "", "cal-model", "dashed");
+&draw_calibration(1, 1, "none", "", "E8_1x1");
+&draw_calibration(2, 1, "none", "", "E8_2x1");
+&draw_calibration(1, 2, "none", "", "E8_1x2");
+&draw_calibration(2, 2, "none", "", "E8_2x2");
+
+&draw_calibration(2, 1, "ed", "", "E10_2x1");
+&draw_calibration(1, 2, "ed", "", "E10_1x2");
+&draw_calibration(2, 2, "ed", "", "E10_2x2");
+
+&draw_calibration(2, 1, "ed", "1", "E12_2x2f");
+&draw_calibration(2, 1, "ed", "2", "E12_2x2r");
+
+&draw_calibration(2, 1, "all", "", "E16_2x1");
+&draw_calibration(1, 2, "all", "", "E16_1x2");
+&draw_calibration(2, 2, "all", "", "E16_2x2");

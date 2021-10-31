@@ -1,0 +1,15 @@
+[Desktop Entry]
+Type=Application
+Encoding=UTF-8
+Name=N2PK VNA
+Comment=Control the N2PK Vector Network Analyzer
+Icon=n2pkvna
+Exec=n2pkvna-gui
+Terminal=false
+Categories=Electronics;Engineering;
+
+#install: /usr/share/applications/n2pkvna.desktop
+
+# install icon in /usr/share/icons/hicolor/48x48/apps/n2pkvna.png
+#             and /usr/share/icons/hicolor/256x256/apps/n2pkvna.png
+#             and /usr/share/icons/hicolor/symbolic/apps/n2pkvna.svg

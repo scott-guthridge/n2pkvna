@@ -17,6 +17,6 @@ rpm: $(rpmspec)
 	$(RPMBUILD) $(RPMFLAGS) -ba $(rpmmacros) $(rpmspec)
 
 clean-local:
-	rm -rf $(PACKAGE_TARNAME)-$(PACKAGE_VERSION) root
+	rm -rf *.rpm */*.rpm $(PACKAGE_TARNAME)-$(PACKAGE_VERSION) root
 
 .PHONY: srcrpm rpms

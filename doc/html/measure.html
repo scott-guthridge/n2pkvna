@@ -1,0 +1,75 @@
+<html>
+<head>
+<link rel="stylesheet" href="../style.css"/>
+<title>Measuring a DUT</title>
+</head>
+<body>
+<h1>Measuring a DUT</h1>
+
+<text id="toc_container">
+<p class="toc_title">Contents</p>
+<ol class="toc_list">
+<li class="nn"><a href="#m_scan">Performing a Scan</a></li>
+<li class="nn"><a href="#m_display">Displaying the Result</a></li>
+<li class="nn"><a href="#m_save">Saving to a File</a></li>
+</ol>
+</text>
+
+<h2 id="m_scan">Performing a Scan</h2>
+
+<img src="measure-screen.png"/>
+
+<p>The first step in measuring a device is to select a calibration and
+set up the hardware as it was when the calibration was made.
+
+<p>Next, set the frequency range, number of points and linear vs.
+logarithmic frequency spacing.  You can narrow but not widen the frequency
+range.  If the new frequency points don't align with those used during
+calibration, the application uses rational fraction interpolation to
+interpolate the error terms.  If you don't make any changes, the Sweep
+parameters default to those used for the calibration.
+
+<p>Note that: automatic attenuation is not yet supported.
+
+<p>If you know that the device under test is fully symmetrical,
+i.e. S11=S22 and S12=S21, check <text class="button">Symmetrical
+DUT</text>.
+
+<p>Connect the VNA to the device and when ready, press <text
+class="button">Start Scan</text>.  Follow any prompts.
+
+<h2 id="m_display">Displaying the Result</h2>
+<p>Use the Parameters control to display the scan result in the desired
+format.  Supported network parameter types are S, T, U, Z, Y, H, G, A
+and B.  Also supported are input impedances looking into each DUT port
+(Zin), impedances written as equivalent R-C or R-L series or parallel
+circuits, return loss, insertion loss and VSWR.  Not all formats are
+applicable to all scans.
+
+<p>Use the Coordinates box to switch beteen real-imaginary,
+magnitude-angle and dB-angle.
+<!-- revisit -->
+<i>Note that polar and Smith charts aren't yet supported.</i>.
+
+<p>Use the plot controls to set ranges and axis labels.  Press <text
+class="button">Replot</text> for range changes to take effect.
+
+<h2 id="m_save">Saving to a File</h2>
+<p>The <text class="button">Save As</text> button brings up a file dialog
+to save the currently displayed parameters to a file.  The filename
+extension determines the file format.  Valid extensions are .s1p and
+.s2p for Touchstone 1 format, .ts for Touchstone 2 format, or .npd for
+Network Parameter Data format.  If the filename doesn't end with one of
+these extensions, .npd format is used.
+
+<p>You can load previously saved parameters using the <text
+class="button">Open</text> button.  This is useful for displaying the
+parameters in different formats and for converting from one format
+to another.  Behavior is currently undefined if the loaded file has
+more than two ports.
+
+<hr>
+<a href="generate.html">Next: Using the Signal Generator</a>
+
+</body>
+</html>
