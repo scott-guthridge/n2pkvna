@@ -688,8 +688,10 @@ skip_special_case:
     /*
      * If create, write the config file.
      */
-    if (n2pkvna_save(vnap) == -1) {
-	goto out;
+    if (create) {
+	if (n2pkvna_save(vnap) == -1) {
+	    goto out;
+	}
     }
     success = true;
 
