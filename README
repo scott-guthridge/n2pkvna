@@ -1,46 +1,115 @@
 N2PKVNA: Library and Utilities for the N2PK Vector Network Analyzer
-Copyright © 2021 D Scott Guthridge <scott-guthridge@rompromity.net>
+Copyright © 2021-2022 D Scott Guthridge <scott-guthridge@rompromity.net>
+
+== Introduction ==
+
+The programs in this package provide an open-source software solution
+for controlling the open hardware N2PK Vector Network Analyzer.  See
+https://www.makarov.ca/vna.htm
+
+
+== Current Limitations ==
+
+Only the v4 and v5 USB models are supported.  Parallel port support can
+be added if there's sufficient interest.  Supported models are:
+
+    USB Vendor: 0547
+    USB Product: 1004, 1005, 1008, 1009, 100a, 100b, 100c and 100d
+
+While the command line program supports multiple VNA devices attached
+to the same computer, the GUI currently can handle only one.  This would
+be pretty easy to fix -- volunteer to help test it.
+
+
+== Build, Test & Install ==
 
 Prerequisites:
-    - You'll need a C99 level C compiler such as gcc or clang.
+  - C compiler such as gcc or clang that can compile the C99 standard
+  - make
+  - libusb development package
 
-    - libusb_1.0, libyaml, and fxload:
+	Fedora, RedHat, Centos, SuSE
+	    yum install gcc make libusbx-devel
 
-	Fedora, RedHat, Centos
-	    sudo yum install libusbx-devel libyaml-devel fxload
+        Debian, Ubuntu
+            sudo apt-get update
+            sudo apt-get install gcc make libusb-1.0-0-dev
 
-	Debian, Ubuntu
-	    sudo apt-get update
-	    sudo apt-get install libusb-1.0-0-dev libyaml-dev fxload
-
-	Libyaml can also be built from source:
-	    https://pyyaml.org/wiki/LibYAML
-
-    - libvna
-	Build from source:
-	    https://github.com/scott-guthridge/libvna
+  - libvna
+	https://github.com/scott-guthridge/libvna
+	See libvna README for installation instructions.
 
 
-Build, Test and Install:
-    ./bootstrap		# If building from git; skip if building from tarball.
+If you're starting with a distribution tarball, e.g.
+n2pkvna-x.y.z.tar.gz, unpack the tar file:
+
+    tar xzf n2pkvna-x.y.z.tar.gz
+    cd n2pkvna-x.y.z
+
+There should be a "configure" script in the top-level directory.
+
+Otherwise, or if you've either cloned or downloaded the sources from git,
+you'll need to install autotools and bootstrap them:
+
+    Fedora, RedHat, Centos, SuSE
+	sudo yum install autoconf libtool
+
+    Debian, Ubuntu
+	sudo apt-get update
+	sudo apt-get install autoconf libtool
+
+    At the top level of the source tree, run:
+	./bootstrap
+
+
+You can now build RPM or Debian packages (as appropriate for your OS
+distribution) and install from those, or you can build and install into
+/usr/local/ directly from the sources.  The package route is preferable
+because you can update and remove the programs using the standard package
+tools that come with your distribution, and you avoid some possible
+library path programs described below.
+
+Option 1: Build RPM Packages and Install from RPM
+
+    sudo yum install rpm-build
+    ./configure
+    make rpm
+    sudo rpm -U rpm/*/*.rpm
+
+Option 2: Build Debian packages and install using apt
+
+    sudo apt-get install build-essential devscripts
+    ./configure
+    make deb
+    ( cd deb && sudo apt install ./*.deb )
+
+Option 3: Build and install into /usr/local/* from source
+
+    Install run-time dependencies:
+
+	Fedora, RedHat, Centos, SuSE
+	    yum install fxload
+	    yum install perl-Cairo perl-Carp perl-Clone perl-File-Temp \
+			perl-Glib perl-Gtk3 perl-open perl-Thread-Queue \
+			perl-threads perl-YAML-LibYAML
+
+        Debian, Ubuntu
+            sudo apt-get update
+            sudo apt-get install fxload
+	    sudo apt-get install libcairo-perl libclone-perl \
+				 libfile-temp-perl libglib-perl \
+				 libgtk3-perl libyaml-libyaml-perl
+
     ./configure
     make
     sudo sh -c 'umask 022 && make install'
 
-    The files are installed in /usr/local/ 
+    By default, the files are installed in /usr/local/
 	/usr/local/include/*.h
 	/usr/local/lib/libn2pkvna.so.*
 	/usr/local/share/doc/n2pkvna/*
 	/usr/local/share/man/man3/*.3
 
-    The example programs and README-EXAMPLES files are copied into
-    /usr/local/share/doc/n2pkvna.  The README-EXAMPLES is worded
-    for someone building the example programs by hand after the library
-    has been installed on the system.  After running a make all here,
-    though the examples will already be built in the src/ directory.
-
-
-Fixing library path problems:
     Some Linux distros (such as Fedora 31) don't include /usr/local/lib
     in the default dyanamic library search path.  If you get an error like
     the following when trying to run a program you linked against n2pkvna:
@@ -50,31 +119,39 @@ Fixing library path problems:
 
     Add /usr/local/lib to the default library search path:
 
-    	sudo echo "/usr/local/lib" > /etc/ld.so.conf.d/local.conf
+	sudo echo "/usr/local/lib" > /etc/ld.so.conf.d/local.conf
 	sudo chmod 644 /etc/ld.so.conf.d/local.conf
 	sudo ldconfig
 
 
-To build PDF versions of the man pages (requries pdfroff):
-    make pdfman
+== Add Users to the n2pkvna Group ==
 
-    The .pdf files appear in src/*/
+    sudo usermod -aG n2pkvna username1
+    sudo usermod -aG n2pkvna username2
+    ...
+
+    This gives the named users access to the n2pkvna USB device.
 
 
-To build RPM files:
-    make srcrpm
-    ( umask 022 && make rpm )
+== Documentation ==
 
-    The source RPM appears in rpm/n2pkvna-*.src.rpm.  Binary RPMs appear
-    in an architecture-specific subdirectory, e.g. rpm/x86-64/.
+Man Pages
 
-    When installing from RPM, the installed files go into the normal
-    system directories such as /usr/include, /usr/lib64, /usr/share/doc,
-    and /usr/share/man instead of /usr/local/
+    man 1 n2pkvna	# describes the command line interface
+    man 3 n2pkvna	# describes the n2pkvna library
+
+    You can build PDF verions (requires the pdfroff package) with:
+	make pdfman
+
+    the .pdf files appear in src/*/*.pdf
+
+HTML Documents
+
+    doc/index.html, or select Help / Manual from the GUI
 
 
 The code is still undergoing development.  While the version remains at
 0.x.x, there may be a few compatiblity breaks.
 
-Please make suggestions for how this software could be improved.  And if
+Please make suggestions for how this software could be improved.  If
 you'd like to help, please contact scott-guthridge@rompromity.net.
