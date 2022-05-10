@@ -115,8 +115,8 @@ void print_error(const char *message, void *arg)
 /*
  * print_libvna_error: print errors from the libvna library
  */
-void print_libvna_error(vnaerr_category_t category, const char *message,
-	void *arg)
+void print_libvna_error(const char *message, void *arg,
+	vnaerr_category_t category)
 {
     (void)fprintf(fp_err, "%s: %s\n", progname, message);
 }

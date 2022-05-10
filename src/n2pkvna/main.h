@@ -44,8 +44,8 @@ extern FILE *fp_err;
 extern n2pkvna_t *vnap;
 extern int parse_attenuation(const char *arg);
 extern void print_error(const char *message, void *arg);
-extern void print_libvna_error(vnaerr_category_t category,
-	const char *message, void *arg);
+extern void print_libvna_error(const char *message, void *arg,
+	vnaerr_category_t category);
 extern void print_usage(const char *command, const char *const *usage,
 	const char *const *help);
 extern int prompt_for_ready();
