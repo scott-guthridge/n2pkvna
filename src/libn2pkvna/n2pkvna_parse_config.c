@@ -22,16 +22,25 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include <yaml.h>
+#include <vnaproperty.h>
 
 #include "n2pkvna_internal.h"
 
 /*
- * _n2pkvna_parse_int: parse an int value from a YAML map
+ * n2pkvna_get_property_root: return the address of the property root
+ *   @vnap: n2pkvna handle
+ */
+vnaproperty_t **n2pkvna_get_property_root(n2pkvna_t *vnap)
+{
+    return vnaproperty_set_subtree(&vnap->vna_property_root, "properties");
+}
+
+/*
+ * parse_int: parse an int value from a
  *   @vnap: n2pkvna handle
  *   @filename: YAML filename (for error messages)
- *   @key: YAML map key
- *   @value: YAML map value
+ *   @map: root of a vnaproperty_t map
+ *   @key: map key
  *   @min: minimum allowed value
  *   @max: maximum allowed value
  *   @result: address of result
@@ -40,36 +49,42 @@
  *    0: success
  *   -1: error
  */
-static int _n2pkvna_parse_int(n2pkvna_t *vnap, const char *filename,
-	yaml_node_t *key, yaml_node_t *value,
+static int parse_int(n2pkvna_t *vnap, const char *filename,
+	const vnaproperty_t *map, const char *key,
 	int min, int max, int *result)
 {
-    int temp;
+    const char *string;
+    int value;
+    char c;
 
-    if (value->type != YAML_SCALAR_NODE) {
+    if ((string = vnaproperty_get(map, "%s", key)) == NULL) {
 	_n2pkvna_error(vnap,
-		"%s (line %ld): error: unexpected non-scalar value",
-		filename, value->start_mark.line + 1);
+		"%s: error: %s: unexpected null value",
+		filename, key);
 	return -1;
     }
-    if (sscanf((char *)value->data.scalar.value, "%i %*c", &temp) != 1 ||
-	    temp < min || temp > max) {
+    if (sscanf(string, "%i %c", &value, &c) != 1) {
 	_n2pkvna_error(vnap,
-		"%s (line %ld): error: %s: invalid value",
-		filename, value->start_mark.line + 1,
-		key->data.scalar.value);
+		"%s: error: %s: \"%s\": invalid integer",
+		filename, key, string);
 	return -1;
     }
-    *result = temp;
+    if (value < min || value > max) {
+	_n2pkvna_error(vnap,
+		"%s: error: %s: value must be in range %d .. %d",
+		filename, key, min, max);
+	return -1;
+    }
+    *result = value;
     return 0;
 }
 
 /*
- * _n2pkvna_parse_int: parse a double value from a YAML map
+ * parse_double: parse a double value from a YAML map
  *   @vnap: n2pkvna handle
  *   @filename: YAML filename (for error messages)
- *   @key: YAML map key
- *   @value: YAML map value
+ *   @map: root of a vnaproperty_t map
+ *   @key: map key
  *   @min: minimum allowed value
  *   @max: maximum allowed value
  *   @result: address of result
@@ -78,27 +93,33 @@ static int _n2pkvna_parse_int(n2pkvna_t *vnap, const char *filename,
  *    0: success
  *   -1: error
  */
-static int _n2pkvna_parse_double(n2pkvna_t *vnap, const char *filename,
-	yaml_node_t *key, yaml_node_t *value,
+static int parse_double(n2pkvna_t *vnap, const char *filename,
+	const vnaproperty_t *map, const char *key,
 	double min, double max, double *result)
 {
-    double temp;
+    const char *string;
+    double value;
+    char c;
 
-    if (value->type != YAML_SCALAR_NODE) {
+    if ((string = vnaproperty_get(map, "%s", key)) == NULL) {
 	_n2pkvna_error(vnap,
-		"%s (line %ld): error: unexpected non-scalar value",
-		filename, value->start_mark.line + 1);
+		"%s: error: %s: unexpected null value",
+		filename, key);
 	return -1;
     }
-    if (sscanf((char *)value->data.scalar.value, "%lf %*c", &temp) != 1 ||
-	    temp < min || temp > max) {
+    if (sscanf(string, "%lf %c", &value, &c) != 1) {
 	_n2pkvna_error(vnap,
-		"%s (line %ld): error: %s: invalid value",
-		filename, value->start_mark.line + 1,
-		key->data.scalar.value);
+		"%s: error: %s: \"%s\": invalid number",
+		filename, key, string);
 	return -1;
     }
-    *result = temp;
+    if (value < min || value > max) {
+	_n2pkvna_error(vnap,
+		"%s: error: %s: value must be in range %g .. %g",
+		filename, key, min, max);
+	return -1;
+    }
+    *result = value;
     return 0;
 }
 
@@ -113,12 +134,9 @@ int _n2pkvna_parse_config(n2pkvna_t *vnap,
 {
     char *filename = NULL;
     FILE *fp = NULL;
-    yaml_parser_t parser;
-    yaml_document_t document;
-    bool parser_active = false;
-    bool document_active = false;
-    yaml_node_t *root;
-    yaml_node_pair_t *pair;
+    const char **element_names = NULL;
+    int i_temp;
+    double lf_temp;
     int rv = -1;
 
     /*
@@ -130,8 +148,8 @@ int _n2pkvna_parse_config(n2pkvna_t *vnap,
     ncip->nci_reference_frequency = AD9851_CLOCK;
 
     /*
-     * Open the config file.  If create is true, then it's not an error for it
-     * not to exist.
+     * Load the config file.  If create is true, then it's not an error
+     * for it not to exist.
      */
     if (asprintf(&filename, "%s/config", ncip->nci_directory) == -1) {
 	_n2pkvna_error(vnap, "asprintf: %s", strerror(errno));
@@ -145,83 +163,98 @@ int _n2pkvna_parse_config(n2pkvna_t *vnap,
 	_n2pkvna_error(vnap, "%s: %s", filename, strerror(errno));
 	goto out;
     }
-    yaml_parser_initialize(&parser);
-    parser_active = true;
-    yaml_parser_set_input_file(&parser, fp);
-    if (!yaml_parser_load(&parser, &document)) {
-	_n2pkvna_error(vnap, "%s (line %ld) error: %s",
-		filename, (long)parser.problem_mark.line + 1, parser.problem);
-	goto out;
-    }
-    document_active = true;
-    (void)fclose(fp);
-    fp = NULL;
-    root = yaml_document_get_root_node(&document);
-    if (root == NULL) {
-	_n2pkvna_error(vnap, "%s: empty config file", filename);
-	goto out;
-    }
-    if (root->type != YAML_MAPPING_NODE) {
-	_n2pkvna_error(vnap, "%s (line %ld): error: expected map",
-	    filename, root->start_mark.line + 1);
-	goto out;
-    }
-    for (pair = root->data.mapping.pairs.start;
-         pair < root->data.mapping.pairs.top; ++pair) {
-	yaml_node_t *key, *value;
-	int temp;
-	double lf;
+    {
+	char config_line[80];
+	char *cp;
 
-	key   = yaml_document_get_node(&document, pair->key);
-	value = yaml_document_get_node(&document, pair->value);
-	if (key->type != YAML_SCALAR_NODE) {
+	if (fgets(config_line, sizeof(config_line), fp) == NULL) {
+	    _n2pkvna_error(vnap, "warning: %s: unexpected empty config file",
+		filename);
+	    rv = 0;
+	    goto out;
+	}
+	config_line[sizeof(config_line) - 1] = '\000';
+	if ((cp = strrchr(config_line, '\n')) != NULL) {
+	    *cp = '\000';
+	}
+	if (strcmp(config_line, "#N2PKVNA_CONFIG") != 0) {
+	    _n2pkvna_error(vnap, "error: %s: expected #N2PKVNA_CONFIG "
+		    "header line", filename);
+	    goto out;
+	}
+    }
+    if (vnaproperty_import_yaml_from_file(&vnap->vna_property_root,
+		fp, filename, _n2pkvna_libvna_errfn, NULL) == -1) {
+	goto out;
+    }
+    if (vnap->vna_property_root == NULL) {
+	rv = 0;
+	goto out;
+    }
+
+    /*
+     * Parse the existing configuration.
+     */
+    errno = 0;
+    if ((element_names = vnaproperty_keys(vnap->vna_property_root,
+		    "{}")) == NULL) {
+	if (errno == ENOENT || errno == EINVAL) {
 	    _n2pkvna_error(vnap,
-		    "%s (line %ld): warning: ignoring non-scalar key",
-		    filename, key->start_mark.line + 1);
-	    continue;
+		    "%s: error: cannot parse config file", filename);
+	    goto out;
 	}
-	if (strcmp((char *)key->data.scalar.value, "usbVendor") == 0) {
-	    if (_n2pkvna_parse_int(vnap, filename, key, value,
-			0, 0xFFFF, &temp) == -1) {
-		goto out;
+    }
+    for (const char **cpp = element_names; *cpp != NULL; ++cpp) {
+	switch (**cpp) {
+	case 'p':
+	    if (strcmp(*cpp, "properties") == 0) {
+		continue;
 	    }
-	    ncip->nci_type = N2PKVNA_ADR_USB;
-	    ncip->nci_usb_vendor = temp;
-	    continue;
-	}
-	if (strcmp((char *)key->data.scalar.value, "usbProduct") == 0) {
-	    if (_n2pkvna_parse_int(vnap, filename, key, value,
-			0, 0xFFFF, &temp) == -1) {
-		goto out;
+	    break;
+
+	case 'r':
+	    if (strcmp(*cpp, "referenceFrequency") == 0) {
+		if (parse_double(vnap, filename, vnap->vna_property_root, *cpp,
+			    MIN_CLOCK, MAX_CLOCK, &lf_temp) == -1) {
+		    goto out;
+		}
+		ncip->nci_reference_frequency = lf_temp;
+		continue;
 	    }
-	    ncip->nci_type = N2PKVNA_ADR_USB;
-	    ncip->nci_usb_product = temp;
-	    continue;
-	}
-	if (strcmp((char *)key->data.scalar.value, "referenceFrequency") == 0) {
-	    if (_n2pkvna_parse_double(vnap, filename, key, value,
-			MIN_CLOCK, MAX_CLOCK, &lf) == -1) {
-		goto out;
+	    break;
+
+	case 'u':
+	    if (strcmp(*cpp, "usbVendor") == 0) {
+		if (parse_int(vnap, filename, vnap->vna_property_root, *cpp,
+			    0, 0xFFFF, &i_temp) == -1) {
+		    goto out;
+		}
+		ncip->nci_type = N2PKVNA_ADR_USB;
+		ncip->nci_usb_vendor = i_temp;
+		continue;
 	    }
-	    ncip->nci_reference_frequency = lf;
-	    continue;
+	    if (strcmp(*cpp, "usbProduct") == 0) {
+		if (parse_int(vnap, filename, vnap->vna_property_root, *cpp,
+			    0, 0xFFFF, &i_temp) == -1) {
+		    goto out;
+		}
+		ncip->nci_type = N2PKVNA_ADR_USB;
+		ncip->nci_usb_product = i_temp;
+		continue;
+	    }
+	    break;
+
+	default:
+	    break;
 	}
-	_n2pkvna_error(vnap,
-		"%s (line %ld): warning: %s: unknown attribute",
-		filename, key->start_mark.line + 1, key->data.scalar.value);
+	_n2pkvna_error(vnap, "%s: warning: %s: unknown attribute",
+		filename, *cpp);
 	continue;
     }
     rv = 0;
 
 out:
-    if (document_active) {
-	yaml_document_delete(&document);
-	document_active = false;
-    }
-    if (parser_active) {
-	yaml_parser_delete(&parser);
-	parser_active = false;
-    }
+    free((void *)element_names);
     if (fp != NULL) {
 	(void)fclose(fp);
 	fp = NULL;

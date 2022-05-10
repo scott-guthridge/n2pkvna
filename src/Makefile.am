@@ -1,5 +1,5 @@
 ACLOCAL_AMFLAGS= -I m4
-libvna_ladir= $(libdir)
+libn2pkvna_ladir= $(libdir)
 
 SUBDIRS= libn2pkvna n2pkvna
 

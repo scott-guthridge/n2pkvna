@@ -113,7 +113,7 @@ int _n2pkvna_vasprintf(char **strp, const char *fmt, va_list ap)
     }
     if (rv < (MAX + 1) / 2) {
 	char *cp;
-	
+
 	if ((cp = realloc(buf, rv + 1)) != NULL) {
 	    buf = cp;
 	}

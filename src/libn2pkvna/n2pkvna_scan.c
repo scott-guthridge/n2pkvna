@@ -36,7 +36,7 @@
  *   @frequency: recevies frequency vector if non-NULL
  *   @detector1: recevies detector1 values if non-NULL
  *   @detector2: recevies detector2 values if non-NULL
- * 
+ *
  * Return:
  *   0: success
  *  -1: error (errno set)

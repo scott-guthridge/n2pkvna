@@ -109,7 +109,7 @@ static void scan(parse_address_state_type *asp)
  *   @string: string to decode
  *   @end:    one byte beyond the end of the string
  *   @value:  address where result should be saved
- * 
+ *
  * Return:
  *    0: success
  *   -1: failure
@@ -137,7 +137,7 @@ static int decode_hex16(const char *string, const char *end, uint16_t *value)
  *   @string: string to decode
  *   @end:    one byte beyond the end of the string
  *   @value:  address where result should be saved
- * 
+ *
  * Return:
  *    0: success
  *   -1: failure
@@ -181,11 +181,11 @@ int _n2pkvna_parse_address(n2pkvna_address_t *adrp, const char *unit)
      * handle them above this block.
      *
      * usb_list		: usb_term
-     * 			| usb_list ',' usb_term
-     * 			;
+     *			| usb_list ',' usb_term
+     *			;
      *
      * usb_term		: vendor [followed by ':' product]
-     * 			| vendor ':'
+     *			| vendor ':'
      *			| bus [followed by '.' device]
      *			| bus '.'
      *			| bus [followed by '/' port]
@@ -195,9 +195,9 @@ int _n2pkvna_parse_address(n2pkvna_address_t *adrp, const char *unit)
      *			;
      *
      * suffix		| ':' product
-     * 			| '.' device
-     * 			| '/' port
-     * 			;
+     *			| '.' device
+     *			| '/' port
+     *			;
      *
      * where vendor, product, bus, device and port are WORD
      */

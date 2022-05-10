@@ -26,6 +26,7 @@
 
 #include "n2pkvna_internal.h"
 
+
 /*
  * n2pkvna_save: save device address and oscillator frequency to config file
  *   @vnap: n2pkvna handle
@@ -62,16 +63,48 @@ int n2pkvna_save(n2pkvna_t *vnap)
 		strerror(errno));
 	goto out;
     }
+
+    /*
+     * Add usbVendor
+     */
+    if (vnaproperty_set(&vnap->vna_property_root, "usbVendor=0x%04x",
+		vnap->vna_address.adri_usb_vendor) == -1) {
+       _n2pkvna_error(vnap, "%s: vnaproperty_set: %s: %s",
+		vnap->vna_config.nci_basename, new_filename,
+		strerror(errno));
+	goto out;
+    }
+
+    /*
+     * Add usbProduct
+     */
+    if (vnaproperty_set(&vnap->vna_property_root, "usbProduct=0x%04x",
+		vnap->vna_address.adri_usb_product) == -1) {
+       _n2pkvna_error(vnap, "%s: vnaproperty_set: %s: %s",
+		vnap->vna_config.nci_basename, new_filename,
+		strerror(errno));
+	goto out;
+    }
+
+    /*
+     * Add referenceFrequency
+     */
+    if (vnaproperty_set(&vnap->vna_property_root, "referenceFrequency=%.5f",
+		vnap->vna_config.nci_reference_frequency) == -1) {
+       _n2pkvna_error(vnap, "%s: vnaproperty_set: %s: %s",
+		vnap->vna_config.nci_basename, new_filename,
+		strerror(errno));
+	goto out;
+    }
+
+    /*
+     * Write and update the file
+     */
     (void)fprintf(fp, "#N2PKVNA_CONFIG\n");
-    (void)fprintf(fp, "%%YAML 1.1\n");
-    (void)fprintf(fp, "---\n");
-    (void)fprintf(fp, "usbVendor:  0x%04x\n",
-	vnap->vna_address.adri_usb_vendor);
-    (void)fprintf(fp, "usbProduct: 0x%04x\n",
-	vnap->vna_address.adri_usb_product);
-    (void)fprintf(fp, "referenceFrequency: %.5f\n",
-	vnap->vna_config.nci_reference_frequency);
-    (void)fprintf(fp, "...\n");
+    if (vnaproperty_export_yaml_to_file(vnap->vna_property_root,
+		fp, new_filename, _n2pkvna_libvna_errfn, NULL) == -1) {
+	goto out;
+    }
     if (fflush(fp) == -1) {
        _n2pkvna_error(vnap, "%s: fflush: %s: %s",
 		vnap->vna_config.nci_basename, new_filename,
@@ -100,6 +133,7 @@ int n2pkvna_save(n2pkvna_t *vnap)
 	goto out;
     }
     rv = 0;
+
 out:
     if (fp != NULL) {
 	fclose(fp);

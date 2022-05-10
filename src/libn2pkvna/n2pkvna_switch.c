@@ -32,7 +32,7 @@
  *   @switch_value: new switch setting [0..3], or -1 for no change
  *   @attentuator_value: new attenuator setting [0..7], or -1 for no change
  *   @delay: delay time in s for the new settings to settle
- * 
+ *
  * Return:
  *   0: success
  *  -1: error (errno set)

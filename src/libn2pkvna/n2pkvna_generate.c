@@ -83,7 +83,7 @@ static void adjust_ratio(double x, uint32_t *rf_code, uint32_t *lo_code)
  *   @phase: phase of LO1 out relative to RF out (degrees)
  *
  * A zero value for frequency disables output.
- * 
+ *
  * Return:
  *   0: success
  *  -1: error (errno set)

@@ -106,3 +106,14 @@ void _n2pkvna_set_usb_errno(int usb_error)
 	break;
     }
 }
+
+/*
+ * n2pkvna_libvna_errfn: libvna compatible error function
+ */
+void _n2pkvna_libvna_errfn(const char *message, void *error_arg,
+	vnaerr_category_t category)
+{
+    n2pkvna_t *vnap = error_arg;
+
+    _n2pkvna_error(vnap, "%s", message);
+}

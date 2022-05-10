@@ -16,12 +16,16 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef VNA_H
-#define VNA_H
+#ifndef N2PKVNA_H
+#define N2PKVNA_H
 
 #ifndef _COMPLEX_H
 #include <complex.h>
 #endif /* _COMPLEX_H */
+
+#ifndef _STDARG_H
+#include <stdarg.h>
+#endif /* _STDARG_H */
 
 #ifndef _STDINT_H
 #include <stdint.h>
@@ -34,6 +38,10 @@
 #ifndef _STDBOOL_H
 #include <stdbool.h>
 #endif /* _STDBOOL_H */
+
+#ifndef _VNAPROPERTY_H
+#include <vnaproperty.h>
+#endif /* _VNAPROPERTY_H */
 
 #ifdef __cplusplus
 extern "C" {
@@ -118,6 +126,9 @@ extern int n2pkvna_switch(n2pkvna_t *vnap, int switch_value,
 /* n2pkvna_reset: reset and re-synchronize the RF signal generators */
 extern int n2pkvna_reset(n2pkvna_t *vnap);
 
+/* n2pkvna_get_property_root: return the address of the property root */
+extern vnaproperty_t **n2pkvna_get_property_root(n2pkvna_t *vnap);
+
 /* n2pkvna_save: write a new config file */
 extern int n2pkvna_save(n2pkvna_t *vnap);
 
@@ -127,5 +138,5 @@ extern void n2pkvna_close(n2pkvna_t *vnap);
 #ifdef __cplusplus
 } /* extern "C" */
 #endif
-			
-#endif /* VNA_H */
+
+#endif /* N2PKVNA_H */

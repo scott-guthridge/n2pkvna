@@ -28,7 +28,7 @@
 /*
  * n2pkvna_reset: reset an N2PK VNA
  *   @vnap: n2pkvna handle
- * 
+ *
  * Return:
  *   0: success
  *  -1: error (errno set)

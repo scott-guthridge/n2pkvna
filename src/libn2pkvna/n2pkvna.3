@@ -17,7 +17,7 @@
 .\"
 .TH LIBN2PKVNA 3 "JULY 2017" Linux
 .SH NAME
-n2pkvna_error_t, n2pkvna_open, n2pkvna_scan, n2pkvna_generate, n2pkvna_switch, n2pkvna_reset, n2pkvna_get_directory, n2pkvna_get_address, n2pkvna_get_reference_frequency, n2pkvna_set_reference_frequency, n2pkvna_save, n2pkvna_close, n2pkvna_free_config_vector \- control N2PK vector network analyzers
+n2pkvna_error_t, n2pkvna_open, n2pkvna_scan, n2pkvna_generate, n2pkvna_switch, n2pkvna_reset, n2pkvna_get_directory, n2pkvna_get_address, n2pkvna_get_reference_frequency, n2pkvna_set_reference_frequency, n2pkvna_get_property_root, n2pkvna_save, n2pkvna_close, n2pkvna_free_config_vector \- control N2PK vector network analyzers
 .\"
 .SH SYNOPSIS
 .B #include <n2pkvna.h>
@@ -108,6 +108,9 @@ double complex *" detector2_vector );
 .BI "double " frequency );
 .in -4n
 .\}
+.\"
+.PP
+.BI "vnaproperty_t **n2pkvna_get_property_root(n2pkvna_t *" vnap );
 .\"
 .PP
 .BI "int n2pkvna_save(n2pkvna_t *" vnap );
@@ -226,12 +229,24 @@ addressing information.
 library uses as the N2PK VNA's internal reference oscillator frequency.
 When the device is opened, any previously saved value is automatically
 loaded from the VNA configuration file.
-By setting this value to the actual frequency of the N2PK VNA's reference
-oscillator, the library compensates for reference frequency error.
+The library uses this value to compensates for reference frequency error.
 .\"
 .PP
-\fBn2pkvna_save\fP() saves the reference frequency and information
-identifying the device into the device's configuration file.
+\fBn2pkvna_get_property_root\fP() provides a way for the caller to store
+and retrieve arbitrary data with each VNA device.
+This is useful, for example, to save VNA switch settings and test
+procedures specific to each device.
+To use this interface, first call \fBn2pkvna_get_property_root\fP() to get
+the root property pointer.
+Next, use the functions described in \fBvnaproperty\fP(3) to store and
+retrieve the desired information.
+Finally, call \fBn2pkvna_save\fP() to harden any changes to the VNA
+configuration file.
+.\"
+.PP
+\fBn2pkvna_save\fP() saves the reference frequency, information
+identifying the device, and user-stored properties into the device's
+configuration file.
 The configuration directory is created if it doesn't already exist.
 .\"
 .PP
@@ -240,7 +255,7 @@ allocated in \fBn2pkvna_open\fP().
 .\"
 .SS "Managing Multiple N2PK VNA Devices"
 If the system has more than one N2PK device, or if it cannot automatically
-discover a particular device, for example, if the device has non-standard
+discover a particular device, for example if the device has non-standard
 USB vendor and product codes, then it's necessary to supply additional
 information to \fBn2pkvna_open\fP() to identify the device.
 .PP
@@ -295,6 +310,8 @@ one device matched, but it still returns the list of matching devices.
 \fBn2pkvna_open\fP() returns a pointer to an opaque \fBn2pkvna_t\fP
 structure on success or \s-2NULL\s+2 on failure.
 \fBn2pkvna_get_address\fP() returns a pointer to \fBn2pkvna_address_t\fP.
+\fBn2pkvna_get_property_root\fP() returns the address of a
+\fBvnaproperty_t\fP pointer.
 \fBn2pkvna_scan\fP(), \fBn2pkvna_generate\fP(), \fBn2pkvna_switch\fP(),
 \fBn2pkvna_reset\fP(), \fBn2pkvna_set_reference_frequency\fP(),
 and \fBn2pkvna_save\fP() return zero on success or -1 on error.

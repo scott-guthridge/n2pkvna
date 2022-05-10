@@ -22,6 +22,8 @@
 #include <libusb-1.0/libusb.h>
 #include <stdarg.h>
 #include <stdlib.h>
+#include <vnaerr.h>
+#include <vnaproperty.h>
 
 #include "n2pkvna.h"
 
@@ -94,10 +96,14 @@ struct n2pkvna {
     struct libusb_device_handle *vna_udhp;
     n2pkvna_error_t *vna_error_fn;
     void *vna_error_arg;
+    vnaproperty_t *vna_property_root;
 };
 
 /* _n2pkvna_error: report errors if error_fn is non-NULL */
 extern void _n2pkvna_error(n2pkvna_t *vnap, const char *format, ...);
+
+extern void _n2pkvna_libvna_errfn(const char *message, void *error_arg,
+	vnaerr_category_t category);
 
 /* _n2pkvna_flush_input: flush unread input from the N2PK VNA */
 extern int _n2pkvna_flush_input(n2pkvna_t *vnap);

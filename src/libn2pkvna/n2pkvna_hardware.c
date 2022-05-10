@@ -30,7 +30,6 @@
 #include <string.h>
 #include <time.h>
 #include <unistd.h>
-#include <yaml.h>
 
 #include "n2pkvna_internal.h"
 
