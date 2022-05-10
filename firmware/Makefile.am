@@ -5,3 +5,6 @@ udevdir=$(prefix)/lib/udev/rules.d
 dist_firmware_DATA = n2pkvna-v4.hex n2pkvna-v4-500.hex \
 	n2pkvna-v5.hex n2pkvna-v5-500.hex
 dist_udev_DATA = 85-n2pkvna.rules
+
+pdfman:
+
