@@ -31,12 +31,14 @@
 #include <vnacal.h>
 
 #include "calibrate.h"
+#include "cal_standard.h"
 #include "main.h"
+#include "message.h"
 
 /*
  * n2pkvna cal options
  */
-static const char short_options[] = "D:f:hlLn:s:S:";
+static const char short_options[] = "D:f:hlLn:s:S:t:z:";
 
 static const struct option long_options[] = {
     { "description",		1, NULL, 'D' },
@@ -47,11 +49,13 @@ static const struct option long_options[] = {
     { "frequencies",		1, NULL, 'n' },
     { "setup",			1, NULL, 's' },
     { "standards",		1, NULL, 'S' },
+    { "type",			1, NULL, 't' },
+    { "z0",			1, NULL, 'z' },
     { NULL,			0, NULL,  0  }
 };
 static const char *const usage[] = {
     "[-lL] [-D description] [-f fMin:fMax] [-n frequencies]\n"
-    "     [-s setup] [-S standards] name",
+    "     [-s setup] [-S standards] [-t error-term-type] name",
     NULL
 };
 static const char *const help[] = {
@@ -63,30 +67,62 @@ static const char *const help[] = {
     " -n|--frequencies                number of frequencies (default 100)",
     " -s|--setup                      hardware setup",
     " -S|--standards=std1,std2,...    calibration standards",
+    " -t|--type=error-term-type	      set error term type (default E12)",
+    "      T8      8-term T parameters",
+    "      U8      8-term U (inverse T) parameters",
+    "      TE10    8-term T plus off-diagonal E11 leakage terms",
+    "      UE10    8-term U plus off-diagonal E11 leakage terms",
+    "      E12    12-term generalized classic SOLT",
+    "      UE14   14-term columns x (rows x 1) U7 systems",
+    "      T16    16-term T parameters",
+    "      U16    16-term U (inverse T) parameters",
+    " -z|--z0=z0                      set the system impedance (default 50)",
     " name                            name for this calibration",
     NULL
 };
+
+/*
+ * Describes where a VNA port is connected.
+ */
+typedef struct probe_connection {
+    const cal_standard_t       *pc_standard;
+    int				pc_port;
+} probe_connection_t;
 
 /*
  * calibrate_main
  */
 int calibrate_main(int argc, char **argv)
 {
-    const char *command = argv[0];
     double f_min = 50.0e+3;
     double f_max = 60.0e+6;
     const char *opt_D = NULL;
     char opt_l = '\000';
     int opt_n = 50;
-    char c_temp;
+    const char *opt_s = "RB";
+    const char *opt_S = "SOLT";
+    const char *opt_t = "E12";
+    double complex opt_z = 50.0;
+    cal_step_list_t *calibration_steps = NULL;
+    char c;
+    vnacal_type_t c_type;
+    int c_rows, c_columns;
     char *filename = NULL;
     vnacal_t *vcp = NULL;
     vnacal_new_t *vnp = NULL;
-    double *frequency_vector = NULL;
-    double complex *vector1 = NULL;
-    double complex *vector2 = NULL;
-    double complex *m[2][1];
-    int rc = 0;
+    setup_t *setup;
+    probe_connection_t pc_cur1 = { NULL, 0 };
+    probe_connection_t pc_cur2 = { NULL, 0 };
+    measurement_args_t ma;
+    measurement_result_t mr;
+    bool need_frequency_vector = true;
+    int end;
+    int rc = -1;
+
+    /*
+     * Init the measurement result structure.
+     */
+    (void)memset((void *)&mr, 0, sizeof(mr));
 
     /*
      * Parse options.
@@ -101,22 +137,22 @@ int calibrate_main(int argc, char **argv)
 	    continue;
 
 	case 'f':
-	    if (sscanf(optarg, "%lf : %lf %c", &f_min, &f_max, &c_temp) != 2) {
-		(void)fprintf(fp_err, "%s: frequency range format is: "
-			"MHz_Min:MHz_Max\n", command);
-		return N2PKVNA_EXIT_USAGE;
+	    if (sscanf(optarg, "%lf : %lf %c", &f_min, &f_max, &c) != 2) {
+		message_error("frequency range format is: MHz_Min:MHz_Max\n");
+		gs.gs_exitcode = N2PKVNA_EXIT_USAGE;
+		return -1;
 	    }
 	    if (f_min < 0.0 || f_min > f_max) {
-		(void)fprintf(fp_err, "%s: invalid frequency range\n",
-		    command);
-		return N2PKVNA_EXIT_USAGE;
+		message_error("invalid frequency range\n");
+		gs.gs_exitcode = N2PKVNA_EXIT_USAGE;
+		return -1;
 	    }
 	    f_min *= 1.0e+6;
 	    f_max *= 1.0e+6;
 	    continue;
 
 	case 'h':
-	    print_usage(command, usage, help);
+	    print_usage(usage, help);
 	    return 0;
 
 	case 'l':
@@ -130,31 +166,58 @@ int calibrate_main(int argc, char **argv)
 	case 'n':
 	    opt_n = atoi(optarg);
 	    if (opt_n < 1) {
-		(void)fprintf(fp_err, "%s: expected positive integer for "
-			"frequencies\n", progname);
-		return N2PKVNA_EXIT_USAGE;
+		message_error("expected positive integer for frequencies\n");
+		gs.gs_exitcode = N2PKVNA_EXIT_USAGE;
+		return -1;
 	    }
 	    continue;
 
 	case 's':
-	    //ZZ: here
+	    opt_s = optarg;
 	    continue;
 
 	case 'S':
-	    //ZZ
+	    opt_S = optarg;
+	    continue;
+
+	case 't':
+	    opt_t = optarg;
+	    continue;
+
+	case 'z':
+	    {
+		double r, i;
+
+		switch (scanf("%lf %lf", &r, &i)) {
+		case 1:
+		    opt_z = r;
+		    break;
+
+		case 2:
+		    opt_z = r + i * I;
+		    break;
+
+		default:
+		    message_error("%s: invalid system impedance\n", optarg);
+		    gs.gs_exitcode = N2PKVNA_EXIT_USAGE;
+		    return -1;
+		}
+	    }
 	    continue;
 
 	default:
-	    print_usage(command, usage, help);
-	    return N2PKVNA_EXIT_USAGE;
+	    print_usage(usage, help);
+	    gs.gs_exitcode = N2PKVNA_EXIT_USAGE;
+	    return -1;
 	}
 	break;
     }
     argc -= optind;
     argv += optind;
     if (argc != 1) {
-	print_usage(command, usage, help);
-	return N2PKVNA_EXIT_USAGE;
+	print_usage(usage, help);
+	gs.gs_exitcode = N2PKVNA_EXIT_USAGE;
+	return -1;
     }
 
     /*
@@ -170,6 +233,49 @@ int calibrate_main(int argc, char **argv)
     }
 
     /*
+     * Look-up the setup.
+     */
+    if ((setup = setup_lookup(opt_s)) == NULL) {
+	message_error("vna setup %s not found; run config to create\n", opt_s);
+	gs.gs_exitcode = N2PKVNA_EXIT_USAGE;
+	return -1;
+    }
+    c_rows    = setup->su_rows;
+    c_columns = setup->su_columns;
+
+    /*
+     * Look-up the error term type.
+     */
+    if ((c_type = vnacal_name_to_type(opt_t)) == VNACAL_NOTYPE) {
+	message_error("%s: invalid error paramter type\n", opt_t);
+	gs.gs_exitcode = N2PKVNA_EXIT_USAGE;
+	return -1;
+    }
+
+    /*
+     * Create vnacal_t and vnacal_new_t structures.
+     */
+    if ((vcp = vnacal_create(print_libvna_error, NULL)) == NULL) {
+	goto out;
+    }
+    if ((vnp = vnacal_new_alloc(vcp, c_type, c_rows, c_columns,
+		    opt_n)) == NULL) {
+	goto out;
+    }
+    if (vnacal_new_set_z0(vnp, opt_z) == -1) {
+	goto out;
+    }
+
+    /*
+     * Parse the calibration steps string.
+     */
+    if ((calibration_steps = cal_standards_parse(gs.gs_vnap,
+		    setup, vcp, opt_S)) == NULL) {
+	gs.gs_exitcode = N2PKVNA_EXIT_USAGE;
+	goto out;
+    }
+
+    /*
      * Find the save filename.
      */
     if (argv[0][0] == '/') {
@@ -182,149 +288,176 @@ int calibrate_main(int argc, char **argv)
 	    *cp = '\000';
 	}
 	if (asprintf(&filename, "%s/%s.vnacal",
-		n2pkvna_get_directory(vnap), argv[0]) == -1) {
+		    n2pkvna_get_directory(gs.gs_vnap), argv[0]) == -1) {
 	    (void)fprintf(stderr, "%s: asprintf: %s\n",
 		    progname, strerror(errno));
-	    filename = NULL;
-	    rc = N2PKVNA_EXIT_SYSTEM;
-	    goto out;
+	    exit(N2PKVNA_EXIT_SYSTEM);
 	}
     }
 
     /*
-     * Create vnacal_t and vnacal_new_t structures.
+     * Init the measurement arguments.
      */
-    if ((vcp = vnacal_create(print_libvna_error, NULL)) == NULL) {
-	rc = N2PKVNA_EXIT_SYSTEM;
-	goto out;
-    }
-    if ((vnp = vnacal_new_alloc(vcp, VNACAL_E12, 2, 1, opt_n)) == NULL) {
-	vnacal_free(vcp);
-	rc = N2PKVNA_EXIT_SYSTEM;
-	goto out;
-    }
+    (void)memset((void *)&ma, 0, sizeof(ma));
+    ma.ma_setup		= setup;
+    ma.ma_fmin		= f_min;
+    ma.ma_fmax		= f_max;
+    ma.ma_frequencies	= opt_n;
+    ma.ma_rows		= c_rows;
+    ma.ma_columns	= c_columns;
+    ma.ma_linear	= opt_l == 'l';
+    ma.ma_colsys	= c_type == VNACAL_E12 || c_type == VNACAL_UE14;
+    ma.ma_z0		= opt_z;
 
     /*
-     * Allocate the measurement vectors.
+     * Set the attenuation to zero.
      */
-    if ((frequency_vector = calloc(opt_n, sizeof(double))) == NULL) {
-	(void)fprintf(stderr, "%s: calloc: %s\n", progname, strerror(errno));
-	rc = N2PKVNA_EXIT_SYSTEM;
+    if (n2pkvna_switch(gs.gs_vnap, -1, 0, SWITCH_DELAY) == -1) {
+	gs.gs_exitcode = N2PKVNA_EXIT_VNAOP;
 	goto out;
     }
-    if ((vector1 = calloc(opt_n, sizeof(double complex))) == NULL) {
-	(void)fprintf(stderr, "%s: calloc: %s\n", progname, strerror(errno));
-	rc = N2PKVNA_EXIT_SYSTEM;
-	goto out;
-    }
-    if ((vector2 = calloc(opt_n, sizeof(double complex))) == NULL) {
-	(void)fprintf(stderr, "%s: calloc: %s\n", progname, strerror(errno));
-	rc = N2PKVNA_EXIT_SYSTEM;
-	goto out;
-    }
-    m[0][0] = vector1;
-    m[1][0] = vector2;
+    gs.gs_attenuation = 0;
 
     /*
-     * Perform short calibration.
+     * For each standard...
      */
-    (void)printf("Connect VNA probe 1 to the short standard.\n");
-    (void)printf("Connect VNA probe 2 to a terminator.\n");
-    if (prompt_for_ready() == -1) {
-	goto out;
-    }
-    (void)printf("Measuring...\n");
-    if (n2pkvna_scan(vnap, f_min, f_max, opt_n, opt_l == 'l', frequency_vector,
-		vector1, vector2) == -1) {
-	rc = N2PKVNA_EXIT_VNAOP;
-	goto out;
-    }
-    (void)printf("done\n\n");
-    if (vnacal_new_set_frequency_vector(vnp, frequency_vector) == -1) {
-	rc = N2PKVNA_EXIT_SYSTEM;
-	goto out;
-    }
-    if (vnacal_new_add_single_reflect_m(vnp, &m[0][0], 2, 1, VNACAL_SHORT,
-		1) == -1) {
-	rc = N2PKVNA_EXIT_SYSTEM;
-	goto out;
-    }
+    for (cal_step_t *cstp = calibration_steps->csl_steps; cstp != NULL;
+	    cstp = cstp->cst_next) {
+	probe_connection_t pc1;
+	probe_connection_t pc2;
 
-    /*
-     * Perform open calibration.
-     */
-    (void)printf("Connect VNA probe 1 to the open standard.\n");
-    if (prompt_for_ready() == -1) {
-	goto out;
-    }
-    (void)printf("Measuring...\n");
-    if (n2pkvna_scan(vnap, f_min, f_max, opt_n, opt_l == 'l', NULL,
-		vector1, vector2) == -1) {
-	rc = N2PKVNA_EXIT_VNAOP;
-	goto out;
-    }
-    (void)printf("done\n\n");
-    if (vnacal_new_add_single_reflect_m(vnp, &m[0][0], 2, 1, VNACAL_OPEN,
-		1) == -1) {
-	rc = N2PKVNA_EXIT_SYSTEM;
-	goto out;
-    }
+	/*
+	 * Print instructions.
+	 */
+	switch (cstp->cst_type) {
+	case CALS_SINGLE_REFLECT:
+	case CALS_DOUBLE_REFLECT:
+	    pc1.pc_standard = cstp->cst_standards[0];
+	    pc1.pc_port     = cstp->cst_standards[0] != NULL ? 1 : 0;
+	    pc2.pc_standard = cstp->cst_standards[1];
+	    pc2.pc_port     = cstp->cst_standards[1] != NULL ? 1 : 0;
+	    break;
 
-    /*
-     * Perform match calibration.
-     */
-    (void)printf("Connect VNA probe 1 to the load standard.\n");
-    if (prompt_for_ready() == -1) {
-	goto out;
-    }
-    (void)printf("Measuring...\n");
-    if (n2pkvna_scan(vnap, f_min, f_max, opt_n, opt_l == 'l', NULL,
-		vector1, vector2) == -1) {
-	rc = N2PKVNA_EXIT_VNAOP;
-	goto out;
-    }
-    (void)printf("done\n\n");
-    if (vnacal_new_add_single_reflect_m(vnp, &m[0][0], 2, 1, VNACAL_MATCH,
-		1) == -1) {
-	rc = N2PKVNA_EXIT_SYSTEM;
-	goto out;
-    }
+	case CALS_THROUGH:
+	case CALS_LINE:
+	    pc1.pc_standard = cstp->cst_standards[0];
+	    pc1.pc_port     = 1;
+	    pc2.pc_standard = cstp->cst_standards[0];
+	    pc2.pc_port     = 2;
+	    break;
 
-    /*
-     * Perform through calibration.
-     */
-    (void)printf("Connect VNA probes 1 & 2 to the through standard.\n");
-    if (prompt_for_ready() == -1) {
-	goto out;
-    }
-    (void)printf("Measuring...\n");
-    if (n2pkvna_scan(vnap, f_min, f_max, opt_n, opt_l == 'l', NULL,
-		vector1, vector2) == -1) {
-	rc = N2PKVNA_EXIT_VNAOP;
-	goto out;
-    }
-    (void)printf("done\n\n");
-    if (vnacal_new_add_through_m(vnp, &m[0][0], 2, 1, 1, 2) == -1) {
-	rc = N2PKVNA_EXIT_SYSTEM;
-	goto out;
+	default:
+	    abort();
+	}
+	if (pc1.pc_standard == pc_cur1.pc_standard &&
+		pc1.pc_port == pc_cur1.pc_port &&
+	    pc2.pc_standard == pc_cur2.pc_standard &&
+		pc2.pc_port == pc_cur2.pc_port) {
+	    /*NULL*/;
+
+	} else if (pc1.pc_standard == pc_cur2.pc_standard &&
+			pc1.pc_port == pc_cur2.pc_port &&
+		   pc2.pc_standard == pc_cur1.pc_standard &&
+			pc2.pc_port == pc_cur1.pc_port) {
+	    message_add_instruction("Swap VNA probes 1 & 2.\n");
+
+	} else if (cstp->cst_type == CALS_THROUGH) {
+	    message_add_instruction("Connect VNA probes 1 & 2 to the "
+		    "through standard.\n");
+
+	} else if (cstp->cst_type == CALS_LINE) {
+	    message_add_instruction("Connect VNA probe 1 to %s port 1.\n",
+		cstp->cst_standards[0]->cs_text);
+	    message_add_instruction("Connect VNA probe 2 to %s port 2.\n",
+		cstp->cst_standards[0]->cs_text);
+
+	} else {
+	    if (pc1.pc_standard != pc_cur1.pc_standard ||
+		    pc1.pc_port     != pc_cur1.pc_port) {
+		message_add_instruction("Connect VNA probe 1 to %s.\n",
+		    pc1.pc_standard->cs_text);
+	    }
+	    if ((pc2.pc_standard != pc_cur2.pc_standard ||
+		     pc2.pc_port     != pc_cur2.pc_port)) {
+		message_add_instruction("Connect VNA probe 2 to %s.\n",
+		    pc2.pc_standard->cs_text);
+	    }
+	}
+	if (make_measurements(&ma, &mr) == -1) {
+	    goto out;
+	}
+	if (need_frequency_vector) {
+	    if (vnacal_new_set_frequency_vector(vnp,
+			mr.mr_frequency_vector) == -1) {
+		goto out;
+	    }
+	    need_frequency_vector = false;
+	}
+	pc_cur1 = pc1;
+	pc_cur2 = pc2;
+	switch (cstp->cst_type) {
+	case CALS_SINGLE_REFLECT:
+	    if (cstp->cst_standards[0] != &cs_terminator) {
+		if (vnacal_new_add_single_reflect(vnp,
+			    mr.mr_a_matrix, mr.mr_a_rows, mr.mr_a_columns,
+			    mr.mr_b_matrix, mr.mr_b_rows, mr.mr_b_columns,
+			    cstp->cst_standards[0]->cs_matrix[0][0], 1) == -1) {
+		    goto out;
+		}
+	    } else {
+		if (vnacal_new_add_single_reflect(vnp,
+			    mr.mr_a_matrix, mr.mr_a_rows, mr.mr_a_columns,
+			    mr.mr_b_matrix, mr.mr_b_rows, mr.mr_b_columns,
+			    cstp->cst_standards[1]->cs_matrix[0][0], 2) == -1) {
+		    goto out;
+		}
+	    }
+	    break;
+
+	case CALS_DOUBLE_REFLECT:
+		if (vnacal_new_add_double_reflect(vnp,
+			    mr.mr_a_matrix, mr.mr_a_rows, mr.mr_a_columns,
+			    mr.mr_b_matrix, mr.mr_b_rows, mr.mr_b_columns,
+			    cstp->cst_standards[0]->cs_matrix[0][0],
+			    cstp->cst_standards[1]->cs_matrix[0][0],
+			    1, 2) == -1) {
+		    goto out;
+		}
+		break;
+
+	case CALS_THROUGH:
+		if (vnacal_new_add_through(vnp,
+			    mr.mr_a_matrix, mr.mr_a_rows, mr.mr_a_columns,
+			    mr.mr_b_matrix, mr.mr_b_rows, mr.mr_b_columns,
+			    1, 2) == -1) {
+		    goto out;
+		}
+		break;
+
+	case CALS_LINE:
+		if (vnacal_new_add_line(vnp,
+			    mr.mr_a_matrix, mr.mr_a_rows, mr.mr_a_columns,
+			    mr.mr_b_matrix, mr.mr_b_rows, mr.mr_b_columns,
+			    &cstp->cst_standards[0]->cs_matrix[0][0],
+			    1, 2) == -1) {
+		    goto out;
+		}
+		break;
+
+	default:
+	    abort();
+	}
+	measurement_result_free(&mr);
     }
 
     /*
      * Solve for the error parameters, add to the calibration and save.
      */
     if (vnacal_new_solve(vnp) == -1) {
-	rc = N2PKVNA_EXIT_SYSTEM;
 	goto out;
     }
-    if (vnacal_add_calibration(vcp, "2x1-SOLT", vnp) == -1) {
-	rc = N2PKVNA_EXIT_SYSTEM;
+    if (vnacal_add_calibration(vcp, argv[0], vnp) == -1) {
 	goto out;
-    }
-    if (opt_D != NULL) {
-	if (vnacal_property_set(vcp, 0, "description=%s", opt_D) == -1) {
-	    rc = N2PKVNA_EXIT_SYSTEM;
-	    goto out;
-	}
     }
     {
 	time_t t;
@@ -335,26 +468,119 @@ int calibrate_main(int argc, char **argv)
 	(void)localtime_r(&t, &tm);
 	(void)strftime(tbuf, sizeof(tbuf), "%Y-%m-%d_%H:%M:%S%z", &tm);
 	if (vnacal_property_set(vcp, 0, "date=%s", tbuf) == -1) {
-	    rc = N2PKVNA_EXIT_SYSTEM;
+	    goto out;
+	}
+    }
+    if (opt_D != NULL) {
+	if (vnacal_property_set(vcp, 0, "description=%s", opt_D) == -1) {
 	    goto out;
 	}
     }
     if (vnacal_property_set(vcp, 0, "frequencySpacing=%s",
 		opt_l == 'l' ? "linear" : "log") == -1) {
-	rc = N2PKVNA_EXIT_SYSTEM;
 	goto out;
     }
-    /* TODO: record the setup and standards properties */
+    if (vnacal_property_set(vcp, 0, "setupName=%s", opt_s) == -1) {
+	goto out;
+    }
+    {
+	vnaproperty_t **rootptr = n2pkvna_get_property_root(gs.gs_vnap);
+	vnaproperty_t *source, **destination;
+
+	source = vnaproperty_get_subtree(*rootptr, "setups.%s", opt_s);
+	destination = vnacal_property_set_subtree(vcp, 0, "setup");
+	if (destination == NULL) {
+	    (void)fprintf(stderr, "%s: vnacal_set_subtree: %s\n",
+		    progname, strerror(errno));
+	    exit(N2PKVNA_EXIT_SYSTEM);
+	}
+	if (vnaproperty_copy(destination, source) == -1) {
+	    (void)fprintf(stderr, "%s: vnacal_set_subtree: %s\n",
+		    progname, strerror(errno));
+	    exit(N2PKVNA_EXIT_SYSTEM);
+	}
+    }
     if (vnacal_save(vcp, filename) == -1) {
-	rc = N2PKVNA_EXIT_SYSTEM;
 	goto out;
     }
-    rc = N2PKVNA_EXIT_SUCCESS;
+    end = vnacal_get_calibration_end(vcp);
+    for (int ci = 0; ci < end; ++ci) {
+	vnaproperty_t **subptr = NULL;
+	vnaproperty_t **properties = NULL;
+	const char *name;
+	vnacal_type_t type;
+	int rows, columns, frequencies;
+	double fmin, fmax;
+
+	if ((name = vnacal_get_name(vcp, ci)) == NULL) {
+	    continue;
+	}
+	type	    = vnacal_get_type(vcp, ci);
+	rows        = vnacal_get_rows(vcp, ci);
+	columns     = vnacal_get_columns(vcp, ci);
+	frequencies = vnacal_get_frequencies(vcp, ci);
+	fmin        = vnacal_get_fmin(vcp, ci);
+	fmax        = vnacal_get_fmax(vcp, ci);
+
+	if ((subptr = vnaproperty_set_subtree(&gs.gs_messages,
+			"calibrations[+]")) == NULL) {
+	    (void)fprintf(stderr, "%s: vnaproperty_set_subtree: %s\n",
+		    progname, strerror(errno));
+	    exit(N2PKVNA_EXIT_SYSTEM);
+	}
+	if (vnaproperty_set(subptr, "name=%s", name) == -1) {
+	    (void)fprintf(stderr, "%s: vnaproperty_set: %s\n",
+		    progname, strerror(errno));
+	    exit(N2PKVNA_EXIT_SYSTEM);
+	}
+	if (vnaproperty_set(subptr, "type=%s",
+		    vnacal_type_to_name(type)) == -1) {
+	    (void)fprintf(stderr, "%s: vnaproperty_set: %s\n",
+		    progname, strerror(errno));
+	    exit(N2PKVNA_EXIT_SYSTEM);
+	}
+	if (vnaproperty_set(subptr, "rows=%d", rows) == -1) {
+	    (void)fprintf(stderr, "%s: vnaproperty_set: %s\n",
+		    progname, strerror(errno));
+	    exit(N2PKVNA_EXIT_SYSTEM);
+	}
+	if (vnaproperty_set(subptr, "columns=%d", columns) == -1) {
+	    (void)fprintf(stderr, "%s: vnaproperty_set: %s\n",
+		    progname, strerror(errno));
+	    exit(N2PKVNA_EXIT_SYSTEM);
+	}
+	if (vnaproperty_set(subptr, "frequencies=%d", frequencies) == -1) {
+	    (void)fprintf(stderr, "%s: vnaproperty_set: %s\n",
+		    progname, strerror(errno));
+	    exit(N2PKVNA_EXIT_SYSTEM);
+	}
+	if (vnaproperty_set(subptr, "fmin=%e", fmin) == -1) {
+	    (void)fprintf(stderr, "%s: vnaproperty_set: %s\n",
+		    progname, strerror(errno));
+	    exit(N2PKVNA_EXIT_SYSTEM);
+	}
+	if (vnaproperty_set(subptr, "fmax=%e", fmax) == -1) {
+	    (void)fprintf(stderr, "%s: vnaproperty_set: %s\n",
+		    progname, strerror(errno));
+	    exit(N2PKVNA_EXIT_SYSTEM);
+	}
+	if ((properties = vnaproperty_set_subtree(subptr,
+			"properties")) == NULL) {
+	    (void)fprintf(stderr, "%s: vnaproperty_set: %s\n",
+		    progname, strerror(errno));
+	    exit(N2PKVNA_EXIT_SYSTEM);
+	}
+	if (vnaproperty_copy(properties,
+		    vnacal_property_get_subtree(vcp, ci, ".")) == -1) {
+	    (void)fprintf(stderr, "%s: vnaproperty_set: %s\n",
+		    progname, strerror(errno));
+	    exit(N2PKVNA_EXIT_SYSTEM);
+	}
+    }
+    rc = 0;
 
 out:
-    free((void *)vector1);
-    free((void *)vector2);
-    free((void *)frequency_vector);
+    measurement_result_free(&mr);
     vnacal_new_free(vnp);
     vnacal_free(vcp);
     if (filename != argv[0]) {

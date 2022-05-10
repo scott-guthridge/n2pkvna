@@ -23,6 +23,7 @@
 #include <stdbool.h>
 #include <stdio.h>
 #include <vnaerr.h>
+#include "measurement.h"
 
 #define SWITCH_DELAY	0.1		/* switch delay, seconds */
 
@@ -30,25 +31,38 @@
  * Exit Codes
  */
 #define N2PKVNA_EXIT_SUCCESS	0	/* success */
-#define N2PKVNA_EXIT_QUIT	1	/* user requested abort */
+#define N2PKVNA_EXIT_CANCEL	1	/* user requested abort */
 #define N2PKVNA_EXIT_USAGE	2	/* bad command-line options */
-#define N2PKVNA_EXIT_SYSTEM	3	/* ENOMEM or similar system error */
-#define N2PKVNA_EXIT_CALLOAD	4	/* can't load calibration file */
-#define N2PKVNA_EXIT_CALPARSE	5	/* bad data in calibration file */
-#define N2PKVNA_EXIT_VNAOPEN	6	/* can't open VNA */
-#define N2PKVNA_EXIT_VNAOP	7	/* run-time error in VNA */
+#define N2PKVNA_EXIT_VNAOP      3       /* error from VNA device */
+#define N2PKVNA_EXIT_ERROR	4	/* other error */
+#define N2PKVNA_EXIT_SYSTEM	5	/* ENOMEM or similar system error */
+
+/*
+ * global_state_t: program global state
+ */
+typedef struct global_state {
+    bool		gs_interactive;	/* true for interactive session */
+    int			gs_exitcode;	/* program exit code */
+    bool		gs_opt_Y;	/* invoked by program instead of user */
+    bool		gs_canceled;	/* operation canceled by user */
+    vnaproperty_t      *gs_messages;	/* error messages, instructions, data */
+    n2pkvna_t	       *gs_vnap;	/* N2PK VNA device */
+    int			gs_switch;	/* switch code 0-3 or unknown -1 */
+    int			gs_attenuation;	/* attenuation code 0-7 or unknown -1 */
+    const char	       *gs_command;	/* command name or NULL */
+    bool		gs_need_ack;	/* need acknowledgement from user */
+    setup_t	       *gs_setups;	/* configured measurement setup list */
+    mstep_t	       *gs_mstep;	/* measurement step name (or NULL) */
+} global_state_t;
 
 
 extern char *progname;
-extern FILE *fp_err;
-extern n2pkvna_t *vnap;
+extern global_state_t gs;
 extern int parse_attenuation(const char *arg);
 extern void print_error(const char *message, void *arg);
 extern void print_libvna_error(const char *message, void *arg,
 	vnaerr_category_t category);
-extern void print_usage(const char *command, const char *const *usage,
-	const char *const *help);
-extern int prompt_for_ready();
+extern void print_usage(const char *const *usage, const char *const *help);
 extern int run_command(int argc, char **argv);
 
 #endif /* MAIN_H */

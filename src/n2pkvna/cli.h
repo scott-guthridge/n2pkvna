@@ -19,6 +19,38 @@
 #ifndef CLI_H
 #define CLI_H
 
-extern void cli();
+#include <stdbool.h>
+
+/*
+ * command_t: name of command and function to call
+ */
+typedef struct command {
+    const char *cmd_name;
+    int (*cmd_function)(int argc, char **argv);
+} command_t;
+
+/*
+ * cli_scan_t: command scanner state
+ */
+typedef struct cli_scan {
+    char	css_cur;		/* look-ahead character */
+    char       *css_buffer;		/* command buffer */
+    int	        css_buffer_length;	/* current command length */
+    int		css_buffer_size;	/* buffer allocation */
+    int	       *css_arg_index;		/* vector of argument indices */
+    int		css_arg_slots;		/* allocated slots in arg_index */
+    int		css_argc;		/* number of arguments */
+    char      **css_argv;		/* argument vector */
+    int		css_state;		/* scanner quote state */
+} cli_scan_t;
+
+extern void cli_scan_init(cli_scan_t *cssp);
+extern int  cli_scan(cli_scan_t *cssp, int *argc, char ***argv);
+extern void cli_scan_free(cli_scan_t *cssp);
+
+extern bool is_quit(const char *command);
+
+extern int cli(command_t *cmdp, int n_entries, const char *prompt,
+	int argc, char **argv);
 
 #endif /* CLI_H */

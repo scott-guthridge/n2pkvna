@@ -16,10 +16,9 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef CONFIGURE_H
-#define CONFIGURE_H
+#ifndef CONVERT_H
+#define CONVERT_H
 
-extern const char *const configure_usage[];
-extern int configure_main(int argc, char **argv);
+extern int convert_main(int argc, char **argv);
 
-#endif /* CONFIGURE_H */
+#endif /* CONVERT_H */

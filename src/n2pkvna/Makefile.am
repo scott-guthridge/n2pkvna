@@ -7,8 +7,11 @@ AM_CFLAGS= -I$(top_srcdir)/src/libn2pkvna
 bin_PROGRAMS = n2pkvna
 
 n2pkvna_SOURCES = attenuate.h attenuate.c calibrate.h calibrate.c \
-	cf.h cf.c cli.h cli.c configure.h configure.c generate.h generate.c \
-	main.h main.c measure.h measure.c switch.h switch.c
+	cal_standard.h cal_standard.c cf.h cf.c cli.h cli.c \
+	convert.h convert.c \
+	generate.h generate.c main.h main.c measure.h measure.c \
+	measurement.h measurement.c message.h message.c \
+	properties.h properties.c setup.h setup.c switch.h switch.c
 
 n2pkvna_LDADD = ../libn2pkvna/libn2pkvna.la -lvna -lusb-1.0 -lyaml -lm
 

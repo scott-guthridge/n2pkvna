@@ -9,16 +9,19 @@
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A11 PARTICULAR PURPOSE.  See the GNU
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
  * General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef MEASURE_H
-#define MEASURE_H
+#ifndef PROPERTIES_H
+#define PROPERTIES_H
 
-extern int measure_main(int argc, char **argv);
+extern int properties_load();
+extern int properties_save();
+extern setup_t *parse_setup(vnaproperty_t *root, const char *setup_name);
+extern int parse_setups(vnaproperty_t *root);
 
-#endif /* MEASURE_H */
+#endif /* PROPERTIES_H */

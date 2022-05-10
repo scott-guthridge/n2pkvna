@@ -57,7 +57,6 @@ static const char *const help[] = {
  */
 int generate_main(int argc, char **argv)
 {
-    const char *command = argv[0];
     double rf_frequency;
     double lo_frequency;
     double phase = 90.0;
@@ -71,12 +70,14 @@ int generate_main(int argc, char **argv)
 	    break;
 
 	case 'h':
-	    print_usage(command, usage, help);
-	    return N2PKVNA_EXIT_USAGE;
+	    print_usage(usage, help);
+	    gs.gs_exitcode = N2PKVNA_EXIT_USAGE;
+	    return -1;
 
 	default:
-	    print_usage(command, usage, help);
-	    return N2PKVNA_EXIT_USAGE;
+	    print_usage(usage, help);
+	    gs.gs_exitcode = N2PKVNA_EXIT_USAGE;
+	    return -1;
 	}
 	break;
     }
@@ -102,14 +103,17 @@ int generate_main(int argc, char **argv)
 	break;
 
     default:
-	print_usage(command, usage, help);
-	return N2PKVNA_EXIT_USAGE;
+	print_usage(usage, help);
+	gs.gs_exitcode = N2PKVNA_EXIT_USAGE;
+	return -1;
     }
-    if (n2pkvna_reset(vnap) == -1) {	/* reset to synchronize phase */
-	return N2PKVNA_EXIT_VNAOP;
+    if (n2pkvna_reset(gs.gs_vnap) == -1) {	/* reset to synchronize phase */
+	gs.gs_exitcode = N2PKVNA_EXIT_VNAOP;
+	return -1;
     }
-    if (n2pkvna_generate(vnap, rf_frequency, lo_frequency, phase) == -1) {
-	return N2PKVNA_EXIT_VNAOP;
+    if (n2pkvna_generate(gs.gs_vnap, rf_frequency, lo_frequency, phase) == -1) {
+	gs.gs_exitcode = N2PKVNA_EXIT_VNAOP;
+	return -1;
     }
     return 0;
 }

@@ -30,6 +30,7 @@
 
 #include "cf.h"
 #include "main.h"
+#include "message.h"
 
 /*
  * n2pkvna cf options
@@ -55,9 +56,7 @@ static const char *const help[] = {
  */
 int cf_main(int argc, char **argv)
 {
-    const char *command = argv[0];
     static double opt_f = 10.0;
-    char line[82];
     double measured, reference;
 
     /*
@@ -73,42 +72,44 @@ int cf_main(int argc, char **argv)
 	    continue;
 
 	case 'h':
-	    print_usage(command, usage, help);
+	    print_usage(usage, help);
 	    return 0;
 
 	default:
-	    print_usage(command, usage, help);
-	    return N2PKVNA_EXIT_USAGE;
+	    print_usage(usage, help);
+	    gs.gs_exitcode = N2PKVNA_EXIT_USAGE;
+	    return -1;
 	}
 	break;
     }
     argc -= optind;
     argv += optind;
 
-    if (n2pkvna_generate(vnap, 1.0e+6 * opt_f, 1.0e+6 * opt_f, 0.0) == -1) {
-	return N2PKVNA_EXIT_VNAOP;
+    if (n2pkvna_generate(gs.gs_vnap,
+		1.0e+6 * opt_f, 1.0e+6 * opt_f, 0.0) == -1) {
+	gs.gs_exitcode = N2PKVNA_EXIT_VNAOP;
+	return -1;
     }
-    (void)printf("measured frequency (MHz) ? ");
-    if (fgets(line, sizeof(line) - 1, stdin) == NULL) {
-	return 0;
+    if (message_get_measured_frequency(&measured) == -1) {
+	return -1;
     }
-    if (sscanf(line, "%lf", &measured) != 1) {
-	return N2PKVNA_EXIT_USAGE;
-    }
-    reference = n2pkvna_get_reference_frequency(vnap);
+    reference = n2pkvna_get_reference_frequency(gs.gs_vnap);
     reference *= measured / opt_f;
-    if (n2pkvna_set_reference_frequency(vnap, reference) == -1) {
+    if (n2pkvna_set_reference_frequency(gs.gs_vnap, reference) == -1) {
 	if (errno == EINVAL) {	/* value out of range */
-	    (void)fprintf(fp_err, "%s: cf: %f: value out of range\n",
-		    progname, measured);
+	    message_error("%s: cf: %f: value out of range\n", measured);
 	}
-	return N2PKVNA_EXIT_VNAOP;
+	gs.gs_exitcode = N2PKVNA_EXIT_VNAOP;
+	return -1;
     }
-    if (n2pkvna_save(vnap) == -1) {
-	return N2PKVNA_EXIT_CALLOAD;
+    if (n2pkvna_save(gs.gs_vnap) == -1) {
+	gs.gs_exitcode = N2PKVNA_EXIT_VNAOP;
+	return -1;
     }
-    if (n2pkvna_generate(vnap, 1.0e+6 * opt_f, 1.0e+6 * opt_f, 0.0) == -1) {
-	return N2PKVNA_EXIT_VNAOP;
+    if (n2pkvna_generate(gs.gs_vnap,
+		1.0e+6 * opt_f, 1.0e+6 * opt_f, 0.0) == -1) {
+	gs.gs_exitcode = N2PKVNA_EXIT_VNAOP;
+	return -1;
     }
     return 0;
 }

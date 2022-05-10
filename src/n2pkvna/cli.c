@@ -27,113 +27,106 @@
 #include <string.h>
 #include <unistd.h>
 
+#include "cli.h"
 #include "main.h"
+#include "message.h"
 
 /*
- * scan_t: command scanner state
+ * cli_scan_init: init a cli_scan_t structure
+ *   @cssp: scanner state
  */
-typedef struct scan {
-    char	ss_cur;			/* look-ahead character */
-    char       *ss_buffer;		/* command buffer */
-    int	        ss_buffer_length;	/* current command length */
-    int		ss_buffer_size;		/* buffer allocation */
-    int	       *ss_arg_index;		/* vector of argument indices */
-    int		ss_arg_slots;		/* allocated slots in arg_index */
-    int		ss_argc;		/* number of arguments */
-    char      **ss_argv;		/* argument vector */
-    int		ss_state;		/* scanner quote state */
-} scan_t;
-
-/*
- * scan_init: init a scan_t structure
- *   @ssp: scanner state
- */
-static void scan_init(scan_t *ssp)
+void cli_scan_init(cli_scan_t *cssp)
 {
-    (void)memset((void *)ssp, 0, sizeof(*ssp));
-    ssp->ss_cur = '\n';
+    (void)memset((void *)cssp, 0, sizeof(*cssp));
+    cssp->css_cur = '\n';
 }
 
 /*
- * scan_free: free resources of the scan_t structure
+ * cli_scan_free: free resources of the cli_scan_t structure
  */
-static void scan_free(scan_t *ssp)
+void cli_scan_free(cli_scan_t *cssp)
 {
-    free((void *)ssp->ss_buffer);
-    free((void *)ssp->ss_arg_index);
-    free((void *)ssp->ss_argv);
+    free((void *)cssp->css_buffer);
+    free((void *)cssp->css_arg_index);
+    free((void *)cssp->css_argv);
 }
 
 /*
  * scan_add_char: add c to the current word
- *   @ssp: scanner state
+ *   @cssp: scanner state
  *   @c: character to add
  */
-static void scan_add_char(scan_t *ssp, char c)
+static void scan_add_char(cli_scan_t *cssp, char c)
 {
-    if (ssp->ss_buffer_length >= ssp->ss_buffer_size) {
-	if (ssp->ss_buffer_size == 0) {
-	    ssp->ss_buffer_size = 128;
+    if (cssp->css_buffer_length >= cssp->css_buffer_size) {
+	if (cssp->css_buffer_size == 0) {
+	    cssp->css_buffer_size = 128;
 	} else {
-	    ssp->ss_buffer_size *= 2;
+	    cssp->css_buffer_size *= 2;
 	}
-	if ((ssp->ss_buffer = realloc(ssp->ss_buffer,
-			ssp->ss_buffer_size)) == NULL) {
+	if ((cssp->css_buffer = realloc(cssp->css_buffer,
+			cssp->css_buffer_size)) == NULL) {
 	    (void)fprintf(stderr, "%s: realloc: %s\n",
 		    progname, strerror(errno));
 	    exit(N2PKVNA_EXIT_SYSTEM);
 	}
     }
-    ssp->ss_buffer[ssp->ss_buffer_length++] = c;
+    cssp->css_buffer[cssp->css_buffer_length++] = c;
 }
 
 /*
  * scan_start_word: start a new argv entry
- *   @ssp: scanner state
+ *   @cssp: scanner state
  */
-static void scan_start_word(scan_t *ssp)
+static void scan_start_word(cli_scan_t *cssp)
 {
-    if (ssp->ss_argc >= ssp->ss_arg_slots) {
-	if (ssp->ss_arg_slots == 0) {
-	    ssp->ss_arg_slots = 16;
+    if (cssp->css_argc >= cssp->css_arg_slots) {
+	if (cssp->css_arg_slots == 0) {
+	    cssp->css_arg_slots = 16;
 	} else {
-	    ssp->ss_arg_slots *= 2;
+	    cssp->css_arg_slots *= 2;
 	}
-	if ((ssp->ss_arg_index = realloc(ssp->ss_arg_index,
-			ssp->ss_arg_slots * sizeof(char *))) == NULL) {
+	if ((cssp->css_arg_index = realloc(cssp->css_arg_index,
+			cssp->css_arg_slots * sizeof(char *))) == NULL) {
 	    (void)fprintf(stderr, "%s: realloc: %s\n",
 		    progname, strerror(errno));
 	    exit(N2PKVNA_EXIT_SYSTEM);
 	}
     }
-    ssp->ss_arg_index[ssp->ss_argc++] = ssp->ss_buffer_length;
+    cssp->css_arg_index[cssp->css_argc++] = cssp->css_buffer_length;
 }
 
 /*
- * scan: scan a command, breaking it into words with simple shell quoting
- *   @ssp: scanner state
+ * cli_scan: scan a command, breaking it into words with simple shell quoting
+ *   @cssp: scanner state
  */
-static int scan(scan_t *ssp)
+int cli_scan(cli_scan_t *cssp, int *argc, char ***argv)
 {
+    /*
+     * Init return values.
+     */
+    *argc = 0;
+    *argv = NULL;
+
     /*
      * Process the newline from the previous line.  For interactive
      * input, we don't want to read past the newline character until
      * the next command; otherwise the user would have to hit return
      * twice to get the command to run.
      */
-    if (ssp->ss_cur == '\n') {
-	ssp->ss_cur = getchar();
-	ssp->ss_buffer_length = 0;
-	ssp->ss_argc = 0;
+    if (cssp->css_cur == '\n') {
+	cssp->css_cur = getchar();
+	cssp->css_buffer_length = 0;
+	cssp->css_argc = 0;
     }
 
     /*
      * Run Duff's device state machine to parse words and quotes.
      */
     for (;;) {
-	switch (ssp->ss_state) {
+	switch (cssp->css_state) {
 	case 0:	/* not in word */
-	    switch (ssp->ss_cur) {
+	    switch (cssp->css_cur) {
 	    case EOF:			/* end of input */
 		return -1;
 
@@ -145,59 +138,58 @@ static int scan(scan_t *ssp)
 	    case '\r':
 	    case '\t':
 	    case '\v':
-		ssp->ss_cur = getchar();
+		cssp->css_cur = getchar();
 		continue;
 
 	    case '\\':			/* backslash escape */
-		ssp->ss_cur = getchar();
-		ssp->ss_state = 1;
+		cssp->css_cur = getchar();
+		cssp->css_state = 1;
 		continue;
 
 	    case '\'':			/* start word on single quote */
-		scan_start_word(ssp);
-		ssp->ss_cur = getchar();
-		ssp->ss_state = 4;
+		scan_start_word(cssp);
+		cssp->css_cur = getchar();
+		cssp->css_state = 4;
 		continue;
 
 	    case '\"':			/* start word on double quote */
-		scan_start_word(ssp);
-		ssp->ss_cur = getchar();
-		ssp->ss_state = 5;
+		scan_start_word(cssp);
+		cssp->css_cur = getchar();
+		cssp->css_state = 5;
 		continue;
 
 	    default:			/* start word on other char */
-		scan_start_word(ssp);
-		scan_add_char(ssp, ssp->ss_cur);
-		ssp->ss_cur = getchar();
-		ssp->ss_state = 2;
+		scan_start_word(cssp);
+		scan_add_char(cssp, cssp->css_cur);
+		cssp->css_cur = getchar();
+		cssp->css_state = 2;
 		continue;
 	    }
 	    break;
 
 	case 1:	/* not in word, backslash */
-	    switch (ssp->ss_cur) {
+	    switch (cssp->css_cur) {
 	    case EOF:			/* backslash EOF: warn and ignore */
-		(void)fprintf(fp_err, "%s: warning: unexpected EOF "
-			"after backslash", progname);
-		ssp->ss_state = 0;
+		message_error("warning: unexpected EOF after backslash");
+		cssp->css_state = 0;
 		continue;
 
 	    case '\n':			/* backslash newline: ignore */
-		ssp->ss_cur = getchar();
-		ssp->ss_state = 0;
+		cssp->css_cur = getchar();
+		cssp->css_state = 0;
 		continue;
 
 	    default:			/* start word on backslashed char */
-		scan_start_word(ssp);
-		scan_add_char(ssp, ssp->ss_cur);
-		ssp->ss_cur = getchar();
-		ssp->ss_state = 2;
+		scan_start_word(cssp);
+		scan_add_char(cssp, cssp->css_cur);
+		cssp->css_cur = getchar();
+		cssp->css_state = 2;
 		continue;
 	    }
 	    break;
 
 	case 2:	/* in word */
-	    switch (ssp->ss_cur) {
+	    switch (cssp->css_cur) {
 	    case EOF:
 	    case ' ':
 	    case '\f':
@@ -219,125 +211,121 @@ static int scan(scan_t *ssp)
 		 * word and return to state zero without removing the
 		 * look-ahead character.
 		 */
-		scan_add_char(ssp, '\000');
-		ssp->ss_state = 0;
+		scan_add_char(cssp, '\000');
+		cssp->css_state = 0;
 		continue;
 
 	    case '\\':			/* backslash escape in word */
-		ssp->ss_cur = getchar();
-		ssp->ss_state = 3;
+		cssp->css_cur = getchar();
+		cssp->css_state = 3;
 		continue;
 
 	    case '\'':			/* single quote in word */
-		ssp->ss_cur = getchar();
-		ssp->ss_state = 4;
+		cssp->css_cur = getchar();
+		cssp->css_state = 4;
 		continue;
 
 	    case '\"':			/* double quote in word */
-		ssp->ss_cur = getchar();
-		ssp->ss_state = 5;
+		cssp->css_cur = getchar();
+		cssp->css_state = 5;
 		continue;
 
 	    default:			/* ordinary character in word */
-		scan_add_char(ssp, ssp->ss_cur);
-		ssp->ss_cur = getchar();
+		scan_add_char(cssp, cssp->css_cur);
+		cssp->css_cur = getchar();
 		continue;
 	    }
 	    break;
 
 	case 3: /* in word, backslash */
-	    switch (ssp->ss_cur) {
+	    switch (cssp->css_cur) {
 	    case EOF:
-		(void)fprintf(fp_err, "%s: warning: unexpected EOF "
-			"after backslash", progname);
-		ssp->ss_state = 2;
+		message_error("warning: unexpected EOF after backslash");
+		cssp->css_state = 2;
 		continue;
 
 	    case '\n':			/* backslash-newline: empty string */
-		ssp->ss_cur = getchar();
-		ssp->ss_state = 2;
+		cssp->css_cur = getchar();
+		cssp->css_state = 2;
 		continue;
 
 	    default:			/* backslashed character in word */
-		scan_add_char(ssp, ssp->ss_cur);
-		ssp->ss_cur = getchar();
-		ssp->ss_state = 2;
+		scan_add_char(cssp, cssp->css_cur);
+		cssp->css_cur = getchar();
+		cssp->css_state = 2;
 		continue;
 	    }
 	    break;
 
 	case 4: /* in word, in single quote */
-	    switch (ssp->ss_cur) {
+	    switch (cssp->css_cur) {
 	    case EOF:
-		(void)fprintf(fp_err, "%s: warning: unexpected EOF "
-			"in string", progname);
-		ssp->ss_state = 2;
+		message_error("warning: unexpected EOF in string");
+		cssp->css_state = 2;
 		continue;
 
 	    case '\'':			/* end of single quote */
-		ssp->ss_cur = getchar();
-		ssp->ss_state = 2;
+		cssp->css_cur = getchar();
+		cssp->css_state = 2;
 		continue;
 
 	    default:			/* single quoted char */
-		scan_add_char(ssp, ssp->ss_cur);
-		ssp->ss_cur = getchar();
+		scan_add_char(cssp, cssp->css_cur);
+		cssp->css_cur = getchar();
 		continue;
 	    }
 	    break;
 
 	case 5: /* in word, in double quote */
-	    switch (ssp->ss_cur) {
+	    switch (cssp->css_cur) {
 	    case EOF:
-		(void)fprintf(fp_err, "%s: warning: unexpected EOF "
-			"in string", progname);
-		ssp->ss_state = 2;
+		message_error("warning: unexpected EOF in string");
+		cssp->css_state = 2;
 		continue;
 
 	    case '\"':			/* end of double quote */
-		ssp->ss_cur = getchar();
-		ssp->ss_state = 2;
+		cssp->css_cur = getchar();
+		cssp->css_state = 2;
 		continue;
 
 	    case '\\':			/* backslash in double quote in word */
-		ssp->ss_cur = getchar();
-		ssp->ss_state = 6;
+		cssp->css_cur = getchar();
+		cssp->css_state = 6;
 		continue;
 
 	    default:			/* double quoted character */
-		scan_add_char(ssp, ssp->ss_cur);
-		ssp->ss_cur = getchar();
+		scan_add_char(cssp, cssp->css_cur);
+		cssp->css_cur = getchar();
 		continue;
 	    }
 	    break;
 
 	case 6: /* in word, in double quote, after backslash */
-	    switch (ssp->ss_cur) {
+	    switch (cssp->css_cur) {
 	    case EOF:
-		(void)fprintf(fp_err, "%s: warning: unexpected EOF "
-			"in string", progname);
-		ssp->ss_state = 2;
+		message_error("warning: unexpected EOF in string");
+		cssp->css_state = 2;
 		continue;
 
 	    case '\n':			/* backslash newline: empty string */
-		ssp->ss_cur = getchar();
-		ssp->ss_state = 5;
+		cssp->css_cur = getchar();
+		cssp->css_state = 5;
 		continue;
 
 	    case '$':			/* these are quoted under backslash */
 	    case '`':
 	    case '\"':
 	    case '\\':
-		scan_add_char(ssp, ssp->ss_cur);
-		ssp->ss_cur = getchar();
-		ssp->ss_state = 5;
+		scan_add_char(cssp, cssp->css_cur);
+		cssp->css_cur = getchar();
+		cssp->css_state = 5;
 		continue;
 
 	    default:			/* backslash and char are literal */
-		scan_add_char(ssp, '\\');
-		scan_add_char(ssp, ssp->ss_cur);
-		ssp->ss_cur = getchar();
-		ssp->ss_state = 5;
+		scan_add_char(cssp, '\\');
+		scan_add_char(cssp, cssp->css_cur);
+		cssp->css_cur = getchar();
+		cssp->css_state = 5;
 		continue;
 	    }
 	    break;
@@ -349,39 +337,136 @@ static int scan(scan_t *ssp)
     }
 
     /*
-     * Now that ss_buffer has settled into its final address (after
+     * Now that css_buffer has settled into its final address (after
      * reallocs), build argv.
      */
-    free((void *)ssp->ss_argv);
-    if ((ssp->ss_argv = calloc(ssp->ss_argc + 1, sizeof(char *))) == NULL) {
+    free((void *)cssp->css_argv);
+    if ((cssp->css_argv = calloc(cssp->css_argc + 1, sizeof(char *))) == NULL) {
 	(void)fprintf(stderr, "%s: calloc: %s\n", progname, strerror(errno));
 	exit(N2PKVNA_EXIT_SYSTEM);
     }
-    for (int i = 0; i < ssp->ss_argc; ++i) {
-	ssp->ss_argv[i] = &ssp->ss_buffer[ssp->ss_arg_index[i]];
+    for (int i = 0; i < cssp->css_argc; ++i) {
+	cssp->css_argv[i] = &cssp->css_buffer[cssp->css_arg_index[i]];
     }
+    *argc = cssp->css_argc;
+    *argv = cssp->css_argv;
     return 0;
 }
 
 /*
- * cli: command line interface
+ * is_quit: test if command is: exit, quit, x or q
  */
-void cli()
+bool is_quit(const char *command)
 {
-    scan_t ss;
+    switch (command[0]) {
+    case 'e':
+	return strcmp(&command[1], "xit") == 0;
 
-    scan_init(&ss);
-    for (;;) {
-	(void)printf("n2pkvna> ");
-	if (scan(&ss) == -1) {
+    case 'q':
+	return command[1] == '\000' || strcmp(&command[1], "uit") == 0;
+
+    case 'x':
+	return command[1] == '\000';
+
+    default:
+	break;
+    }
+    return false;
+}
+
+/*
+ * run: binary search for command and call
+ *   @command_table: table of command_t sorted by name
+ *   @table_length: number of entries in command table
+ *   @argc: argument count for this command
+ *   @argv: argument vector for this command
+ */
+static int run(command_t *command_table, int table_length,
+	int argc, char **argv)
+{
+    int low = 0;
+    int high = table_length - 1;
+    int cur, cmp;
+    int rc;
+
+    /*
+     * Binary search for the command.
+     */
+    assert(argc > 0);
+    while (low <= high) {
+	cur = (low + high) / 2;
+	cmp = strcmp(argv[0], command_table[cur].cmd_name);
+
+	if (cmp == 0) {
 	    break;
 	}
-	if (ss.ss_argc > 0) {
-	    if (run_command(ss.ss_argc, ss.ss_argv) == -1) {
-		break;
-	    }
+	if (cmp < 0) {
+	    high = cur - 1;
+	} else {
+	    low = cur + 1;
 	}
     }
-    (void)printf("\n");
-    scan_free(&ss);
+    if (cmp != 0) {
+	message_error("%s: unknown command\n", argv[0]);
+	gs.gs_exitcode = N2PKVNA_EXIT_USAGE;
+	return -1;
+    }
+    optind = 1;				/* reset optind */
+    gs.gs_command = argv[0];
+    rc = command_table[cur].cmd_function(argc, argv);
+    gs.gs_command = NULL;
+
+    return rc;
+}
+
+/*
+ * cli: command line interface
+ *   @command_table: table of command_t sorted by name
+ *   @table_length: number of entries in command table
+ *   @prompt: interactive prompt text
+ *   @argc: argument count for this command
+ *   @argv: argument vector for this command
+ */
+int cli(command_t *command_table, int table_length, const char *prompt,
+	int argc, char **argv)
+{
+    /*
+     * If we were given arguments, run the single command.
+     */
+    if (argc != 0) {
+	int rc = 0;
+
+	if (!is_quit(argv[0])) {
+	    if (run(command_table, table_length, argc, argv) == -1) {
+		rc = -1;
+	    }
+	}
+	return rc;
+    }
+
+    /*
+     * Otherwise, drop into an interactive CLI.
+     */
+    {
+	cli_scan_t css;
+
+	gs.gs_interactive = true;
+	cli_scan_init(&css);
+	for (;;) {
+	    message_prompt();
+	    gs.gs_exitcode = 0;
+	    if (cli_scan(&css, &argc, &argv) == -1) {
+		break;
+	    }
+	    if (css.css_argc > 0) {
+		if (is_quit(css.css_argv[0])) {
+		    break;
+		}
+		(void)run(command_table, table_length, argc, argv);
+	    }
+	}
+	(void)printf("\n");
+	cli_scan_free(&css);
+    }
+    return 0;
 }
