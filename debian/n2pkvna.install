@@ -1,0 +1,4 @@
+usr/bin/n2pkvna
+usr/lib/firmware/*
+usr/lib/*/libn2pkvna.so.*
+usr/lib/udev/*

@@ -44,6 +44,7 @@ LT_INIT
 AC_CONFIG_HEADERS([config.h])
 AC_CONFIG_FILES([
     Makefile
+    deb/Makefile
     doc/Makefile
     doc/html/Makefile
     firmware/85-n2pkvna.rules

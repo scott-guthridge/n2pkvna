@@ -1,0 +1,33 @@
+Source: n2pkvna
+Priority: optional
+Maintainer: Scott Guthridge <scott_guthridge@rompromity.net>
+Build-Depends: debhelper-compat (= 13), autotools-dev
+Standards-Version: 4.5.1
+Section: electronics
+Homepage: https://github.com/scott-guthridge/n2pkvna
+Rules-Requires-Root: no
+
+Package: n2pkvna
+Architecture: any
+Multi-Arch: same
+Depends: ${shlibs:Depends}, ${misc:Depends}, fxload, libvna (>= 0.3.0)
+Description: N2PK Vector Netork Analyzer
+ Program for controlling the N2PK vector network analzyer
+
+Package: n2pkvna-dev
+Section: libdevel
+Architecture: any
+Multi-Arch: same
+Depends: n2pkvna (= ${binary:Version}), ${misc:Depends}
+Description: N2PK Vector Network Analyzer (development package)
+ Library for controlling the N2PK vector network analyzer
+
+Package: n2pkvna-gui
+Section: electronics
+Architecture: any
+Multi-Arch: same
+Depends: n2pkvna (= ${binary:Version}), ${misc:Depends},
+    libbrowser-open-perl, libcairo-perl, libclone-perl, libfile-temp-perl,
+    libglib-perl, libgtk3-perl, libyaml-libyaml-perl
+Description: N2PK Vector Network Analyzer (GUI)
+ Graphical user interface for controlling the N2PK vector network analyzer
