@@ -2,7 +2,7 @@
 # Process this file with autoconf to produce a configure script.
 #
 AC_PREREQ([2.69])
-AC_INIT([n2pkvna], [0.0.0], [bugs@rompromity.net])
+AC_INIT([n2pkvna], [0.1.0], [bugs@rompromity.net])
 AC_CONFIG_SRCDIR([src/libn2pkvna/n2pkvna_open.c])
 AC_CONFIG_MACRO_DIR([m4])
 AM_INIT_AUTOMAKE([-Wall -Werror foreign subdir-objects])
