@@ -245,7 +245,7 @@ are first subtracted out, then the system is solved using U parameters
 where it becomes a linear system.
 
 <p>The E12 calibration type (the well known 12-error term model in
-2x2) is equivalent to UE10 in this setup comprising six error terms.
+2x2) is equivalent to UE10 in this setup, providing six error terms.
 When E12 is used, the software solves the system using U parameters as
 above then converts the U parameters to scattering E parameters before
 saving the calibration.  Thus in the 2x1 setup, UE10 and E12 are exactly
@@ -331,8 +331,7 @@ is a free variable, giving effectively 7 error terms.
 
 <p>The 2x2 T8 and U8 calibrations require only three standards, e.g.
 short-open, short-match, and through.  At least one of the standards
-must be asymmetrical, e.g. short-open as opposed to short-short, and at
-least one must have a through component, e.g. through or delay.
+must have a through component, e.g. through or delay.
 
 <h4 id="cal_2x2_TE10">Types: TE10, UE10</h3>
 <p><img src="E10_2x2.svg">		<!-- TE10, UE10: 10-1 -->
@@ -362,7 +361,7 @@ Together, these form the expected 12 error terms
 2x2 system is that it corrects for errors in the forward/reverse switch
 without having to know the incident signal (reference or "a" measurements)
 on the DUT, because when the switch is changed, a completely separate
-set of error terms are used.  This calibration can even correct for
+set of error terms is used.  This calibration can even correct for
 errors in a switch that lies between the directional couplers and DUT.
 
 <p>These parameters are solved using a hybrid of scattering (E) and
@@ -409,8 +408,7 @@ the number of frequency steps and whether the VNA should use linear
 or logarithmic spacing.  Note that because of the way the VNA does
 frequency interpolation, it's generally better to have a smaller number
 of accurately measured calibration points than a much larger number of
-noisy ones.  On the other hand, it's important to sample sufficiently
-well around resonances in order to fully characterize these errors.
+noisy ones.
 
 <p>The software automatically fills in the Standards table with a viable
 sequence of calibration standards.  You can use the suggested standards
