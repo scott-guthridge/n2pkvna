@@ -56,9 +56,8 @@ measurements.
 <p>The <b>a1</b> and <b>a2</b> inputs into the error box are incident
 signals from the VNA to the DUT.  Some VNA's measure these.  When not
 measured, we assume that during the forward measurement, a1=1 and a2=0,
-and during the reverse measurement, a1=0 and a2=1.  The reflected signals
-from the DUT to the VNA are the outputs, <b>b1</b> and <b>b2</b>, which
-the VNA measures.
+and during the reverse measurement, a1=0 and a2=1.  The <b>b1</b> and
+<b>b2</b> outputs are the measured reflected signals from the DUT.
 
 <p>The <b>x1</b>, <b>y1</b>, <b>x2</b> and <b>y2</b> arrows define the
 <q>reference plane</q> that delineates the VNA from the DUT.
@@ -131,14 +130,15 @@ error, reflection tracking error, transmission tracking error and port
 match error, respectively.
 
 <p>The goal of calibration is to solve for the error terms using
-measurements of known standards.  While the scattering parameter form of
-the error box is easy to understand, it's not easy to solve the error
-parameters in this form.  It's much easier to solve for them in the
-scattering transfer (T) or inverse scattering transfer (U) form where the
+measurements of known standards.  While the scattering parameter form
+of the error box shown above is easy to understand, it's not the best
+form for solving the terms.  It's much easier to solve for them in the
+scattering transfer (T) or inverse scattering transfer (U) form, where the
 problem becomes a linear system of equations.  If E terms are desired,
-we can then convert the resulting T or U terms to E.  The conversion
-from T to E is the same as for converting t-parameters to s-parameters
-except that the elements of the 2x2 T matrix are matrices.
+we can convert the resulting T or U terms to E.  The conversion from
+T or U to E is the same as for converting t-parameters or u-parameters
+to s-parameters except that the elements of the 2x2 T or U matrix are
+matrices.
 
 
 <h2 id="cal_types">Calibration Types</h2>
@@ -146,18 +146,18 @@ except that the elements of the 2x2 T matrix are matrices.
 <p>The software supports several types of error terms, capable of
 correcting different errors.  In general, calibration types with more
 error terms correct for more errors, but this comes at a cost of requiring
-more calibration standards.  Also, while it may seem better to always use
-calibrations that correct for more errors, correcting for errors you
-don't actually have in your test setup may in fact add correlated noise
-to your measurements.  Therefore, it's important to consider which errors
-are likely significant in a given situation and choose a calibration
-type that matches.
+more calibration standards.  Also, while it may seem better to always
+use calibrations that correct for more errors, correcting for errors
+you don't actually have in your test setup may in fact add turn noise
+measured during calibration into correlated error in your measurements.
+Therefore, it's important to consider which errors are likely significant
+in a given situation and choose an appropriate calibration type.
 
-<p>For all supported calibration types, the software solves for the error
-terms using either scattering transfer (T) or inverse scattering transfer
-(U) parameters which turn the problem into a linear system of equations.
-This provides wide flexibility in the choice of standards used, and
-it makes it always possible to use more than the minimum required
+<p>For all supported calibration types, the software solves for the
+error terms using either scattering transfer (T) or inverse scattering
+transfer (U) parameters which turn the problem into a linear system of
+equations.  This provides wide flexibility in the choice of standards
+used, and makes it always possible to use more than the minimum required
 number of standards in a calibration.  If the resulting linear system
 is over-determined, the software finds a least-squares solution using
 Q-R decomposition.
@@ -241,8 +241,7 @@ measuring a reflect standard on port 1, we can opportunistically measure
 the leakage term into the second detector.  The N2PK VNA application
 solves this system using a hybrid of scattering (E) and inverse scattering
 transfer (U) parameters.  The opportunistically measured leakage terms
-are first subtracted out, then the system is solved using U parameters
-where it becomes a linear system.
+are first subtracted out, then the system is solved using U parameters.
 
 <p>The E12 calibration type (the well known 12-error term model in
 2x2) is equivalent to UE10 in this setup, providing six error terms.
@@ -263,7 +262,7 @@ probes, a stronger model that corrects for the additional errors
 is needed.  The U16 calibration type provides 12 error terms, one
 of which is a free variable, giving it effectively 11 error terms.
 The software solves this calibration using inverse scattering
-transfer (U) terms, where it's a linear system.
+transfer (U) parameters.
 
 <p>In 2x1 setups, at least six standards are required for calibration!
 For example, a possible choice is: short-open, short-match, open-match,
@@ -365,11 +364,9 @@ set of error terms is used.  This calibration can even correct for
 errors in a switch that lies between the directional couplers and DUT.
 
 <p>These parameters are solved using a hybrid of scattering (E) and
-inverse scattering transfer (U) parameters as in the UE10 calibration.  As
-with all the other the methods described here, this turns the calibration
-problem into a linear system of equations, providing broad flexibility
-in the choice of standards used.  If more than the required number of
-standards is used, the error terms are solved in a least-squares manner.
+inverse scattering transfer (U) parameters as in the UE10 calibration.
+If more than the required number of standards is used, the error terms
+are solved in a least-squares manner.
 
 <p>This calibration requires a minimum of four calibration standards.
 A typical choice is: short-open, match-open, match-short, through.
@@ -404,15 +401,14 @@ under which the calibration is being made.
 
 <p>The Sweep settings are filled in automatically from the setup.
 If desired, you can narrow but not widen the frequency range.  Select
-the number of frequency steps and whether the VNA should use linear
-or logarithmic spacing.  Note that because of the way the VNA does
-frequency interpolation, it's generally better to have a smaller number
-of accurately measured calibration points than a much larger number of
-noisy ones.
+the number of frequency steps and whether the VNA should use linear or
+logarithmic spacing.  If the frequency spacing during DUT measurement is
+different from that used during calibration, the software uses rational
+function interpolation between calibration points.
 
 <p>The software automatically fills in the Standards table with a viable
 sequence of calibration standards.  You can use the suggested standards
-or alternately use a set of your choice.  You can use any arbitrary known
+or alternately use a set of your choice.  You may use any arbitrary known
 single or dual port device as a standard by copying the network parameter
 data file into the VNA's configuration directory, "$HOME/.n2pkvna/*/"
 before starting the program.  The filename must end in ".npd", ".ts",

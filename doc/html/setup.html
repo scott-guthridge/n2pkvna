@@ -61,7 +61,7 @@ to correct the frequency coefficient.  For example, if the VNA uses
 the Valpey oscillator at 148.344 MHz, run the frequency calibration,
 accept the default of 10 MHz then enter a measured value of 9.494016 MHz.
 You can also edit the VNA configuration file ($HOME/.n2pkvna/*/config)
-directly using a text editor and update the referenceFrequency attribute
+directly using a text editor and update the referenceFrequency attribute,
 given in Hz.  The file is stored in YAML format.
 
 <h2 id="setup_identify">Identify the Hardware Configuration</h2>
@@ -97,9 +97,8 @@ change cables, etc.  In this context, manual steps do not include
 DUT port swaps at the reference plane.
 
 <p><u>Detector Measurements</u>: Within each manual step and switch
-combination, there are sixteen possible different measurements each
-detector can make.  These correspond to the elements of the following
-four matrices:
+combination, there are sixteen possible measurements each detector can
+make.  These correspond to the elements of the following four matrices:
 
 <p>
 <table border>
@@ -177,10 +176,10 @@ of the other matrices follow the same numbering pattern.
 <p>In some hardware configurations, one or both of the directional
 couplers is replaced with an RF-IV detector.  The first column of the
 <b>i</b> matrix describes the currents flowing toward the DUT in each
-VNA probe plane during the forward measurement; the
+VNA probe during the forward measurement; the
 second column describes the corresponding currents flowing into the DUT
 during the reverse measurement.  The <b>v</b> matrix similarly describes
-the voltages at each DUT port.
+the voltages on each DUT port.
 
 <p>Following are several examples of hardware setups, their dimensions
 and the values each detector measures.
@@ -463,8 +462,9 @@ may potentially outweigh any benefits of measuring the incident signal.
 <text class="button">Create Custom</text>,
 and <text class="button">Edit</text>,
 open the same switch and detector edit screen that describes the switch
-settings and detector measurements.  The difference between these buttons
-is only in how the switch and detector screen is initially filled in.
+settings and detector measurements (shown below).  The difference between
+these buttons is only in how the switch and detector screen is initially
+filled in.
 
 <p>The <text class="button">Configure Reflection Bridge</text>
 button opens the switch and detector edit screen with typical default
@@ -485,8 +485,8 @@ href="#s_2x2">S-Parameter Test Set</a>.
 <p>The <text class="button">Configure RF-IV</text> opens the edit screen
 with typical defaults for the <a href="rfiv_2x1">RF-IV</a> detector.
 
-<p>The <text class="button">Create Custom</text> opens the edit
-screen with a blank slate.  Use the setup examples shown in <a
+<p>The <text class="button">Create Custom</text> opens the edit screen
+with nothing already filled in.  Use the setup examples shown in <a
 href="#setup_identify">Identify the Hardware Configuration</a> section
 above for guidance on creating custom configurations.
 
@@ -520,9 +520,9 @@ setup.  If you're using a transverter, fill in the shifted frequency
 range and also enter local oscillator frequency of the transverter into
 the fOsc field; if not using a transverter, leave fOsc blank.
 <!-- TODO: revisit -->
-<i>Note: transverter support in the software is currently completely
-untested and probably broken.  Contact the author if you would like
-to help or be a tester for this feature.</i>
+<i>Note: transverter support in the software is currently untested.
+Contact the author if you would like to help or be a tester for this
+feature.</i>
 
 <p>With the <text class="button">Number of Manual Steps</text> spin
 button, it's possible to add manual steps in addition to automatic
