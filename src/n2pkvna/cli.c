@@ -411,7 +411,7 @@ static int run(command_t *command_table, int table_length,
 	gs.gs_exitcode = N2PKVNA_EXIT_USAGE;
 	return -1;
     }
-    optind = 1;				/* reset optind */
+    optind = 0;				/* reset optind */
     gs.gs_command = argv[0];
     rc = command_table[cur].cmd_function(argc, argv);
     gs.gs_command = NULL;
