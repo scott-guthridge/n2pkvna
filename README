@@ -52,11 +52,11 @@ Otherwise, or if you've either cloned or downloaded the sources from git,
 you'll need to install autotools and bootstrap them:
 
     Fedora, RedHat, Centos, SuSE
-	sudo yum install autoconf libtool
+	sudo yum install autoconf automake libtool
 
     Debian, Ubuntu
 	sudo apt-get update
-	sudo apt-get install autoconf libtool
+	sudo apt-get install autoconf automake libtool
 
     At the top level of the source tree, run:
 	./bootstrap
