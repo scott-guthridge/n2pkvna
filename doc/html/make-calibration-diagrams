@@ -296,7 +296,7 @@ sub draw_calibration {
     if ($rows > 1 || $cols > 1) {
 	if ($leakage eq "all") {
 	    &drawArrowLine($fig, [[ $X2, $Y1 ], [ $X2, $Y2 ]], 0.50,
-		    $prefix . "Em12", 0,
+		    $prefix . "Em21", 0,
 		    {  color => "purple", lineStyle => $leakage_style });
 	    $x1 = $X2 + $ED12_EM21;
 	    $y1 = ($Y2 + $Y3) / 2.0;
@@ -305,7 +305,7 @@ sub draw_calibration {
 	    $fig->polyline([[ $X2, $Y3 ], [ $x1, $y1 ]],
 		    { color => "purple", lineStyle => $leakage_style });
 	    &drawArrowLine($fig, [[ $x1, $y1 ], [ $x2, $y2 ]], 0.50,
-		    $prefix . "Em21", 0,
+		    $prefix . "Em12", 0,
 		    { color => "purple", lineStyle => $leakage_style });
 	    $fig->polyline([[ $x2, $y2 ], [ $X2,   0 ]],
 		    { color => "purple", lineStyle => $leakage_style });
