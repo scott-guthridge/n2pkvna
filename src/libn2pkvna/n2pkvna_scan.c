@@ -285,7 +285,7 @@ int n2pkvna_scan(n2pkvna_t *vnap, double f0, double ff,
     /*
      * Disable output.
      */
-    (void)_n2pkvna_set_dds(vnap, 0.0, false, 0, 0, 0);
+    (void)_n2pkvna_set_dds(vnap, false, 0.0, 0, 0, 0);
 
     return 0;
 

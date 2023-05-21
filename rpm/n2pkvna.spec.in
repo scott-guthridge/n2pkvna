@@ -34,7 +34,7 @@ Requires:	perl-YAML-LibYAML
 BuildArch:	noarch
 
 %description gui
-The %{name}-guid package provides a graphical user interface for
+The %{name}-gui package provides a graphical user interface for
 controlling the N2PK Vector Network Analzyer.
 
 %prep

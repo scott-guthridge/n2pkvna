@@ -308,7 +308,7 @@ int _n2pkvna_set_dds(n2pkvna_t *vnap, bool measure, double start_delay,
     /*
      * Convert start_delay.  There are two ranges:
      *   8us to 2040us
-     *   3ms to 255ms
+     *   1ms to 255ms
      */
     assert(start_delay >= 0.0);
     flags &= ~0x20;
