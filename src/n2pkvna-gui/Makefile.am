@@ -14,7 +14,8 @@ n2pkvna-gui: n2pkvna-gui.pl
 	sed -e 's@%%BINDIR%%@$(bindir)@' \
 	    -e 's@%%DOCDIR%%@$(docdir)@' \
 	    -e 's@%%UIDIR%%@$(uidir)@' \
-	    -e 's@%%VERSION%%@$(PACKAGE_VERSION)@' > "$@" n2pkvna-gui.pl
+	    -e 's@%%VERSION%%@$(PACKAGE_VERSION)@' \
+	    $(srcdir)/n2pkvna-gui.pl > "$@" 
 	chmod 755 "$@"
 
 n2pkvna.svg: make-icon.pl
