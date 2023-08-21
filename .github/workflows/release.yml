@@ -13,7 +13,8 @@ jobs:
       run: |
         sudo apt-get update
         sudo apt-get install autoconf automake build-essential \
-             curl debhelper-compat devscripts libtool libyaml-dev make
+             curl debhelper-compat devscripts libtool libyaml-dev make \
+             libusb-1.0-0-dev
         .github/scripts/install-libvna.sh
     - name: Build Debian Package
       run: |
