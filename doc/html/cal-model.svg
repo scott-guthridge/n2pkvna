@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <!-- Creator: fig2dev Version 3.2.7b-dev -->
-<!-- CreationDate: 2023-05-20 20:11:25 -->
+<!-- CreationDate: 2023-08-20 17:28:05 -->
 <!-- Magnification: 1 -->
 <svg	xmlns="http://www.w3.org/2000/svg"
 	xmlns:xlink="http://www.w3.org/1999/xlink"
@@ -18,42 +18,6 @@
 	stroke="#000000" stroke-width="15px"/>
 <!-- Circle -->
 <circle cx="600" cy="4200" r="60"
-	stroke="#000000" stroke-width="15px"/>
-<!-- Circle -->
-<circle cx="1800" cy="600" r="36" fill="#000000"
-	stroke="#000000" stroke-width="15px"/>
-<!-- Circle -->
-<circle cx="3600" cy="600" r="36" fill="#000000"
-	stroke="#000000" stroke-width="15px"/>
-<!-- Circle -->
-<circle cx="1800" cy="1800" r="36" fill="#000000"
-	stroke="#000000" stroke-width="15px"/>
-<!-- Circle -->
-<circle cx="3600" cy="1800" r="36" fill="#000000"
-	stroke="#000000" stroke-width="15px"/>
-<!-- Circle -->
-<circle cx="5100" cy="1800" r="36" fill="#000000"
-	stroke="#000000" stroke-width="15px"/>
-<!-- Circle -->
-<circle cx="6300" cy="1800" r="36" fill="#000000"
-	stroke="#000000" stroke-width="15px"/>
-<!-- Circle -->
-<circle cx="1800" cy="3000" r="36" fill="#000000"
-	stroke="#000000" stroke-width="15px"/>
-<!-- Circle -->
-<circle cx="3600" cy="3000" r="36" fill="#000000"
-	stroke="#000000" stroke-width="15px"/>
-<!-- Circle -->
-<circle cx="5100" cy="3000" r="36" fill="#000000"
-	stroke="#000000" stroke-width="15px"/>
-<!-- Circle -->
-<circle cx="6300" cy="3000" r="36" fill="#000000"
-	stroke="#000000" stroke-width="15px"/>
-<!-- Circle -->
-<circle cx="1800" cy="4200" r="36" fill="#000000"
-	stroke="#000000" stroke-width="15px"/>
-<!-- Circle -->
-<circle cx="3600" cy="4200" r="36" fill="#000000"
 	stroke="#000000" stroke-width="15px"/>
 <!-- Line -->
 <rect x="1050" y="300" width="3300" height="4200"
@@ -573,5 +537,41 @@
 <text xml:space="preserve" x="0" y="0" fill="#000000" font-family="Times" font-style="normal" font-weight="normal" font-size="144" text-anchor="middle">S21</text>
 </g><!-- Text -->
 <text xml:space="preserve" x="5700" y="3222" fill="#000000" font-family="Times" font-style="normal" font-weight="normal" font-size="144" text-anchor="middle">S22</text>
+<!-- Circle -->
+<circle cx="1800" cy="600" r="36" fill="#000000"
+	stroke="#000000" stroke-width="15px"/>
+<!-- Circle -->
+<circle cx="3600" cy="600" r="36" fill="#000000"
+	stroke="#000000" stroke-width="15px"/>
+<!-- Circle -->
+<circle cx="1800" cy="1800" r="36" fill="#000000"
+	stroke="#000000" stroke-width="15px"/>
+<!-- Circle -->
+<circle cx="3600" cy="1800" r="36" fill="#000000"
+	stroke="#000000" stroke-width="15px"/>
+<!-- Circle -->
+<circle cx="5100" cy="1800" r="36" fill="#000000"
+	stroke="#000000" stroke-width="15px"/>
+<!-- Circle -->
+<circle cx="6300" cy="1800" r="36" fill="#000000"
+	stroke="#000000" stroke-width="15px"/>
+<!-- Circle -->
+<circle cx="1800" cy="3000" r="36" fill="#000000"
+	stroke="#000000" stroke-width="15px"/>
+<!-- Circle -->
+<circle cx="3600" cy="3000" r="36" fill="#000000"
+	stroke="#000000" stroke-width="15px"/>
+<!-- Circle -->
+<circle cx="5100" cy="3000" r="36" fill="#000000"
+	stroke="#000000" stroke-width="15px"/>
+<!-- Circle -->
+<circle cx="6300" cy="3000" r="36" fill="#000000"
+	stroke="#000000" stroke-width="15px"/>
+<!-- Circle -->
+<circle cx="1800" cy="4200" r="36" fill="#000000"
+	stroke="#000000" stroke-width="15px"/>
+<!-- Circle -->
+<circle cx="3600" cy="4200" r="36" fill="#000000"
+	stroke="#000000" stroke-width="15px"/>
 </g>
 </svg>

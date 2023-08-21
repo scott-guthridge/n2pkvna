@@ -64,7 +64,12 @@ sub drawDot {
     my $fig   = shift;
     my $point = shift;
 
-    $fig->circle({ center => $point, r => $DOT_RADIUS, areaFill => "black" });
+    $fig->circle({
+	center   => $point,
+	r        => $DOT_RADIUS,
+	areaFill => "black",
+	depth    => 30,
+    });
 }
 
 sub draw_calibration {

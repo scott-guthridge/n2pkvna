@@ -62,7 +62,7 @@ and during the reverse measurement, a1=0 and a2=1.  The <b>b1</b> and
 <p>The <b>x1</b>, <b>y1</b>, <b>x2</b> and <b>y2</b> arrows define the
 <q>reference plane</q> that delineates the VNA from the DUT.
 
-<p>The error terms are simply the S-parameters of the error box.
+<p>The error terms (E terms) are simply the S-parameters of the error box.
 Since the error box is a 4-port device, it has 16 terms.  Depending on
 the calibration type, however, we may or may not include all sixteen
 error terms.
@@ -135,10 +135,10 @@ of the error box shown above is easy to understand, it's not the best
 form for solving the terms.  It's much easier to solve for them in the
 scattering transfer (T) or inverse scattering transfer (U) form, where the
 problem becomes a linear system of equations.  If E terms are desired,
-we can convert the resulting T or U terms to E.  The conversion from
-T or U to E is the same as for converting t-parameters or u-parameters
-to s-parameters except that the elements of the 2x2 T or U matrix are
-matrices.
+then after solving for the error terms, we can convert the resulting
+T or U terms to E.  The conversion from T or U to E is the same as for
+converting t-parameters or u-parameters to s-parameters except that the
+elements of the 2x2 T or U matrix are, themselves, matrices.
 
 
 <h2 id="cal_types">Calibration Types</h2>
@@ -148,7 +148,7 @@ correcting different errors.  In general, calibration types with more
 error terms correct for more errors, but this comes at a cost of requiring
 more calibration standards.  Also, while it may seem better to always
 use calibrations that correct for more errors, correcting for errors
-you don't actually have in your test setup may in fact add turn noise
+you don't actually have in your test setup may in fact turn noise
 measured during calibration into correlated error in your measurements.
 Therefore, it's important to consider which errors are likely significant
 in a given situation and choose an appropriate calibration type.
@@ -165,7 +165,7 @@ Q-R decomposition.
 <p>The E12 type is a generalization of the classic 12-term error
 correction model historically calibrated using SOLT or OSLT.  Under the
 covers, it's solved using U parameters which are then converted to
-E parameters.
+S parameters (the E terms).
 
 <p>The rest of this section goes through each calibration type,
 shows which errors are corrected, and gives the calibration standard
@@ -246,9 +246,9 @@ are first subtracted out, then the system is solved using U parameters.
 <p>The E12 calibration type (the well known 12-error term model in
 2x2) is equivalent to UE10 in this setup, providing six error terms.
 When E12 is used, the software solves the system using U parameters as
-above then converts the U parameters to scattering E parameters before
-saving the calibration.  Thus in the 2x1 setup, UE10 and E12 are exactly
-the same except for the format in which they save the error terms.
+above then converts the U terms to E terms before saving the calibration.
+Thus in the 2x1 setup, UE10 and E12 are exactly the same except for the
+format in which they save the error terms.
 
 <p>Like in U8, typical choice of standards are short, open, match,
 and through.  Here also, it's possible to perform the calibration using
