@@ -1,0 +1,29 @@
+name: Test
+
+on:
+  push:
+    branches: [ development ]
+  pull_request:
+    branches: [ development ]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+    - name: Checkout Source
+      uses: actions/checkout@v3
+    - name: Install Dependencies
+      run: |
+        sudo apt-get update
+        sudo apt-get install autoconf automake build-essential \
+             curl devscripts libtool libyaml-dev make
+        .github/scripts/install-libvna.sh
+    - name: Build
+      run: |
+        ./bootstrap
+        ./configure
+        make -j8
+    #- name: Test
+    #  run: make -j8 check
+    - name: Run Distcheck
+      run: make -j8 distcheck
