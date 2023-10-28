@@ -475,7 +475,6 @@ skip_special_case:
 
 		default:
 		    abort();
-		    /*NOTREACHED*/
 		}
 	    }
 	    ncip->nci_addresses[ncip->nci_count++] = adrip;
@@ -545,7 +544,6 @@ skip_special_case:
 
 		default:
 		    abort();
-		    /*NOTREACHED*/
 		}
 		ncp->nc_addresses[ncp->nc_count++] = adrp;
 	    }
@@ -670,7 +668,6 @@ skip_special_case:
 
 	default:
 	    abort();
-	    /*NOTREACHED*/
 	}
     }
 

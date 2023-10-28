@@ -15,7 +15,7 @@
 .\" You should have received a copy of the GNU General Public License
 .\" along with this program.  If not, see <http://www.gnu.org/licenses/>.
 .\"
-.TH LIBN2PKVNA 3 "JULY 2017" Linux
+.TH N2PKVNA 3 "JULY 2017" Linux
 .SH NAME
 n2pkvna_error_t, n2pkvna_open, n2pkvna_scan, n2pkvna_generate, n2pkvna_switch, n2pkvna_reset, n2pkvna_get_directory, n2pkvna_get_address, n2pkvna_get_reference_frequency, n2pkvna_set_reference_frequency, n2pkvna_get_property_root, n2pkvna_save, n2pkvna_close, n2pkvna_free_config_vector \- control N2PK vector network analyzers
 .\"
@@ -321,9 +321,9 @@ configuration directory.
 frequency in Hz.
 .\"
 .SH ERRORS
-All n2pkvna library functions call the error reporting function (if one
-was provided via \fBn2pkvna_open\fP()'s \fBe\fP option), set \fIerrno\fP
-and return \s-2NULL\s+2 or -1 on failure.
+All n2pkvna library functions call the error reporting function (if
+one was provided via \fBn2pkvna_open\fP()'s \fIerror_fn\fP argument),
+set \fIerrno\fP and return \s-2NULL\s+2 or -1 on failure.
 Common errno values that may be returned are:
 .IP \fBEINVAL\fP
 .br
@@ -387,7 +387,6 @@ int main(int argc, char **argv)
     vnap = NULL;
 
     exit(0);
-    /*NOTREACHED*/
 }
 .fi
 .\"

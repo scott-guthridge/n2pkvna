@@ -59,5 +59,4 @@ int main(int argc, char **argv)
     vnap = NULL;
 
     exit(0);
-    /*NOTREACHED*/
 }
