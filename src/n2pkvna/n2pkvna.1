@@ -62,15 +62,12 @@ The \fIsetup\fP option is the hardware setup of the VNA, e.g. selecting
 between the classic reflection bridge configuration that measures
 only S11 and S21, the full S-parameter test set, and the RF IV
 module.
-In version 0.0.0, this option is ignored and only the classic reflection
-bridge setup is supported.
 The \fIstandards\fP option is a comma-separated list of calibration names.
 Built-in names include the one-port standards S (short), O (open),
 and M (match), the two-port standards such as S-O (short-open),
 S-M (short-match), O-S (open-short), etc., T (through), and short-hand
 names SOLT and TOSL for common sequences of standards.
 User-defined standards based on measured values can also be given.
-In version 0.0.0, this option is ignored \- only SOLT is available.
 .\"
 .IP "\fBcf\fP [\fB-f\fP \fIfrequency_MHz\fP]" 4n
 .TS
