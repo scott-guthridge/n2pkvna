@@ -386,7 +386,7 @@ static int run(command_t *command_table, int table_length,
 {
     int low = 0;
     int high = table_length - 1;
-    int cur, cmp;
+    int cur = 0, cmp = -1;
     int rc;
 
     /*
