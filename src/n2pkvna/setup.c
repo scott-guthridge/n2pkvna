@@ -38,7 +38,7 @@
 /*
  * n2pkvna setup options
  */
-static const char short_options[] = "h:";
+static const char short_options[] = "h";
 static const struct option long_options[] = {
     { "help",			0, NULL, 'h' },
     { NULL,			0, NULL,  0  }
