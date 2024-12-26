@@ -103,6 +103,8 @@ Option 3: Build and install into /usr/local/* from source
     ./configure
     make
     sudo sh -c 'umask 022 && make install'
+    sudo ldconfig
+    sudo udevadm control --reload-rules
 
     By default, the files are installed in /usr/local/
 	/usr/local/include/*.h
