@@ -1,0 +1,11 @@
+#!/bin/sh
+#
+# Build RPMs
+#
+set -e
+dnf install -y gcc git libusbx-devel make python3 python3-pip rpm-build
+pip3 install requests
+cd /n2pkvna
+./tools/install-libvna-rpm
+./configure
+make -j12 rpm

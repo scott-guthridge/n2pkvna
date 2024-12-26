@@ -1,0 +1,37 @@
+#!/usr/bin/python3
+'''
+Download the .rpm packages from the latest release of libvna and
+install them.
+'''
+
+import json
+import os
+import requests
+import subprocess
+import sys
+
+URL = 'https://api.github.com/repos/scott-guthridge/libvna/releases/latest'
+try:
+    progname = os.path.basename(sys.argv[0])
+    response = requests.get(URL)
+    if response.status_code != 200:
+        print(f'{progname}: error: {URL}: status {response.status_code}')
+        exit(1)
+    data = response.json()
+    packages = []
+    for asset in data["assets"]:
+        if "browser_download_url" in asset:
+            download = asset["browser_download_url"]
+            if download.endswith('.rpm') and not download.endswith('.src.rpm'):
+                status = subprocess.run(['curl', '-sLO', download])
+                if status.returncode != 0:
+                    sys.exit(status.returncode)
+                packages.append(os.path.basename(download))
+    status = subprocess.run(['yum', 'install', '-y'] + packages)
+    if status.returncode != 0:
+        sys.exit(status.returncode)
+
+
+except Exception as e:
+    print(f'Exception: {e}', file=sys.stderr)
+    sys.exit(99)

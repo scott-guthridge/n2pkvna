@@ -15,12 +15,16 @@ jobs:
         sudo apt-get install autoconf automake build-essential \
              curl debhelper-compat devscripts libtool libyaml-dev make \
              libusb-1.0-0-dev
-        .github/scripts/install-libvna.sh
-    - name: Build Debian Package
+        tools/install-libvna-deb
+    - name: Build Debian Packages
       run: |
         ./bootstrap
         ./configure
         make -j8 deb
+    - name: Build RPM Packages
+      run: |
+        podman run --rm -v "`pwd`:/n2pkvna" almalinux:8 \
+            /n2pkvna/tools/make-rpm
     - name: Create Release
       id: create_release
       uses: actions/create-release@v1
@@ -36,4 +40,10 @@ jobs:
       env:
         GITHUB_TOKEN: ${{ github.token }}
       with:
-        asset_paths: '["libvna-*.tar.gz", "deb/*.deb", "deb/*.dsc", "deb/*.buildinfo"]'
+        asset_paths: >
+          ["deb/*.buildinfo",
+           "deb/*.deb",
+           "deb/*.dsc",
+           "n2pkvna-*.tar.gz",
+           "rpm/x86_64/*.rpm",
+           "rpm/*.src.rpm"]
