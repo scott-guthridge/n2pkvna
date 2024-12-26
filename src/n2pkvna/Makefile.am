@@ -13,7 +13,7 @@ n2pkvna_SOURCES = attenuate.h attenuate.c calibrate.h calibrate.c \
 	measurement.h measurement.c message.h message.c \
 	properties.h properties.c setup.h setup.c switch.h switch.c
 
-n2pkvna_LDADD = ../libn2pkvna/libn2pkvna.la -lvna -lusb-1.0 -lyaml -lm
+n2pkvna_LDADD = ../libn2pkvna/libn2pkvna.la -lvna -lm
 
 dist_man_MANS = n2pkvna.1
 
