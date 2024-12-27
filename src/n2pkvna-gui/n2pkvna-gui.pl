@@ -411,7 +411,7 @@ my %Units = (
 	"Ω",
 	"kΩ"
     ],
-    A => [
+    Y => [
 	"mS",
 	"S",
 	"kS"
@@ -474,9 +474,9 @@ my %ParameterToUnits = (
     zri_n	=> [ "1", undef   ],
     zma		=> [ "Z", "angle" ],
     zma_n	=> [ "1", "angle" ],
-    yri		=> [ "A", undef   ],
+    yri		=> [ "Y", undef   ],
     yri_n	=> [ "1", undef   ],
-    yma		=> [ "A", "angle" ],
+    yma		=> [ "Y", "angle" ],
     yma_n	=> [ "1", "angle" ],
     hri_n	=> [ "1", undef   ],
     hma_n	=> [ "1", "angle" ],
@@ -1550,9 +1550,9 @@ sub m_init_y_ranges {
 
     $cur->{m_range_y} = {
 	1 => [ undef, undef, undef ],		# dimensionless
-	A => [ undef, undef, "S"  ],		# admittance
 	B => [ undef, undef, "dB" ],		# bell
 	R => [ undef, undef, "Ω"  ],		# impedance
+	Y => [ undef, undef, "S"  ],		# admittance
 	Z => [ undef, undef, "Ω"  ],		# impedance
     },
     $cur->{m_range_y2} = {
