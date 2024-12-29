@@ -2102,11 +2102,14 @@ sub m_plot {
     $svgfile = $conversions->getdir() . "/plot.svg";
 
     #
-    # Open plot file and set terminal.
+    # Open plot file, set terminal and set global plot options.
     #
     open(PLOT, ">${plotfile}") || die "${plotfile}: $!";
+    printf PLOT ("reset\n");
     printf PLOT ("set term svg size %d,%d\n", $width, $height);
     printf PLOT ("set output '%s'\n", $svgfile);
+    printf PLOT ("set grid\n");
+    printf PLOT ("set style data lines\n");
 
     #
     # Create the rest of the plot script.
