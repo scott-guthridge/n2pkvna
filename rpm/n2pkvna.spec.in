@@ -10,6 +10,8 @@ Provides: libn2pkvna.so
 BuildRequires: libvna-devel >= 0.3.0, libusbx-devel
 Requires: fxload, libvna >= 0.3.0
 
+%define source_date_epoch_from_changelog 0
+
 %description
 The %{name} package provides a shared library and command line interpretor
 for controlling the N2PK Vector Network Analyzer.
@@ -89,6 +91,3 @@ make clean
 %{_datadir}/applications/n2pkvna/n2pkvna.desktop
 %{_datadir}/icons/*
 %{_datadir}/n2pkvna/ui/n2pkvna.glade
-
-
-%changelog
