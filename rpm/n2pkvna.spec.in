@@ -29,7 +29,7 @@ Analyzer.
 %package	gui
 Summary:	Graphical User Interface for %{name}
 Group:		Applications/Engineering
-Requires:	n2pkvna == %{version}, perl-Browser-Open, perl-Cairo
+Requires:	gnuplot, n2pkvna == %{version}, perl-Browser-Open, perl-Cairo
 Requires:	perl-Carp, perl-Clone, perl-File-Temp, perl-Glib
 Requires:	perl-Gtk3, perl-open, perl-Thread-Queue, perl-threads
 Requires:	perl-YAML-LibYAML

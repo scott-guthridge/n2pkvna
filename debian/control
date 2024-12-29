@@ -27,7 +27,7 @@ Section: electronics
 Architecture: any
 Multi-Arch: same
 Depends: n2pkvna (= ${binary:Version}), ${misc:Depends},
-    libbrowser-open-perl, libcairo-perl, libclone-perl, libfile-temp-perl,
-    libglib-perl, libgtk3-perl, libyaml-libyaml-perl
+    gnuplot, libbrowser-open-perl, libcairo-perl, libclone-perl,
+    libfile-temp-perl, libglib-perl, libgtk3-perl, libyaml-libyaml-perl
 Description: N2PK Vector Network Analyzer (GUI)
  Graphical user interface for controlling the N2PK vector network analyzer

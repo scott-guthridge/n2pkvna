@@ -88,14 +88,14 @@ Option 3: Build and install into /usr/local/* from source
     Install run-time dependencies:
 
 	Fedora, RedHat, Centos, SuSE
-	    yum install fxload
+	    yum install fxload gnuplot
 	    yum install perl-Browser-Open perl-Cairo perl-Carp perl-Clone \
 			perl-File-Temp perl-Glib perl-Gtk3 perl-open \
 			perl-Thread-Queue perl-threads perl-YAML-LibYAML
 
         Debian, Ubuntu
             sudo apt-get update
-            sudo apt-get install fxload
+            sudo apt-get install fxload gnuplot
 	    sudo apt-get install libbrowser-open-perl libcairo-perl \
 				 libclone-perl libfile-temp-perl libglib-perl \
 				 libgtk3-perl libyaml-libyaml-perl
