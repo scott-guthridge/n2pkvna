@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!-- Generated with glade 3.22.2 
+<!-- Generated with glade 3.40.0 
 
 Copyright (C) D Scott Guthridge <scott_guthridge@rompromity.net>
 
@@ -26,28 +26,25 @@ along with N2PK VNA.  If not, see <http://www.gnu.org/licenses/>.
   <!-- interface-copyright D Scott Guthridge <scott_guthridge@rompromity.net> -->
   <object class="GtkTextBuffer" id="cal_description_text"/>
   <object class="GtkDialog" id="setup_fcal_dialog">
-    <property name="can_focus">False</property>
-    <property name="type_hint">dialog</property>
-    <child type="titlebar">
-      <placeholder/>
-    </child>
+    <property name="can-focus">False</property>
+    <property name="type-hint">dialog</property>
     <child internal-child="vbox">
       <object class="GtkBox">
-        <property name="can_focus">False</property>
+        <property name="can-focus">False</property>
         <property name="orientation">vertical</property>
         <property name="spacing">2</property>
         <child internal-child="action_area">
           <object class="GtkButtonBox">
-            <property name="can_focus">False</property>
-            <property name="layout_style">end</property>
+            <property name="can-focus">False</property>
+            <property name="layout-style">end</property>
             <child>
               <object class="GtkButton" id="setup_fcal_cancel">
                 <property name="label">gtk-cancel</property>
                 <property name="visible">True</property>
-                <property name="can_focus">True</property>
-                <property name="receives_default">True</property>
-                <property name="use_stock">True</property>
-                <property name="always_show_image">True</property>
+                <property name="can-focus">True</property>
+                <property name="receives-default">True</property>
+                <property name="use-stock">True</property>
+                <property name="always-show-image">True</property>
               </object>
               <packing>
                 <property name="expand">True</property>
@@ -59,10 +56,10 @@ along with N2PK VNA.  If not, see <http://www.gnu.org/licenses/>.
               <object class="GtkButton" id="setup_fcal_apply">
                 <property name="label">gtk-apply</property>
                 <property name="visible">True</property>
-                <property name="can_focus">True</property>
-                <property name="receives_default">True</property>
-                <property name="use_stock">True</property>
-                <property name="always_show_image">True</property>
+                <property name="can-focus">True</property>
+                <property name="receives-default">True</property>
+                <property name="use-stock">True</property>
+                <property name="always-show-image">True</property>
               </object>
               <packing>
                 <property name="expand">True</property>
@@ -80,18 +77,18 @@ along with N2PK VNA.  If not, see <http://www.gnu.org/licenses/>.
         <child>
           <object class="GtkBox">
             <property name="visible">True</property>
-            <property name="can_focus">False</property>
+            <property name="can-focus">False</property>
             <property name="orientation">vertical</property>
             <property name="spacing">5</property>
             <child>
               <object class="GtkBox">
                 <property name="visible">True</property>
-                <property name="can_focus">False</property>
+                <property name="can-focus">False</property>
                 <property name="spacing">5</property>
                 <child>
                   <object class="GtkLabel">
                     <property name="visible">True</property>
-                    <property name="can_focus">False</property>
+                    <property name="can-focus">False</property>
                     <property name="label" translatable="yes">Measured Frequency</property>
                   </object>
                   <packing>
@@ -103,7 +100,7 @@ along with N2PK VNA.  If not, see <http://www.gnu.org/licenses/>.
                 <child>
                   <object class="GtkEntry" id="setup_fcal_measured">
                     <property name="visible">True</property>
-                    <property name="can_focus">True</property>
+                    <property name="can-focus">True</property>
                   </object>
                   <packing>
                     <property name="expand">False</property>
@@ -114,8 +111,8 @@ along with N2PK VNA.  If not, see <http://www.gnu.org/licenses/>.
                 <child>
                   <object class="GtkComboBoxText" id="setup_fcal_measured_unit">
                     <property name="visible">True</property>
-                    <property name="can_focus">False</property>
-                    <property name="active_id">MHz</property>
+                    <property name="can-focus">False</property>
+                    <property name="active-id">MHz</property>
                     <items>
                       <item id="Hz" translatable="yes">Hz</item>
                       <item id="kHz" translatable="yes">kHz</item>
@@ -151,44 +148,41 @@ along with N2PK VNA.  If not, see <http://www.gnu.org/licenses/>.
   </object>
   <object class="GtkAdjustment" id="setup_msteps_adjustment">
     <property name="upper">100</property>
-    <property name="step_increment">1</property>
-    <property name="page_increment">10</property>
+    <property name="step-increment">1</property>
+    <property name="page-increment">10</property>
   </object>
   <object class="GtkApplicationWindow" id="appwindow">
-    <property name="can_focus">False</property>
+    <property name="can-focus">False</property>
     <property name="title" translatable="yes">N2PK VNA</property>
     <signal name="destroy" handler="quit" swapped="no"/>
-    <child type="titlebar">
-      <placeholder/>
-    </child>
     <child>
       <object class="GtkBox">
         <property name="name">box1</property>
         <property name="visible">True</property>
-        <property name="can_focus">False</property>
+        <property name="can-focus">False</property>
         <property name="orientation">vertical</property>
-        <property name="baseline_position">top</property>
+        <property name="baseline-position">top</property>
         <child>
           <object class="GtkMenuBar" id="menubar1">
             <property name="visible">True</property>
-            <property name="can_focus">False</property>
+            <property name="can-focus">False</property>
             <child>
               <object class="GtkMenuItem">
                 <property name="visible">True</property>
-                <property name="can_focus">False</property>
+                <property name="can-focus">False</property>
                 <property name="label" translatable="yes">_File</property>
-                <property name="use_underline">True</property>
+                <property name="use-underline">True</property>
                 <child type="submenu">
                   <object class="GtkMenu">
                     <property name="visible">True</property>
-                    <property name="can_focus">False</property>
+                    <property name="can-focus">False</property>
                     <child>
                       <object class="GtkImageMenuItem" id="manual">
                         <property name="label">gtk-open</property>
                         <property name="visible">True</property>
-                        <property name="can_focus">False</property>
-                        <property name="use_underline">True</property>
-                        <property name="use_stock">True</property>
+                        <property name="can-focus">False</property>
+                        <property name="use-underline">True</property>
+                        <property name="use-stock">True</property>
                         <signal name="activate" handler="manual_activate_cb" swapped="no"/>
                       </object>
                     </child>
@@ -196,25 +190,25 @@ along with N2PK VNA.  If not, see <http://www.gnu.org/licenses/>.
                       <object class="GtkImageMenuItem" id="close_vna">
                         <property name="label">gtk-close</property>
                         <property name="visible">True</property>
-                        <property name="can_focus">False</property>
-                        <property name="use_underline">True</property>
-                        <property name="use_stock">True</property>
+                        <property name="can-focus">False</property>
+                        <property name="use-underline">True</property>
+                        <property name="use-stock">True</property>
                         <signal name="activate" handler="close_vna_activate_cb" swapped="no"/>
                       </object>
                     </child>
                     <child>
                       <object class="GtkSeparatorMenuItem">
                         <property name="visible">True</property>
-                        <property name="can_focus">False</property>
+                        <property name="can-focus">False</property>
                       </object>
                     </child>
                     <child>
                       <object class="GtkImageMenuItem">
                         <property name="label">gtk-quit</property>
                         <property name="visible">True</property>
-                        <property name="can_focus">False</property>
-                        <property name="use_underline">True</property>
-                        <property name="use_stock">True</property>
+                        <property name="can-focus">False</property>
+                        <property name="use-underline">True</property>
+                        <property name="use-stock">True</property>
                         <signal name="activate" handler="quit" swapped="no"/>
                       </object>
                     </child>
@@ -225,19 +219,19 @@ along with N2PK VNA.  If not, see <http://www.gnu.org/licenses/>.
             <child>
               <object class="GtkMenuItem">
                 <property name="visible">True</property>
-                <property name="can_focus">False</property>
+                <property name="can-focus">False</property>
                 <property name="label" translatable="yes">_Preferences</property>
-                <property name="use_underline">True</property>
+                <property name="use-underline">True</property>
                 <child type="submenu">
                   <object class="GtkMenu">
                     <property name="visible">True</property>
-                    <property name="can_focus">False</property>
+                    <property name="can-focus">False</property>
                     <child>
                       <object class="GtkCheckMenuItem" id="dark_theme">
                         <property name="visible">True</property>
-                        <property name="can_focus">False</property>
+                        <property name="can-focus">False</property>
                         <property name="label" translatable="yes">Dark Theme</property>
-                        <property name="use_underline">True</property>
+                        <property name="use-underline">True</property>
                         <signal name="toggled" handler="dark_theme_toggled_cb" swapped="no"/>
                       </object>
                     </child>
@@ -248,30 +242,30 @@ along with N2PK VNA.  If not, see <http://www.gnu.org/licenses/>.
             <child>
               <object class="GtkMenuItem">
                 <property name="visible">True</property>
-                <property name="can_focus">False</property>
+                <property name="can-focus">False</property>
                 <property name="label" translatable="yes">_Help</property>
-                <property name="use_underline">True</property>
+                <property name="use-underline">True</property>
                 <child type="submenu">
                   <object class="GtkMenu">
                     <property name="visible">True</property>
-                    <property name="can_focus">False</property>
+                    <property name="can-focus">False</property>
                     <child>
                       <object class="GtkImageMenuItem" id="about">
                         <property name="label">gtk-about</property>
                         <property name="visible">True</property>
-                        <property name="can_focus">False</property>
-                        <property name="use_underline">True</property>
-                        <property name="use_stock">True</property>
+                        <property name="can-focus">False</property>
+                        <property name="use-underline">True</property>
+                        <property name="use-stock">True</property>
                         <signal name="activate" handler="about_activate_cb" swapped="no"/>
                       </object>
                     </child>
                     <child>
                       <object class="GtkMenuItem">
                         <property name="visible">True</property>
-                        <property name="can_focus">False</property>
-                        <property name="tooltip_text" translatable="yes">Open the manual</property>
+                        <property name="can-focus">False</property>
+                        <property name="tooltip-text" translatable="yes">Open the manual</property>
                         <property name="label" translatable="yes">Manual</property>
-                        <property name="use_underline">True</property>
+                        <property name="use-underline">True</property>
                         <signal name="activate" handler="manual_activate_cb" swapped="no"/>
                       </object>
                     </child>
@@ -290,7 +284,7 @@ along with N2PK VNA.  If not, see <http://www.gnu.org/licenses/>.
           <object class="GtkStackSwitcher" id="switcher1">
             <property name="name">switcher1</property>
             <property name="visible">True</property>
-            <property name="can_focus">False</property>
+            <property name="can-focus">False</property>
             <property name="stack">stack1</property>
           </object>
           <packing>
@@ -302,105 +296,106 @@ along with N2PK VNA.  If not, see <http://www.gnu.org/licenses/>.
         <child>
           <object class="GtkStack" id="stack1">
             <property name="visible">True</property>
-            <property name="can_focus">False</property>
+            <property name="can-focus">False</property>
             <signal name="notify::visible-child-name" handler="stack1_notify_visible_child_name_cb" swapped="no"/>
             <child>
               <object class="GtkStack" id="setup">
                 <property name="visible">True</property>
-                <property name="can_focus">False</property>
+                <property name="can-focus">False</property>
                 <child>
+                  <!-- n-columns=3 n-rows=7 -->
                   <object class="GtkGrid" id="setup_menu">
                     <property name="visible">True</property>
-                    <property name="can_focus">False</property>
-                    <property name="row_spacing">5</property>
-                    <property name="column_spacing">5</property>
+                    <property name="can-focus">False</property>
+                    <property name="row-spacing">5</property>
+                    <property name="column-spacing">5</property>
                     <child>
                       <object class="GtkEntry" id="setup_create_name">
                         <property name="visible">True</property>
-                        <property name="can_focus">True</property>
-                        <property name="tooltip_text" translatable="yes">To create a new setup, enter a name here and press Create Custom</property>
-                        <property name="placeholder_text" translatable="yes">New Setup Name</property>
+                        <property name="can-focus">True</property>
+                        <property name="tooltip-text" translatable="yes">To create a new setup, enter a name here and press Create Custom</property>
+                        <property name="placeholder-text" translatable="yes">New Setup Name</property>
                       </object>
                       <packing>
-                        <property name="left_attach">1</property>
-                        <property name="top_attach">5</property>
+                        <property name="left-attach">1</property>
+                        <property name="top-attach">5</property>
                       </packing>
                     </child>
                     <child>
                       <object class="GtkComboBoxText" id="setup_edit_name">
                         <property name="visible">True</property>
-                        <property name="can_focus">False</property>
+                        <property name="can-focus">False</property>
                       </object>
                       <packing>
-                        <property name="left_attach">1</property>
-                        <property name="top_attach">6</property>
+                        <property name="left-attach">1</property>
+                        <property name="top-attach">6</property>
                       </packing>
                     </child>
                     <child>
                       <object class="GtkButton" id="setup_configure_RFIV">
                         <property name="visible">True</property>
-                        <property name="can_focus">True</property>
-                        <property name="receives_default">True</property>
+                        <property name="can-focus">True</property>
+                        <property name="receives-default">True</property>
                         <signal name="clicked" handler="setup_configure_RFIV_clicked_cb" swapped="no"/>
                         <child>
                           <object class="GtkLabel">
                             <property name="visible">True</property>
-                            <property name="can_focus">False</property>
+                            <property name="can-focus">False</property>
                             <property name="label" translatable="yes">Configure RF-IV</property>
                             <property name="xalign">0</property>
                           </object>
                         </child>
                       </object>
                       <packing>
-                        <property name="left_attach">0</property>
-                        <property name="top_attach">4</property>
+                        <property name="left-attach">0</property>
+                        <property name="top-attach">4</property>
                       </packing>
                     </child>
                     <child>
                       <object class="GtkButton" id="setup_create">
                         <property name="visible">True</property>
-                        <property name="can_focus">True</property>
-                        <property name="receives_default">True</property>
+                        <property name="can-focus">True</property>
+                        <property name="receives-default">True</property>
                         <signal name="clicked" handler="setup_create_clicked_cb" swapped="no"/>
                         <child>
                           <object class="GtkLabel">
                             <property name="visible">True</property>
-                            <property name="can_focus">False</property>
+                            <property name="can-focus">False</property>
                             <property name="label" translatable="yes">Create Custom</property>
                             <property name="xalign">0</property>
                           </object>
                         </child>
                       </object>
                       <packing>
-                        <property name="left_attach">0</property>
-                        <property name="top_attach">5</property>
+                        <property name="left-attach">0</property>
+                        <property name="top-attach">5</property>
                       </packing>
                     </child>
                     <child>
                       <object class="GtkButton" id="setup_edit">
                         <property name="visible">True</property>
-                        <property name="can_focus">True</property>
-                        <property name="receives_default">True</property>
+                        <property name="can-focus">True</property>
+                        <property name="receives-default">True</property>
                         <signal name="clicked" handler="setup_edit_clicked_cb" swapped="no"/>
                         <child>
                           <object class="GtkLabel">
                             <property name="visible">True</property>
-                            <property name="can_focus">False</property>
+                            <property name="can-focus">False</property>
                             <property name="label" translatable="yes">Edit</property>
                             <property name="xalign">0</property>
                           </object>
                         </child>
                       </object>
                       <packing>
-                        <property name="left_attach">0</property>
-                        <property name="top_attach">6</property>
+                        <property name="left-attach">0</property>
+                        <property name="top-attach">6</property>
                       </packing>
                     </child>
                     <child>
                       <object class="GtkLabel">
                         <property name="visible">True</property>
-                        <property name="can_focus">False</property>
-                        <property name="margin_top">5</property>
+                        <property name="can-focus">False</property>
+                        <property name="margin-top">5</property>
                         <property name="label" translatable="yes">Setup Menu</property>
                         <attributes>
                           <attribute name="font-desc" value="Sans Bold 14"/>
@@ -408,70 +403,91 @@ along with N2PK VNA.  If not, see <http://www.gnu.org/licenses/>.
                         </attributes>
                       </object>
                       <packing>
-                        <property name="left_attach">0</property>
-                        <property name="top_attach">0</property>
+                        <property name="left-attach">0</property>
+                        <property name="top-attach">0</property>
                         <property name="width">2</property>
                       </packing>
                     </child>
                     <child>
                       <object class="GtkButton" id="setup_calibrate_frequency">
                         <property name="visible">True</property>
-                        <property name="can_focus">True</property>
-                        <property name="receives_default">True</property>
+                        <property name="can-focus">True</property>
+                        <property name="receives-default">True</property>
                         <signal name="clicked" handler="setup_calibrate_frequency_clicked_cb" swapped="no"/>
                         <child>
                           <object class="GtkLabel">
                             <property name="visible">True</property>
-                            <property name="can_focus">False</property>
+                            <property name="can-focus">False</property>
                             <property name="label" translatable="yes">Calibrate Frequency</property>
                             <property name="xalign">0</property>
                           </object>
                         </child>
                       </object>
                       <packing>
-                        <property name="left_attach">0</property>
-                        <property name="top_attach">1</property>
+                        <property name="left-attach">0</property>
+                        <property name="top-attach">1</property>
                       </packing>
                     </child>
                     <child>
                       <object class="GtkButton" id="setup_configure_RB">
                         <property name="visible">True</property>
-                        <property name="can_focus">True</property>
-                        <property name="receives_default">True</property>
+                        <property name="can-focus">True</property>
+                        <property name="receives-default">True</property>
                         <signal name="clicked" handler="setup_configure_RB_clicked_cb" swapped="no"/>
                         <child>
                           <object class="GtkLabel">
                             <property name="visible">True</property>
-                            <property name="can_focus">False</property>
+                            <property name="can-focus">False</property>
                             <property name="label" translatable="yes">Configure Reflection Bridge</property>
                             <property name="xalign">0</property>
                           </object>
                         </child>
                       </object>
                       <packing>
-                        <property name="left_attach">0</property>
-                        <property name="top_attach">2</property>
+                        <property name="left-attach">0</property>
+                        <property name="top-attach">2</property>
                       </packing>
                     </child>
                     <child>
                       <object class="GtkButton" id="setup_configure_S">
                         <property name="visible">True</property>
-                        <property name="can_focus">True</property>
-                        <property name="receives_default">True</property>
+                        <property name="can-focus">True</property>
+                        <property name="receives-default">True</property>
                         <signal name="clicked" handler="setup_configure_S_clicked_cb" swapped="no"/>
                         <child>
                           <object class="GtkLabel">
                             <property name="visible">True</property>
-                            <property name="can_focus">False</property>
+                            <property name="can-focus">False</property>
                             <property name="label" translatable="yes">Configure S Parameter Test Set</property>
                             <property name="xalign">0</property>
                           </object>
                         </child>
                       </object>
                       <packing>
-                        <property name="left_attach">0</property>
-                        <property name="top_attach">3</property>
+                        <property name="left-attach">0</property>
+                        <property name="top-attach">3</property>
                       </packing>
+                    </child>
+                    <child>
+                      <placeholder/>
+                    </child>
+                    <child>
+                      <placeholder/>
+                    </child>
+                    <child>
+                      <placeholder/>
+                    </child>
+                    <child>
+                      <placeholder/>
+                    </child>
+                    <child>
+                      <placeholder/>
+                    </child>
+                    <child>
+                      <placeholder/>
+                    </child>
+                    <child>
+                      <placeholder/>
                     </child>
                     <child>
                       <placeholder/>
@@ -494,20 +510,20 @@ along with N2PK VNA.  If not, see <http://www.gnu.org/licenses/>.
                 <child>
                   <object class="GtkBox" id="setup_editor">
                     <property name="visible">True</property>
-                    <property name="can_focus">False</property>
+                    <property name="can-focus">False</property>
                     <property name="orientation">vertical</property>
                     <property name="spacing">5</property>
                     <child>
                       <object class="GtkBox">
                         <property name="visible">True</property>
-                        <property name="can_focus">False</property>
-                        <property name="margin_top">5</property>
+                        <property name="can-focus">False</property>
+                        <property name="margin-top">5</property>
                         <child>
                           <object class="GtkLabel">
                             <property name="visible">True</property>
-                            <property name="can_focus">False</property>
+                            <property name="can-focus">False</property>
                             <property name="label" translatable="yes">Setup Name</property>
-                            <property name="width_chars">10</property>
+                            <property name="width-chars">10</property>
                           </object>
                           <packing>
                             <property name="expand">False</property>
@@ -518,10 +534,10 @@ along with N2PK VNA.  If not, see <http://www.gnu.org/licenses/>.
                         <child>
                           <object class="GtkEntry" id="setup_name">
                             <property name="visible">True</property>
-                            <property name="can_focus">True</property>
-                            <property name="tooltip_text" translatable="yes">The name of this VNA setup</property>
-                            <property name="truncate_multiline">True</property>
-                            <property name="caps_lock_warning">False</property>
+                            <property name="can-focus">True</property>
+                            <property name="tooltip-text" translatable="yes">The name of this VNA setup</property>
+                            <property name="truncate-multiline">True</property>
+                            <property name="caps-lock-warning">False</property>
                           </object>
                           <packing>
                             <property name="expand">False</property>
@@ -533,10 +549,10 @@ along with N2PK VNA.  If not, see <http://www.gnu.org/licenses/>.
                           <object class="GtkCheckButton" id="setup_hide">
                             <property name="label" translatable="yes">Hide</property>
                             <property name="visible">True</property>
-                            <property name="can_focus">True</property>
-                            <property name="receives_default">False</property>
-                            <property name="tooltip_text" translatable="yes">Hide or unhide this setup from the calibration tab</property>
-                            <property name="draw_indicator">True</property>
+                            <property name="can-focus">True</property>
+                            <property name="receives-default">False</property>
+                            <property name="tooltip-text" translatable="yes">Hide or unhide this setup from the calibration tab</property>
+                            <property name="draw-indicator">True</property>
                             <signal name="toggled" handler="setup_hide_toggled_cb" swapped="no"/>
                           </object>
                           <packing>
@@ -555,13 +571,13 @@ along with N2PK VNA.  If not, see <http://www.gnu.org/licenses/>.
                     <child>
                       <object class="GtkBox">
                         <property name="visible">True</property>
-                        <property name="can_focus">False</property>
+                        <property name="can-focus">False</property>
                         <child>
                           <object class="GtkLabel">
                             <property name="visible">True</property>
-                            <property name="can_focus">False</property>
+                            <property name="can-focus">False</property>
                             <property name="label" translatable="yes">Dimensions</property>
-                            <property name="width_chars">10</property>
+                            <property name="width-chars">10</property>
                           </object>
                           <packing>
                             <property name="expand">False</property>
@@ -572,8 +588,8 @@ along with N2PK VNA.  If not, see <http://www.gnu.org/licenses/>.
                         <child>
                           <object class="GtkComboBoxText" id="setup_dimensions">
                             <property name="visible">True</property>
-                            <property name="can_focus">False</property>
-                            <property name="tooltip_text" translatable="yes">S parameters the VNA measures without swapping DUT ports</property>
+                            <property name="can-focus">False</property>
+                            <property name="tooltip-text" translatable="yes">S parameters the VNA measures without swapping DUT ports</property>
                             <items>
                               <item id="1x1" translatable="yes">1x1: Reflection Only</item>
                               <item id="1x2" translatable="yes">1x2: S11 and S12 Only</item>
@@ -598,32 +614,32 @@ along with N2PK VNA.  If not, see <http://www.gnu.org/licenses/>.
                     <child>
                       <object class="GtkBox">
                         <property name="visible">True</property>
-                        <property name="can_focus">False</property>
+                        <property name="can-focus">False</property>
                         <child>
                           <object class="GtkFrame">
                             <property name="visible">True</property>
-                            <property name="can_focus">False</property>
-                            <property name="label_xalign">0</property>
+                            <property name="can-focus">False</property>
+                            <property name="label-xalign">0</property>
                             <child>
                               <object class="GtkAlignment">
                                 <property name="visible">True</property>
-                                <property name="can_focus">False</property>
-                                <property name="left_padding">12</property>
+                                <property name="can-focus">False</property>
+                                <property name="left-padding">12</property>
                                 <child>
                                   <object class="GtkBox">
                                     <property name="visible">True</property>
-                                    <property name="can_focus">False</property>
+                                    <property name="can-focus">False</property>
                                     <property name="orientation">vertical</property>
                                     <child>
                                       <object class="GtkBox">
                                         <property name="visible">True</property>
-                                        <property name="can_focus">False</property>
+                                        <property name="can-focus">False</property>
                                         <child>
                                           <object class="GtkLabel">
                                             <property name="visible">True</property>
-                                            <property name="can_focus">False</property>
+                                            <property name="can-focus">False</property>
                                             <property name="label" translatable="yes">fMin</property>
-                                            <property name="width_chars">5</property>
+                                            <property name="width-chars">5</property>
                                             <property name="xalign">0</property>
                                           </object>
                                           <packing>
@@ -635,11 +651,11 @@ along with N2PK VNA.  If not, see <http://www.gnu.org/licenses/>.
                                         <child>
                                           <object class="GtkEntry" id="setup_fmin">
                                             <property name="visible">True</property>
-                                            <property name="can_focus">True</property>
-                                            <property name="tooltip_text" translatable="yes">The minimum frequency covered by this setup</property>
-                                            <property name="width_chars">9</property>
+                                            <property name="can-focus">True</property>
+                                            <property name="tooltip-text" translatable="yes">The minimum frequency covered by this setup</property>
+                                            <property name="width-chars">9</property>
                                             <property name="text" translatable="yes">50</property>
-                                            <property name="input_purpose">number</property>
+                                            <property name="input-purpose">number</property>
                                           </object>
                                           <packing>
                                             <property name="expand">False</property>
@@ -650,8 +666,8 @@ along with N2PK VNA.  If not, see <http://www.gnu.org/licenses/>.
                                         <child>
                                           <object class="GtkComboBoxText" id="setup_fmin_unit">
                                             <property name="visible">True</property>
-                                            <property name="can_focus">False</property>
-                                            <property name="active_id">kHz</property>
+                                            <property name="can-focus">False</property>
+                                            <property name="active-id">kHz</property>
                                             <items>
                                               <item id="Hz" translatable="yes">Hz</item>
                                               <item id="kHz" translatable="yes">kHz</item>
@@ -674,13 +690,13 @@ along with N2PK VNA.  If not, see <http://www.gnu.org/licenses/>.
                                     <child>
                                       <object class="GtkBox">
                                         <property name="visible">True</property>
-                                        <property name="can_focus">False</property>
+                                        <property name="can-focus">False</property>
                                         <child>
                                           <object class="GtkLabel">
                                             <property name="visible">True</property>
-                                            <property name="can_focus">False</property>
+                                            <property name="can-focus">False</property>
                                             <property name="label" translatable="yes">fMax</property>
-                                            <property name="width_chars">5</property>
+                                            <property name="width-chars">5</property>
                                             <property name="xalign">0</property>
                                           </object>
                                           <packing>
@@ -692,9 +708,9 @@ along with N2PK VNA.  If not, see <http://www.gnu.org/licenses/>.
                                         <child>
                                           <object class="GtkEntry" id="setup_fmax">
                                             <property name="visible">True</property>
-                                            <property name="can_focus">True</property>
-                                            <property name="tooltip_text" translatable="yes">The maximum frequency covered by this setup</property>
-                                            <property name="width_chars">9</property>
+                                            <property name="can-focus">True</property>
+                                            <property name="tooltip-text" translatable="yes">The maximum frequency covered by this setup</property>
+                                            <property name="width-chars">9</property>
                                             <property name="text" translatable="yes">60</property>
                                           </object>
                                           <packing>
@@ -706,8 +722,8 @@ along with N2PK VNA.  If not, see <http://www.gnu.org/licenses/>.
                                         <child>
                                           <object class="GtkComboBoxText" id="setup_fmax_unit">
                                             <property name="visible">True</property>
-                                            <property name="can_focus">False</property>
-                                            <property name="active_id">MHz</property>
+                                            <property name="can-focus">False</property>
+                                            <property name="active-id">MHz</property>
                                             <items>
                                               <item id="Hz" translatable="yes">Hz</item>
                                               <item id="kHz" translatable="yes">kHz</item>
@@ -730,13 +746,13 @@ along with N2PK VNA.  If not, see <http://www.gnu.org/licenses/>.
                                     <child>
                                       <object class="GtkBox">
                                         <property name="visible">True</property>
-                                        <property name="can_focus">False</property>
+                                        <property name="can-focus">False</property>
                                         <child>
                                           <object class="GtkLabel">
                                             <property name="visible">True</property>
-                                            <property name="can_focus">False</property>
+                                            <property name="can-focus">False</property>
                                             <property name="label" translatable="yes">fOsc</property>
-                                            <property name="width_chars">5</property>
+                                            <property name="width-chars">5</property>
                                             <property name="xalign">2.2351741291171123e-10</property>
                                           </object>
                                           <packing>
@@ -748,9 +764,9 @@ along with N2PK VNA.  If not, see <http://www.gnu.org/licenses/>.
                                         <child>
                                           <object class="GtkEntry" id="setup_fosc">
                                             <property name="visible">True</property>
-                                            <property name="can_focus">True</property>
-                                            <property name="tooltip_text" translatable="yes">The local oscillator frequency of the transverter.  Leave blank if no using a transverter</property>
-                                            <property name="width_chars">9</property>
+                                            <property name="can-focus">True</property>
+                                            <property name="tooltip-text" translatable="yes">The local oscillator frequency of the transverter.  Leave blank if no using a transverter</property>
+                                            <property name="width-chars">9</property>
                                           </object>
                                           <packing>
                                             <property name="expand">False</property>
@@ -761,8 +777,8 @@ along with N2PK VNA.  If not, see <http://www.gnu.org/licenses/>.
                                         <child>
                                           <object class="GtkComboBoxText" id="setup_fosc_unit">
                                             <property name="visible">True</property>
-                                            <property name="can_focus">False</property>
-                                            <property name="active_id">MHz</property>
+                                            <property name="can-focus">False</property>
+                                            <property name="active-id">MHz</property>
                                             <items>
                                               <item id="Hz" translatable="yes">Hz</item>
                                               <item id="kHz" translatable="yes">kHz</item>
@@ -789,7 +805,7 @@ along with N2PK VNA.  If not, see <http://www.gnu.org/licenses/>.
                             <child type="label">
                               <object class="GtkLabel">
                                 <property name="visible">True</property>
-                                <property name="can_focus">False</property>
+                                <property name="can-focus">False</property>
                                 <property name="label" translatable="yes">Frequency Range</property>
                               </object>
                             </child>
@@ -810,12 +826,12 @@ along with N2PK VNA.  If not, see <http://www.gnu.org/licenses/>.
                     <child>
                       <object class="GtkBox">
                         <property name="visible">True</property>
-                        <property name="can_focus">False</property>
+                        <property name="can-focus">False</property>
                         <property name="spacing">5</property>
                         <child>
                           <object class="GtkLabel">
                             <property name="visible">True</property>
-                            <property name="can_focus">False</property>
+                            <property name="can-focus">False</property>
                             <property name="label" translatable="yes">Number of Manual Steps</property>
                           </object>
                           <packing>
@@ -827,12 +843,12 @@ along with N2PK VNA.  If not, see <http://www.gnu.org/licenses/>.
                         <child>
                           <object class="GtkSpinButton" id="setup_msteps">
                             <property name="visible">True</property>
-                            <property name="can_focus">True</property>
-                            <property name="tooltip_text" translatable="yes">The number of manual steps, e.g. transmission / reflection, needed to perform a measurement.  Don't include manual swaps of DUT ports.</property>
-                            <property name="width_chars">1</property>
+                            <property name="can-focus">True</property>
+                            <property name="tooltip-text" translatable="yes">The number of manual steps, e.g. transmission / reflection, needed to perform a measurement.  Don't include manual swaps of DUT ports.</property>
+                            <property name="width-chars">1</property>
                             <property name="text" translatable="yes">0</property>
-                            <property name="caps_lock_warning">False</property>
-                            <property name="input_purpose">number</property>
+                            <property name="caps-lock-warning">False</property>
+                            <property name="input-purpose">number</property>
                             <property name="adjustment">setup_msteps_adjustment</property>
                             <property name="numeric">True</property>
                             <signal name="value-changed" handler="setup_msteps_value_changed_cb" swapped="no"/>
@@ -846,7 +862,7 @@ along with N2PK VNA.  If not, see <http://www.gnu.org/licenses/>.
                         <child>
                           <object class="GtkLabel">
                             <property name="visible">True</property>
-                            <property name="can_focus">False</property>
+                            <property name="can-focus">False</property>
                             <property name="label" translatable="yes">Number of Detectors</property>
                           </object>
                           <packing>
@@ -859,11 +875,11 @@ along with N2PK VNA.  If not, see <http://www.gnu.org/licenses/>.
                           <object class="GtkRadioButton" id="setup_det1">
                             <property name="label" translatable="yes">1</property>
                             <property name="visible">True</property>
-                            <property name="can_focus">True</property>
-                            <property name="receives_default">False</property>
-                            <property name="tooltip_text" translatable="yes">The VNA uses only one RF detector in this setup</property>
+                            <property name="can-focus">True</property>
+                            <property name="receives-default">False</property>
+                            <property name="tooltip-text" translatable="yes">The VNA uses only one RF detector in this setup</property>
                             <property name="active">True</property>
-                            <property name="draw_indicator">True</property>
+                            <property name="draw-indicator">True</property>
                             <signal name="toggled" handler="setup_det1_toggled_cb" swapped="no"/>
                           </object>
                           <packing>
@@ -876,10 +892,10 @@ along with N2PK VNA.  If not, see <http://www.gnu.org/licenses/>.
                           <object class="GtkRadioButton" id="setup_det2">
                             <property name="label" translatable="yes">2</property>
                             <property name="visible">True</property>
-                            <property name="can_focus">True</property>
-                            <property name="receives_default">False</property>
-                            <property name="tooltip_text" translatable="yes">The VNA uses two RF detectors in this setup</property>
-                            <property name="draw_indicator">True</property>
+                            <property name="can-focus">True</property>
+                            <property name="receives-default">False</property>
+                            <property name="tooltip-text" translatable="yes">The VNA uses two RF detectors in this setup</property>
+                            <property name="draw-indicator">True</property>
                             <property name="group">setup_det1</property>
                           </object>
                           <packing>
@@ -898,15 +914,15 @@ along with N2PK VNA.  If not, see <http://www.gnu.org/licenses/>.
                     <child>
                       <object class="GtkBox">
                         <property name="visible">True</property>
-                        <property name="can_focus">False</property>
+                        <property name="can-focus">False</property>
                         <child>
                           <object class="GtkCheckButton" id="setup_use_switch">
                             <property name="label" translatable="yes">use switch</property>
                             <property name="visible">True</property>
-                            <property name="can_focus">True</property>
-                            <property name="receives_default">False</property>
-                            <property name="tooltip_text" translatable="yes">This setup uses the VNA sw0 or sw1 switches</property>
-                            <property name="draw_indicator">True</property>
+                            <property name="can-focus">True</property>
+                            <property name="receives-default">False</property>
+                            <property name="tooltip-text" translatable="yes">This setup uses the VNA sw0 or sw1 switches</property>
+                            <property name="draw-indicator">True</property>
                             <signal name="toggled" handler="setup_use_switch_toggled_cb" swapped="no"/>
                           </object>
                           <packing>
@@ -919,10 +935,10 @@ along with N2PK VNA.  If not, see <http://www.gnu.org/licenses/>.
                           <object class="GtkCheckButton" id="setup_use_RFIV">
                             <property name="label" translatable="yes">use RFIV</property>
                             <property name="visible">True</property>
-                            <property name="can_focus">True</property>
-                            <property name="receives_default">False</property>
-                            <property name="tooltip_text" translatable="yes">This setup uses voltage and current measurements</property>
-                            <property name="draw_indicator">True</property>
+                            <property name="can-focus">True</property>
+                            <property name="receives-default">False</property>
+                            <property name="tooltip-text" translatable="yes">This setup uses voltage and current measurements</property>
+                            <property name="draw-indicator">True</property>
                             <signal name="toggled" handler="setup_use_RFIV_toggled_cb" swapped="no"/>
                           </object>
                           <packing>
@@ -935,10 +951,10 @@ along with N2PK VNA.  If not, see <http://www.gnu.org/licenses/>.
                           <object class="GtkCheckButton" id="setup_use_references">
                             <property name="label" translatable="yes">use references</property>
                             <property name="visible">True</property>
-                            <property name="can_focus">True</property>
-                            <property name="receives_default">False</property>
-                            <property name="tooltip_text" translatable="yes">This setup uses references</property>
-                            <property name="draw_indicator">True</property>
+                            <property name="can-focus">True</property>
+                            <property name="receives-default">False</property>
+                            <property name="tooltip-text" translatable="yes">This setup uses references</property>
+                            <property name="draw-indicator">True</property>
                             <signal name="toggled" handler="setup_use_references_toggled_cb" swapped="no"/>
                           </object>
                           <packing>
@@ -957,24 +973,25 @@ along with N2PK VNA.  If not, see <http://www.gnu.org/licenses/>.
                     <child>
                       <object class="GtkBox">
                         <property name="visible">True</property>
-                        <property name="can_focus">False</property>
+                        <property name="can-focus">False</property>
                         <child>
                           <object class="GtkFrame">
                             <property name="visible">True</property>
-                            <property name="can_focus">False</property>
-                            <property name="label_xalign">0</property>
+                            <property name="can-focus">False</property>
+                            <property name="label-xalign">0</property>
                             <child>
                               <object class="GtkAlignment">
                                 <property name="visible">True</property>
-                                <property name="can_focus">False</property>
-                                <property name="left_padding">12</property>
+                                <property name="can-focus">False</property>
+                                <property name="left-padding">12</property>
                                 <child>
+                                  <!-- n-columns=3 n-rows=3 -->
                                   <object class="GtkGrid" id="setup_table">
                                     <property name="name">setup_table</property>
                                     <property name="visible">True</property>
-                                    <property name="can_focus">False</property>
-                                    <property name="row_spacing">5</property>
-                                    <property name="column_spacing">5</property>
+                                    <property name="can-focus">False</property>
+                                    <property name="row-spacing">5</property>
+                                    <property name="column-spacing">5</property>
                                     <child>
                                       <placeholder/>
                                     </child>
@@ -1009,7 +1026,7 @@ along with N2PK VNA.  If not, see <http://www.gnu.org/licenses/>.
                             <child type="label">
                               <object class="GtkLabel">
                                 <property name="visible">True</property>
-                                <property name="can_focus">False</property>
+                                <property name="can-focus">False</property>
                                 <property name="label" translatable="yes">Measurements</property>
                               </object>
                             </child>
@@ -1030,18 +1047,18 @@ along with N2PK VNA.  If not, see <http://www.gnu.org/licenses/>.
                     <child>
                       <object class="GtkButtonBox">
                         <property name="visible">True</property>
-                        <property name="can_focus">False</property>
+                        <property name="can-focus">False</property>
                         <property name="spacing">5</property>
-                        <property name="layout_style">start</property>
+                        <property name="layout-style">start</property>
                         <child>
                           <object class="GtkButton" id="setup_cancel">
                             <property name="label">gtk-cancel</property>
                             <property name="visible">True</property>
-                            <property name="can_focus">True</property>
-                            <property name="receives_default">True</property>
-                            <property name="tooltip_text" translatable="yes">Discard all changes on this page</property>
-                            <property name="use_stock">True</property>
-                            <property name="always_show_image">True</property>
+                            <property name="can-focus">True</property>
+                            <property name="receives-default">True</property>
+                            <property name="tooltip-text" translatable="yes">Discard all changes on this page</property>
+                            <property name="use-stock">True</property>
+                            <property name="always-show-image">True</property>
                             <signal name="clicked" handler="setup_cancel_clicked_cb" swapped="no"/>
                           </object>
                           <packing>
@@ -1054,11 +1071,11 @@ along with N2PK VNA.  If not, see <http://www.gnu.org/licenses/>.
                           <object class="GtkButton" id="setup_save">
                             <property name="label">gtk-save</property>
                             <property name="visible">True</property>
-                            <property name="can_focus">True</property>
-                            <property name="receives_default">True</property>
-                            <property name="tooltip_text" translatable="yes">Save the changes on this page</property>
-                            <property name="use_stock">True</property>
-                            <property name="always_show_image">True</property>
+                            <property name="can-focus">True</property>
+                            <property name="receives-default">True</property>
+                            <property name="tooltip-text" translatable="yes">Save the changes on this page</property>
+                            <property name="use-stock">True</property>
+                            <property name="always-show-image">True</property>
                             <signal name="clicked" handler="setup_save_clicked_cb" swapped="no"/>
                           </object>
                           <packing>
@@ -1082,39 +1099,40 @@ along with N2PK VNA.  If not, see <http://www.gnu.org/licenses/>.
                   </packing>
                 </child>
                 <child>
+                  <!-- n-columns=4 n-rows=3 -->
                   <object class="GtkGrid" id="setup_fcal">
                     <property name="visible">True</property>
-                    <property name="can_focus">False</property>
-                    <property name="margin_top">5</property>
-                    <property name="row_spacing">5</property>
-                    <property name="column_spacing">5</property>
+                    <property name="can-focus">False</property>
+                    <property name="margin-top">5</property>
+                    <property name="row-spacing">5</property>
+                    <property name="column-spacing">5</property>
                     <child>
                       <object class="GtkLabel">
                         <property name="visible">True</property>
-                        <property name="can_focus">False</property>
+                        <property name="can-focus">False</property>
                         <property name="label" translatable="yes">Test Frequency</property>
                       </object>
                       <packing>
-                        <property name="left_attach">0</property>
-                        <property name="top_attach">0</property>
+                        <property name="left-attach">0</property>
+                        <property name="top-attach">0</property>
                       </packing>
                     </child>
                     <child>
                       <object class="GtkEntry" id="setup_fcal_expected">
                         <property name="visible">True</property>
-                        <property name="can_focus">True</property>
+                        <property name="can-focus">True</property>
                         <property name="text" translatable="yes">10</property>
                       </object>
                       <packing>
-                        <property name="left_attach">1</property>
-                        <property name="top_attach">0</property>
+                        <property name="left-attach">1</property>
+                        <property name="top-attach">0</property>
                       </packing>
                     </child>
                     <child>
                       <object class="GtkComboBoxText" id="setup_fcal_expected_unit">
                         <property name="visible">True</property>
-                        <property name="can_focus">False</property>
-                        <property name="active_id">MHz</property>
+                        <property name="can-focus">False</property>
+                        <property name="active-id">MHz</property>
                         <items>
                           <item id="Hz" translatable="yes">Hz</item>
                           <item id="kHz" translatable="yes">kHz</item>
@@ -1122,37 +1140,49 @@ along with N2PK VNA.  If not, see <http://www.gnu.org/licenses/>.
                         </items>
                       </object>
                       <packing>
-                        <property name="left_attach">2</property>
-                        <property name="top_attach">0</property>
+                        <property name="left-attach">2</property>
+                        <property name="top-attach">0</property>
                       </packing>
                     </child>
                     <child>
                       <object class="GtkButton" id="setup_fcal_back">
                         <property name="label">gtk-go-back</property>
                         <property name="visible">True</property>
-                        <property name="can_focus">True</property>
-                        <property name="receives_default">True</property>
-                        <property name="use_stock">True</property>
-                        <property name="always_show_image">True</property>
+                        <property name="can-focus">True</property>
+                        <property name="receives-default">True</property>
+                        <property name="use-stock">True</property>
+                        <property name="always-show-image">True</property>
                         <signal name="clicked" handler="setup_fcal_back_clicked_cb" swapped="no"/>
                       </object>
                       <packing>
-                        <property name="left_attach">0</property>
-                        <property name="top_attach">1</property>
+                        <property name="left-attach">0</property>
+                        <property name="top-attach">1</property>
                       </packing>
                     </child>
                     <child>
                       <object class="GtkButton" id="setup_fcal_calibrate">
                         <property name="label" translatable="yes">Calibrate</property>
                         <property name="visible">True</property>
-                        <property name="can_focus">True</property>
-                        <property name="receives_default">True</property>
+                        <property name="can-focus">True</property>
+                        <property name="receives-default">True</property>
                         <signal name="clicked" handler="setup_fcal_calibrate_clicked_cb" swapped="no"/>
                       </object>
                       <packing>
-                        <property name="left_attach">3</property>
-                        <property name="top_attach">0</property>
+                        <property name="left-attach">3</property>
+                        <property name="top-attach">0</property>
                       </packing>
+                    </child>
+                    <child>
+                      <placeholder/>
+                    </child>
+                    <child>
+                      <placeholder/>
+                    </child>
+                    <child>
+                      <placeholder/>
+                    </child>
+                    <child>
+                      <placeholder/>
                     </child>
                     <child>
                       <placeholder/>
@@ -1179,20 +1209,20 @@ along with N2PK VNA.  If not, see <http://www.gnu.org/licenses/>.
             <child>
               <object class="GtkBox">
                 <property name="visible">True</property>
-                <property name="can_focus">False</property>
+                <property name="can-focus">False</property>
                 <property name="orientation">vertical</property>
                 <property name="spacing">5</property>
                 <child>
                   <object class="GtkBox">
                     <property name="visible">True</property>
-                    <property name="can_focus">False</property>
-                    <property name="margin_top">5</property>
+                    <property name="can-focus">False</property>
+                    <property name="margin-top">5</property>
                     <child>
                       <object class="GtkLabel">
                         <property name="visible">True</property>
-                        <property name="can_focus">False</property>
+                        <property name="can-focus">False</property>
                         <property name="label" translatable="yes">VNA Setup</property>
-                        <property name="width_chars">16</property>
+                        <property name="width-chars">16</property>
                         <property name="xalign">0</property>
                       </object>
                       <packing>
@@ -1204,7 +1234,7 @@ along with N2PK VNA.  If not, see <http://www.gnu.org/licenses/>.
                     <child>
                       <object class="GtkComboBoxText" id="cal_setup">
                         <property name="visible">True</property>
-                        <property name="can_focus">False</property>
+                        <property name="can-focus">False</property>
                         <property name="active">0</property>
                         <signal name="changed" handler="cal_setup_changed_cb" swapped="no"/>
                       </object>
@@ -1224,13 +1254,13 @@ along with N2PK VNA.  If not, see <http://www.gnu.org/licenses/>.
                 <child>
                   <object class="GtkBox">
                     <property name="visible">True</property>
-                    <property name="can_focus">False</property>
+                    <property name="can-focus">False</property>
                     <child>
                       <object class="GtkLabel">
                         <property name="visible">True</property>
-                        <property name="can_focus">False</property>
+                        <property name="can-focus">False</property>
                         <property name="label" translatable="yes">Error Term Type</property>
-                        <property name="width_chars">16</property>
+                        <property name="width-chars">16</property>
                         <property name="xalign">0</property>
                       </object>
                       <packing>
@@ -1242,7 +1272,7 @@ along with N2PK VNA.  If not, see <http://www.gnu.org/licenses/>.
                     <child>
                       <object class="GtkComboBoxText" id="cal_type">
                         <property name="visible">True</property>
-                        <property name="can_focus">False</property>
+                        <property name="can-focus">False</property>
                         <property name="active">0</property>
                         <signal name="changed" handler="cal_type_changed_cb" swapped="no"/>
                       </object>
@@ -1262,13 +1292,13 @@ along with N2PK VNA.  If not, see <http://www.gnu.org/licenses/>.
                 <child>
                   <object class="GtkBox">
                     <property name="visible">True</property>
-                    <property name="can_focus">False</property>
+                    <property name="can-focus">False</property>
                     <child>
                       <object class="GtkLabel">
                         <property name="visible">True</property>
-                        <property name="can_focus">False</property>
+                        <property name="can-focus">False</property>
                         <property name="label" translatable="yes">Calibration Name</property>
-                        <property name="width_chars">16</property>
+                        <property name="width-chars">16</property>
                         <property name="xalign">0</property>
                       </object>
                       <packing>
@@ -1279,10 +1309,10 @@ along with N2PK VNA.  If not, see <http://www.gnu.org/licenses/>.
                     </child>
                     <child>
                       <object class="GtkEntry" id="cal_name">
-                        <property name="width_request">350</property>
+                        <property name="width-request">350</property>
                         <property name="visible">True</property>
-                        <property name="can_focus">True</property>
-                        <property name="placeholder_text" translatable="yes">Enter calibration name</property>
+                        <property name="can-focus">True</property>
+                        <property name="placeholder-text" translatable="yes">Enter calibration name</property>
                       </object>
                       <packing>
                         <property name="expand">False</property>
@@ -1300,24 +1330,24 @@ along with N2PK VNA.  If not, see <http://www.gnu.org/licenses/>.
                 <child>
                   <object class="GtkBox">
                     <property name="visible">True</property>
-                    <property name="can_focus">False</property>
+                    <property name="can-focus">False</property>
                     <child>
                       <object class="GtkFrame">
                         <property name="visible">True</property>
-                        <property name="can_focus">False</property>
-                        <property name="label_xalign">0</property>
+                        <property name="can-focus">False</property>
+                        <property name="label-xalign">0</property>
                         <child>
                           <object class="GtkAlignment">
                             <property name="visible">True</property>
-                            <property name="can_focus">False</property>
-                            <property name="left_padding">12</property>
+                            <property name="can-focus">False</property>
+                            <property name="left-padding">12</property>
                             <child>
                               <object class="GtkTextView" id="cal_description">
-                                <property name="width_request">200</property>
-                                <property name="height_request">30</property>
+                                <property name="width-request">200</property>
+                                <property name="height-request">30</property>
                                 <property name="visible">True</property>
-                                <property name="can_focus">True</property>
-                                <property name="tooltip_text" translatable="yes">Enter optional information about calibration set-up and conditions.</property>
+                                <property name="can-focus">True</property>
+                                <property name="tooltip-text" translatable="yes">Enter optional information about calibration set-up and conditions.</property>
                                 <property name="buffer">cal_description_text</property>
                                 <property name="overwrite">True</property>
                               </object>
@@ -1327,7 +1357,7 @@ along with N2PK VNA.  If not, see <http://www.gnu.org/licenses/>.
                         <child type="label">
                           <object class="GtkLabel">
                             <property name="visible">True</property>
-                            <property name="can_focus">False</property>
+                            <property name="can-focus">False</property>
                             <property name="label" translatable="yes">Description</property>
                           </object>
                         </child>
@@ -1348,28 +1378,28 @@ along with N2PK VNA.  If not, see <http://www.gnu.org/licenses/>.
                 <child>
                   <object class="GtkFrame">
                     <property name="visible">True</property>
-                    <property name="can_focus">False</property>
-                    <property name="label_xalign">0</property>
+                    <property name="can-focus">False</property>
+                    <property name="label-xalign">0</property>
                     <child>
                       <object class="GtkAlignment">
                         <property name="visible">True</property>
-                        <property name="can_focus">False</property>
-                        <property name="left_padding">12</property>
+                        <property name="can-focus">False</property>
+                        <property name="left-padding">12</property>
                         <child>
                           <object class="GtkBox">
                             <property name="visible">True</property>
-                            <property name="can_focus">False</property>
+                            <property name="can-focus">False</property>
                             <property name="orientation">vertical</property>
                             <child>
                               <object class="GtkBox">
                                 <property name="visible">True</property>
-                                <property name="can_focus">False</property>
+                                <property name="can-focus">False</property>
                                 <child>
                                   <object class="GtkLabel">
                                     <property name="visible">True</property>
-                                    <property name="can_focus">False</property>
+                                    <property name="can-focus">False</property>
                                     <property name="label" translatable="yes">Start</property>
-                                    <property name="width_chars">5</property>
+                                    <property name="width-chars">5</property>
                                     <property name="xalign">0</property>
                                   </object>
                                   <packing>
@@ -1381,9 +1411,9 @@ along with N2PK VNA.  If not, see <http://www.gnu.org/licenses/>.
                                 <child>
                                   <object class="GtkEntry" id="cal_fmin">
                                     <property name="visible">True</property>
-                                    <property name="can_focus">True</property>
-                                    <property name="width_chars">9</property>
-                                    <property name="input_purpose">number</property>
+                                    <property name="can-focus">True</property>
+                                    <property name="width-chars">9</property>
+                                    <property name="input-purpose">number</property>
                                   </object>
                                   <packing>
                                     <property name="expand">False</property>
@@ -1394,7 +1424,7 @@ along with N2PK VNA.  If not, see <http://www.gnu.org/licenses/>.
                                 <child>
                                   <object class="GtkComboBoxText" id="cal_fmin_unit">
                                     <property name="visible">True</property>
-                                    <property name="can_focus">False</property>
+                                    <property name="can-focus">False</property>
                                     <property name="active">2</property>
                                     <items>
                                       <item translatable="yes">Hz</item>
@@ -1418,13 +1448,13 @@ along with N2PK VNA.  If not, see <http://www.gnu.org/licenses/>.
                             <child>
                               <object class="GtkBox">
                                 <property name="visible">True</property>
-                                <property name="can_focus">False</property>
+                                <property name="can-focus">False</property>
                                 <child>
                                   <object class="GtkLabel">
                                     <property name="visible">True</property>
-                                    <property name="can_focus">False</property>
+                                    <property name="can-focus">False</property>
                                     <property name="label" translatable="yes">Stop</property>
-                                    <property name="width_chars">5</property>
+                                    <property name="width-chars">5</property>
                                     <property name="xalign">0</property>
                                   </object>
                                   <packing>
@@ -1436,8 +1466,8 @@ along with N2PK VNA.  If not, see <http://www.gnu.org/licenses/>.
                                 <child>
                                   <object class="GtkEntry" id="cal_fmax">
                                     <property name="visible">True</property>
-                                    <property name="can_focus">True</property>
-                                    <property name="width_chars">9</property>
+                                    <property name="can-focus">True</property>
+                                    <property name="width-chars">9</property>
                                   </object>
                                   <packing>
                                     <property name="expand">False</property>
@@ -1448,7 +1478,7 @@ along with N2PK VNA.  If not, see <http://www.gnu.org/licenses/>.
                                 <child>
                                   <object class="GtkComboBoxText" id="cal_fmax_unit">
                                     <property name="visible">True</property>
-                                    <property name="can_focus">False</property>
+                                    <property name="can-focus">False</property>
                                     <property name="active">2</property>
                                     <items>
                                       <item translatable="yes">Hz</item>
@@ -1472,13 +1502,13 @@ along with N2PK VNA.  If not, see <http://www.gnu.org/licenses/>.
                             <child>
                               <object class="GtkBox">
                                 <property name="visible">True</property>
-                                <property name="can_focus">False</property>
+                                <property name="can-focus">False</property>
                                 <child>
                                   <object class="GtkLabel">
                                     <property name="visible">True</property>
-                                    <property name="can_focus">False</property>
+                                    <property name="can-focus">False</property>
                                     <property name="label" translatable="yes">Steps</property>
-                                    <property name="width_chars">5</property>
+                                    <property name="width-chars">5</property>
                                     <property name="xalign">2.2351741291171123e-10</property>
                                   </object>
                                   <packing>
@@ -1490,8 +1520,8 @@ along with N2PK VNA.  If not, see <http://www.gnu.org/licenses/>.
                                 <child>
                                   <object class="GtkEntry" id="cal_steps">
                                     <property name="visible">True</property>
-                                    <property name="can_focus">True</property>
-                                    <property name="width_chars">4</property>
+                                    <property name="can-focus">True</property>
+                                    <property name="width-chars">4</property>
                                   </object>
                                   <packing>
                                     <property name="expand">False</property>
@@ -1503,9 +1533,9 @@ along with N2PK VNA.  If not, see <http://www.gnu.org/licenses/>.
                                   <object class="GtkCheckButton" id="cal_log">
                                     <property name="label" translatable="yes">Log</property>
                                     <property name="visible">True</property>
-                                    <property name="can_focus">True</property>
-                                    <property name="receives_default">False</property>
-                                    <property name="draw_indicator">True</property>
+                                    <property name="can-focus">True</property>
+                                    <property name="receives-default">False</property>
+                                    <property name="draw-indicator">True</property>
                                   </object>
                                   <packing>
                                     <property name="expand">False</property>
@@ -1527,7 +1557,7 @@ along with N2PK VNA.  If not, see <http://www.gnu.org/licenses/>.
                     <child type="label">
                       <object class="GtkLabel">
                         <property name="visible">True</property>
-                        <property name="can_focus">False</property>
+                        <property name="can-focus">False</property>
                         <property name="label" translatable="yes">Sweep</property>
                       </object>
                     </child>
@@ -1541,81 +1571,94 @@ along with N2PK VNA.  If not, see <http://www.gnu.org/licenses/>.
                 <child>
                   <object class="GtkFrame">
                     <property name="visible">True</property>
-                    <property name="can_focus">False</property>
-                    <property name="label_xalign">0</property>
+                    <property name="can-focus">False</property>
+                    <property name="label-xalign">0</property>
                     <child>
                       <object class="GtkAlignment">
                         <property name="visible">True</property>
-                        <property name="can_focus">False</property>
-                        <property name="left_padding">12</property>
+                        <property name="can-focus">False</property>
+                        <property name="left-padding">12</property>
                         <child>
+                          <!-- n-columns=4 n-rows=3 -->
                           <object class="GtkGrid" id="cal_standards">
                             <property name="visible">True</property>
-                            <property name="can_focus">False</property>
-                            <property name="row_spacing">3</property>
-                            <property name="column_spacing">3</property>
+                            <property name="can-focus">False</property>
+                            <property name="row-spacing">3</property>
+                            <property name="column-spacing">3</property>
                             <child>
                               <object class="GtkLabel">
                                 <property name="visible">True</property>
-                                <property name="can_focus">False</property>
+                                <property name="can-focus">False</property>
                                 <property name="label" translatable="yes">Step</property>
                               </object>
                               <packing>
-                                <property name="left_attach">0</property>
-                                <property name="top_attach">0</property>
+                                <property name="left-attach">0</property>
+                                <property name="top-attach">0</property>
                               </packing>
                             </child>
                             <child>
                               <object class="GtkLabel">
                                 <property name="visible">True</property>
-                                <property name="can_focus">False</property>
+                                <property name="can-focus">False</property>
                                 <property name="label" translatable="yes">Port 1</property>
                               </object>
                               <packing>
-                                <property name="left_attach">1</property>
-                                <property name="top_attach">0</property>
+                                <property name="left-attach">1</property>
+                                <property name="top-attach">0</property>
                               </packing>
                             </child>
                             <child>
                               <object class="GtkLabel">
                                 <property name="visible">True</property>
-                                <property name="can_focus">False</property>
+                                <property name="can-focus">False</property>
                                 <property name="label" translatable="yes">Port 2</property>
                               </object>
                               <packing>
-                                <property name="left_attach">3</property>
-                                <property name="top_attach">0</property>
+                                <property name="left-attach">3</property>
+                                <property name="top-attach">0</property>
                               </packing>
                             </child>
                             <child>
                               <object class="GtkSeparator">
                                 <property name="visible">True</property>
-                                <property name="can_focus">False</property>
+                                <property name="can-focus">False</property>
                               </object>
                               <packing>
-                                <property name="left_attach">0</property>
-                                <property name="top_attach">1</property>
+                                <property name="left-attach">0</property>
+                                <property name="top-attach">1</property>
                               </packing>
                             </child>
                             <child>
                               <object class="GtkSeparator">
                                 <property name="visible">True</property>
-                                <property name="can_focus">False</property>
+                                <property name="can-focus">False</property>
                               </object>
                               <packing>
-                                <property name="left_attach">1</property>
-                                <property name="top_attach">1</property>
+                                <property name="left-attach">1</property>
+                                <property name="top-attach">1</property>
                               </packing>
                             </child>
                             <child>
                               <object class="GtkSeparator">
                                 <property name="visible">True</property>
-                                <property name="can_focus">False</property>
+                                <property name="can-focus">False</property>
                               </object>
                               <packing>
-                                <property name="left_attach">3</property>
-                                <property name="top_attach">1</property>
+                                <property name="left-attach">3</property>
+                                <property name="top-attach">1</property>
                               </packing>
+                            </child>
+                            <child>
+                              <placeholder/>
+                            </child>
+                            <child>
+                              <placeholder/>
+                            </child>
+                            <child>
+                              <placeholder/>
+                            </child>
+                            <child>
+                              <placeholder/>
                             </child>
                             <child>
                               <placeholder/>
@@ -1630,7 +1673,7 @@ along with N2PK VNA.  If not, see <http://www.gnu.org/licenses/>.
                     <child type="label">
                       <object class="GtkLabel">
                         <property name="visible">True</property>
-                        <property name="can_focus">False</property>
+                        <property name="can-focus">False</property>
                         <property name="label" translatable="yes">Standards</property>
                       </object>
                     </child>
@@ -1644,13 +1687,13 @@ along with N2PK VNA.  If not, see <http://www.gnu.org/licenses/>.
                 <child>
                   <object class="GtkBox">
                     <property name="visible">True</property>
-                    <property name="can_focus">False</property>
+                    <property name="can-focus">False</property>
                     <child>
                       <object class="GtkButton" id="cal_run">
                         <property name="label" translatable="yes">Run Calibration</property>
                         <property name="visible">True</property>
-                        <property name="can_focus">True</property>
-                        <property name="receives_default">True</property>
+                        <property name="can-focus">True</property>
+                        <property name="receives-default">True</property>
                         <signal name="clicked" handler="cal_run_clicked_cb" swapped="no"/>
                       </object>
                       <packing>
@@ -1676,31 +1719,31 @@ along with N2PK VNA.  If not, see <http://www.gnu.org/licenses/>.
             <child>
               <object class="GtkBox">
                 <property name="visible">True</property>
-                <property name="can_focus">False</property>
-                <property name="margin_top">5</property>
+                <property name="can-focus">False</property>
+                <property name="margin-top">5</property>
                 <property name="orientation">vertical</property>
                 <property name="spacing">5</property>
                 <child>
                   <object class="GtkBox">
                     <property name="visible">True</property>
-                    <property name="can_focus">False</property>
+                    <property name="can-focus">False</property>
                     <property name="spacing">5</property>
                     <child>
                       <object class="GtkBox">
                         <property name="visible">True</property>
-                        <property name="can_focus">False</property>
+                        <property name="can-focus">False</property>
                         <property name="orientation">vertical</property>
                         <property name="spacing">5</property>
                         <child>
                           <object class="GtkBox">
                             <property name="visible">True</property>
-                            <property name="can_focus">False</property>
-                            <property name="margin_top">5</property>
+                            <property name="can-focus">False</property>
+                            <property name="margin-top">5</property>
                             <property name="spacing">5</property>
                             <child>
                               <object class="GtkLabel">
                                 <property name="visible">True</property>
-                                <property name="can_focus">False</property>
+                                <property name="can-focus">False</property>
                                 <property name="label" translatable="yes">Calibration</property>
                                 <property name="xalign">2.2351741291171123e-10</property>
                               </object>
@@ -1713,8 +1756,8 @@ along with N2PK VNA.  If not, see <http://www.gnu.org/licenses/>.
                             <child>
                               <object class="GtkComboBoxText" id="m_select_calibration">
                                 <property name="visible">True</property>
-                                <property name="can_focus">False</property>
-                                <property name="tooltip_text" translatable="yes">Select a Calibration
+                                <property name="can-focus">False</property>
+                                <property name="tooltip-text" translatable="yes">Select a Calibration
 </property>
                                 <property name="active">0</property>
                                 <items>
@@ -1738,28 +1781,28 @@ along with N2PK VNA.  If not, see <http://www.gnu.org/licenses/>.
                         <child>
                           <object class="GtkFrame">
                             <property name="visible">True</property>
-                            <property name="can_focus">False</property>
-                            <property name="label_xalign">0</property>
+                            <property name="can-focus">False</property>
+                            <property name="label-xalign">0</property>
                             <child>
                               <object class="GtkAlignment">
                                 <property name="visible">True</property>
-                                <property name="can_focus">False</property>
-                                <property name="left_padding">12</property>
+                                <property name="can-focus">False</property>
+                                <property name="left-padding">12</property>
                                 <child>
                                   <object class="GtkBox">
                                     <property name="visible">True</property>
-                                    <property name="can_focus">False</property>
+                                    <property name="can-focus">False</property>
                                     <property name="orientation">vertical</property>
                                     <child>
                                       <object class="GtkBox">
                                         <property name="visible">True</property>
-                                        <property name="can_focus">False</property>
+                                        <property name="can-focus">False</property>
                                         <child>
                                           <object class="GtkLabel">
                                             <property name="visible">True</property>
-                                            <property name="can_focus">False</property>
+                                            <property name="can-focus">False</property>
                                             <property name="label" translatable="yes">Start</property>
-                                            <property name="width_chars">5</property>
+                                            <property name="width-chars">5</property>
                                             <property name="xalign">0</property>
                                           </object>
                                           <packing>
@@ -1771,9 +1814,9 @@ along with N2PK VNA.  If not, see <http://www.gnu.org/licenses/>.
                                         <child>
                                           <object class="GtkEntry" id="m_fmin">
                                             <property name="visible">True</property>
-                                            <property name="can_focus">True</property>
-                                            <property name="width_chars">9</property>
-                                            <property name="input_purpose">number</property>
+                                            <property name="can-focus">True</property>
+                                            <property name="width-chars">9</property>
+                                            <property name="input-purpose">number</property>
                                           </object>
                                           <packing>
                                             <property name="expand">False</property>
@@ -1784,7 +1827,7 @@ along with N2PK VNA.  If not, see <http://www.gnu.org/licenses/>.
                                         <child>
                                           <object class="GtkComboBoxText" id="m_fmin_unit">
                                             <property name="visible">True</property>
-                                            <property name="can_focus">False</property>
+                                            <property name="can-focus">False</property>
                                             <property name="active">2</property>
                                             <items>
                                               <item translatable="yes">Hz</item>
@@ -1808,13 +1851,13 @@ along with N2PK VNA.  If not, see <http://www.gnu.org/licenses/>.
                                     <child>
                                       <object class="GtkBox">
                                         <property name="visible">True</property>
-                                        <property name="can_focus">False</property>
+                                        <property name="can-focus">False</property>
                                         <child>
                                           <object class="GtkLabel">
                                             <property name="visible">True</property>
-                                            <property name="can_focus">False</property>
+                                            <property name="can-focus">False</property>
                                             <property name="label" translatable="yes">Stop</property>
-                                            <property name="width_chars">5</property>
+                                            <property name="width-chars">5</property>
                                             <property name="xalign">0</property>
                                           </object>
                                           <packing>
@@ -1826,8 +1869,8 @@ along with N2PK VNA.  If not, see <http://www.gnu.org/licenses/>.
                                         <child>
                                           <object class="GtkEntry" id="m_fmax">
                                             <property name="visible">True</property>
-                                            <property name="can_focus">True</property>
-                                            <property name="width_chars">9</property>
+                                            <property name="can-focus">True</property>
+                                            <property name="width-chars">9</property>
                                           </object>
                                           <packing>
                                             <property name="expand">False</property>
@@ -1838,7 +1881,7 @@ along with N2PK VNA.  If not, see <http://www.gnu.org/licenses/>.
                                         <child>
                                           <object class="GtkComboBoxText" id="m_fmax_unit">
                                             <property name="visible">True</property>
-                                            <property name="can_focus">False</property>
+                                            <property name="can-focus">False</property>
                                             <property name="active">2</property>
                                             <items>
                                               <item translatable="yes">Hz</item>
@@ -1862,13 +1905,13 @@ along with N2PK VNA.  If not, see <http://www.gnu.org/licenses/>.
                                     <child>
                                       <object class="GtkBox">
                                         <property name="visible">True</property>
-                                        <property name="can_focus">False</property>
+                                        <property name="can-focus">False</property>
                                         <child>
                                           <object class="GtkLabel">
                                             <property name="visible">True</property>
-                                            <property name="can_focus">False</property>
+                                            <property name="can-focus">False</property>
                                             <property name="label" translatable="yes">Steps</property>
-                                            <property name="width_chars">5</property>
+                                            <property name="width-chars">5</property>
                                             <property name="xalign">2.2351741291171123e-10</property>
                                           </object>
                                           <packing>
@@ -1880,8 +1923,8 @@ along with N2PK VNA.  If not, see <http://www.gnu.org/licenses/>.
                                         <child>
                                           <object class="GtkEntry" id="m_steps">
                                             <property name="visible">True</property>
-                                            <property name="can_focus">True</property>
-                                            <property name="width_chars">4</property>
+                                            <property name="can-focus">True</property>
+                                            <property name="width-chars">4</property>
                                           </object>
                                           <packing>
                                             <property name="expand">False</property>
@@ -1893,10 +1936,10 @@ along with N2PK VNA.  If not, see <http://www.gnu.org/licenses/>.
                                           <object class="GtkCheckButton" id="m_log">
                                             <property name="label" translatable="yes">Log</property>
                                             <property name="visible">True</property>
-                                            <property name="can_focus">True</property>
-                                            <property name="receives_default">False</property>
-                                            <property name="margin_left">40</property>
-                                            <property name="draw_indicator">True</property>
+                                            <property name="can-focus">True</property>
+                                            <property name="receives-default">False</property>
+                                            <property name="margin-left">40</property>
+                                            <property name="draw-indicator">True</property>
                                           </object>
                                           <packing>
                                             <property name="expand">False</property>
@@ -1918,7 +1961,7 @@ along with N2PK VNA.  If not, see <http://www.gnu.org/licenses/>.
                             <child type="label">
                               <object class="GtkLabel">
                                 <property name="visible">True</property>
-                                <property name="can_focus">False</property>
+                                <property name="can-focus">False</property>
                                 <property name="label" translatable="yes">Sweep</property>
                               </object>
                             </child>
@@ -1932,12 +1975,12 @@ along with N2PK VNA.  If not, see <http://www.gnu.org/licenses/>.
                         <child>
                           <object class="GtkBox">
                             <property name="visible">True</property>
-                            <property name="can_focus">False</property>
+                            <property name="can-focus">False</property>
                             <property name="spacing">5</property>
                             <child>
                               <object class="GtkLabel">
                                 <property name="visible">True</property>
-                                <property name="can_focus">False</property>
+                                <property name="can-focus">False</property>
                                 <property name="label" translatable="yes">Attenuation</property>
                                 <property name="xalign">0</property>
                               </object>
@@ -1950,7 +1993,7 @@ along with N2PK VNA.  If not, see <http://www.gnu.org/licenses/>.
                             <child>
                               <object class="GtkLabel">
                                 <property name="visible">True</property>
-                                <property name="can_focus">False</property>
+                                <property name="can-focus">False</property>
                                 <property name="label" translatable="yes">0</property>
                               </object>
                               <packing>
@@ -1962,7 +2005,7 @@ along with N2PK VNA.  If not, see <http://www.gnu.org/licenses/>.
                             <child>
                               <object class="GtkLabel">
                                 <property name="visible">True</property>
-                                <property name="can_focus">False</property>
+                                <property name="can-focus">False</property>
                                 <property name="label" translatable="yes">dB</property>
                               </object>
                               <packing>
@@ -1982,15 +2025,15 @@ along with N2PK VNA.  If not, see <http://www.gnu.org/licenses/>.
                         <child>
                           <object class="GtkBox">
                             <property name="visible">True</property>
-                            <property name="can_focus">False</property>
+                            <property name="can-focus">False</property>
                             <property name="spacing">5</property>
                             <child>
                               <object class="GtkCheckButton" id="m_symmetrical">
                                 <property name="label" translatable="yes">Symmetrical DUT</property>
                                 <property name="visible">True</property>
-                                <property name="can_focus">True</property>
-                                <property name="receives_default">False</property>
-                                <property name="draw_indicator">True</property>
+                                <property name="can-focus">True</property>
+                                <property name="receives-default">False</property>
+                                <property name="draw-indicator">True</property>
                               </object>
                               <packing>
                                 <property name="expand">False</property>
@@ -2009,9 +2052,9 @@ along with N2PK VNA.  If not, see <http://www.gnu.org/licenses/>.
                           <object class="GtkButton" id="m_start_scan">
                             <property name="label" translatable="yes">Start Scan</property>
                             <property name="visible">True</property>
-                            <property name="can_focus">True</property>
-                            <property name="receives_default">True</property>
-                            <property name="always_show_image">True</property>
+                            <property name="can-focus">True</property>
+                            <property name="receives-default">True</property>
+                            <property name="always-show-image">True</property>
                             <signal name="clicked" handler="m_start_scan_clicked_cb" swapped="no"/>
                           </object>
                           <packing>
@@ -2029,10 +2072,10 @@ along with N2PK VNA.  If not, see <http://www.gnu.org/licenses/>.
                     </child>
                     <child>
                       <object class="GtkDrawingArea" id="m_graph">
-                        <property name="width_request">640</property>
-                        <property name="height_request">480</property>
+                        <property name="width-request">640</property>
+                        <property name="height-request">480</property>
                         <property name="visible">True</property>
-                        <property name="can_focus">False</property>
+                        <property name="can-focus">False</property>
                         <signal name="draw" handler="m_graph_draw_cb" swapped="no"/>
                         <signal name="size-allocate" handler="m_graph_size_allocate_cb" swapped="no"/>
                       </object>
@@ -2052,66 +2095,67 @@ along with N2PK VNA.  If not, see <http://www.gnu.org/licenses/>.
                 <child>
                   <object class="GtkBox">
                     <property name="visible">True</property>
-                    <property name="can_focus">False</property>
+                    <property name="can-focus">False</property>
                     <property name="spacing">46</property>
                     <child>
+                      <!-- n-columns=3 n-rows=4 -->
                       <object class="GtkGrid">
                         <property name="visible">True</property>
-                        <property name="can_focus">False</property>
-                        <property name="row_spacing">3</property>
-                        <property name="column_spacing">3</property>
+                        <property name="can-focus">False</property>
+                        <property name="row-spacing">3</property>
+                        <property name="column-spacing">3</property>
                         <child>
                           <object class="GtkLabel">
                             <property name="visible">True</property>
-                            <property name="can_focus">False</property>
+                            <property name="can-focus">False</property>
                             <property name="label" translatable="yes">Parameters</property>
-                            <property name="width_chars">10</property>
+                            <property name="width-chars">10</property>
                             <property name="xalign">0</property>
                           </object>
                           <packing>
-                            <property name="left_attach">0</property>
-                            <property name="top_attach">0</property>
+                            <property name="left-attach">0</property>
+                            <property name="top-attach">0</property>
                           </packing>
                         </child>
                         <child>
                           <object class="GtkLabel">
                             <property name="visible">True</property>
-                            <property name="can_focus">False</property>
+                            <property name="can-focus">False</property>
                             <property name="label" translatable="yes">Coordinates</property>
                             <property name="xalign">0</property>
                           </object>
                           <packing>
-                            <property name="left_attach">0</property>
-                            <property name="top_attach">1</property>
+                            <property name="left-attach">0</property>
+                            <property name="top-attach">1</property>
                           </packing>
                         </child>
                         <child>
                           <object class="GtkLabel">
                             <property name="visible">True</property>
-                            <property name="can_focus">False</property>
+                            <property name="can-focus">False</property>
                             <property name="label" translatable="yes">Plot Title</property>
                             <property name="xalign">0</property>
                           </object>
                           <packing>
-                            <property name="left_attach">0</property>
-                            <property name="top_attach">2</property>
+                            <property name="left-attach">0</property>
+                            <property name="top-attach">2</property>
                           </packing>
                         </child>
                         <child>
                           <object class="GtkEntry" id="m_title">
                             <property name="visible">True</property>
-                            <property name="can_focus">True</property>
+                            <property name="can-focus">True</property>
                           </object>
                           <packing>
-                            <property name="left_attach">1</property>
-                            <property name="top_attach">2</property>
+                            <property name="left-attach">1</property>
+                            <property name="top-attach">2</property>
                           </packing>
                         </child>
                         <child>
                           <object class="GtkComboBoxText" id="m_coordinates">
                             <property name="visible">True</property>
-                            <property name="can_focus">False</property>
-                            <property name="active_id">ri</property>
+                            <property name="can-focus">False</property>
+                            <property name="active-id">ri</property>
                             <items>
                               <item id="ri" translatable="yes">Real-Imaginary</item>
                               <item id="ma" translatable="yes">Magnitude-Angle</item>
@@ -2120,25 +2164,25 @@ along with N2PK VNA.  If not, see <http://www.gnu.org/licenses/>.
                             <signal name="changed" handler="m_coordinates_changed_cb" swapped="no"/>
                           </object>
                           <packing>
-                            <property name="left_attach">1</property>
-                            <property name="top_attach">1</property>
+                            <property name="left-attach">1</property>
+                            <property name="top-attach">1</property>
                           </packing>
                         </child>
                         <child>
                           <object class="GtkButtonBox">
                             <property name="visible">True</property>
-                            <property name="can_focus">False</property>
-                            <property name="margin_top">2</property>
+                            <property name="can-focus">False</property>
+                            <property name="margin-top">2</property>
                             <property name="spacing">3</property>
-                            <property name="layout_style">start</property>
+                            <property name="layout-style">start</property>
                             <child>
                               <object class="GtkButton" id="m_load">
                                 <property name="label">gtk-open</property>
                                 <property name="visible">True</property>
-                                <property name="can_focus">True</property>
-                                <property name="receives_default">True</property>
-                                <property name="use_stock">True</property>
-                                <property name="always_show_image">True</property>
+                                <property name="can-focus">True</property>
+                                <property name="receives-default">True</property>
+                                <property name="use-stock">True</property>
+                                <property name="always-show-image">True</property>
                                 <signal name="clicked" handler="m_load_clicked_cb" swapped="no"/>
                               </object>
                               <packing>
@@ -2151,10 +2195,10 @@ along with N2PK VNA.  If not, see <http://www.gnu.org/licenses/>.
                               <object class="GtkButton" id="m_save">
                                 <property name="label">gtk-save-as</property>
                                 <property name="visible">True</property>
-                                <property name="can_focus">True</property>
-                                <property name="receives_default">True</property>
-                                <property name="use_stock">True</property>
-                                <property name="always_show_image">True</property>
+                                <property name="can-focus">True</property>
+                                <property name="receives-default">True</property>
+                                <property name="use-stock">True</property>
+                                <property name="always-show-image">True</property>
                                 <signal name="clicked" handler="m_save_clicked_cb" swapped="no"/>
                               </object>
                               <packing>
@@ -2165,15 +2209,15 @@ along with N2PK VNA.  If not, see <http://www.gnu.org/licenses/>.
                             </child>
                           </object>
                           <packing>
-                            <property name="left_attach">0</property>
-                            <property name="top_attach">3</property>
+                            <property name="left-attach">0</property>
+                            <property name="top-attach">3</property>
                             <property name="width">2</property>
                           </packing>
                         </child>
                         <child>
                           <object class="GtkComboBoxText" id="m_parameters">
                             <property name="visible">True</property>
-                            <property name="can_focus">False</property>
+                            <property name="can-focus">False</property>
                             <items>
                               <item id="s" translatable="yes">S</item>
                               <item id="t" translatable="yes">T</item>
@@ -2196,9 +2240,21 @@ along with N2PK VNA.  If not, see <http://www.gnu.org/licenses/>.
                             <signal name="changed" handler="m_parameters_changed_cb" swapped="no"/>
                           </object>
                           <packing>
-                            <property name="left_attach">1</property>
-                            <property name="top_attach">0</property>
+                            <property name="left-attach">1</property>
+                            <property name="top-attach">0</property>
                           </packing>
+                        </child>
+                        <child>
+                          <placeholder/>
+                        </child>
+                        <child>
+                          <placeholder/>
+                        </child>
+                        <child>
+                          <placeholder/>
+                        </child>
+                        <child>
+                          <placeholder/>
                         </child>
                       </object>
                       <packing>
@@ -2210,209 +2266,214 @@ along with N2PK VNA.  If not, see <http://www.gnu.org/licenses/>.
                     <child>
                       <object class="GtkBox">
                         <property name="visible">True</property>
-                        <property name="can_focus">False</property>
+                        <property name="can-focus">False</property>
                         <property name="orientation">vertical</property>
                         <property name="spacing">5</property>
                         <child>
+                          <!-- n-columns=6 n-rows=3 -->
                           <object class="GtkGrid">
                             <property name="visible">True</property>
-                            <property name="can_focus">False</property>
-                            <property name="row_spacing">3</property>
-                            <property name="column_spacing">3</property>
+                            <property name="can-focus">False</property>
+                            <property name="row-spacing">3</property>
+                            <property name="column-spacing">3</property>
                             <child>
                               <object class="GtkLabel">
                                 <property name="visible">True</property>
-                                <property name="can_focus">False</property>
+                                <property name="can-focus">False</property>
                                 <property name="label" translatable="yes">Range x</property>
                                 <property name="xalign">0</property>
                               </object>
                               <packing>
-                                <property name="left_attach">0</property>
-                                <property name="top_attach">0</property>
+                                <property name="left-attach">0</property>
+                                <property name="top-attach">0</property>
                               </packing>
                             </child>
                             <child>
                               <object class="GtkLabel">
                                 <property name="visible">True</property>
-                                <property name="can_focus">False</property>
+                                <property name="can-focus">False</property>
                                 <property name="label" translatable="yes">Range y</property>
                                 <property name="xalign">0</property>
                               </object>
                               <packing>
-                                <property name="left_attach">0</property>
-                                <property name="top_attach">1</property>
+                                <property name="left-attach">0</property>
+                                <property name="top-attach">1</property>
                               </packing>
                             </child>
                             <child>
                               <object class="GtkLabel">
                                 <property name="visible">True</property>
-                                <property name="can_focus">False</property>
+                                <property name="can-focus">False</property>
                                 <property name="label" translatable="yes">Range y2</property>
                                 <property name="xalign">0</property>
                               </object>
                               <packing>
-                                <property name="left_attach">0</property>
-                                <property name="top_attach">2</property>
+                                <property name="left-attach">0</property>
+                                <property name="top-attach">2</property>
                               </packing>
                             </child>
                             <child>
                               <object class="GtkEntry" id="m_x_min">
                                 <property name="visible">True</property>
-                                <property name="can_focus">True</property>
-                                <property name="width_chars">4</property>
-                                <property name="overwrite_mode">True</property>
-                                <property name="placeholder_text" translatable="yes">min</property>
-                                <property name="input_purpose">number</property>
+                                <property name="can-focus">True</property>
+                                <property name="width-chars">4</property>
+                                <property name="overwrite-mode">True</property>
+                                <property name="placeholder-text" translatable="yes">min</property>
+                                <property name="input-purpose">number</property>
+                                <signal name="focus-out-event" handler="m_x_min_focus_out_event_cb" swapped="no"/>
                               </object>
                               <packing>
-                                <property name="left_attach">1</property>
-                                <property name="top_attach">0</property>
+                                <property name="left-attach">1</property>
+                                <property name="top-attach">0</property>
                               </packing>
                             </child>
                             <child>
                               <object class="GtkEntry" id="m_y_min">
                                 <property name="visible">True</property>
-                                <property name="can_focus">True</property>
-                                <property name="width_chars">4</property>
-                                <property name="overwrite_mode">True</property>
-                                <property name="placeholder_text" translatable="yes">min</property>
-                                <property name="input_purpose">number</property>
+                                <property name="can-focus">True</property>
+                                <property name="width-chars">4</property>
+                                <property name="overwrite-mode">True</property>
+                                <property name="placeholder-text" translatable="yes">min</property>
+                                <property name="input-purpose">number</property>
+                                <signal name="focus-out-event" handler="m_y_min_focus_out_event_cb" swapped="no"/>
                               </object>
                               <packing>
-                                <property name="left_attach">1</property>
-                                <property name="top_attach">1</property>
+                                <property name="left-attach">1</property>
+                                <property name="top-attach">1</property>
                               </packing>
                             </child>
                             <child>
                               <object class="GtkEntry" id="m_x_max">
                                 <property name="visible">True</property>
-                                <property name="can_focus">True</property>
-                                <property name="width_chars">4</property>
-                                <property name="overwrite_mode">True</property>
-                                <property name="placeholder_text" translatable="yes">max</property>
-                                <property name="input_purpose">number</property>
+                                <property name="can-focus">True</property>
+                                <property name="width-chars">4</property>
+                                <property name="overwrite-mode">True</property>
+                                <property name="placeholder-text" translatable="yes">max</property>
+                                <property name="input-purpose">number</property>
+                                <signal name="focus-out-event" handler="m_x_max_focus_out_event_cb" swapped="no"/>
                               </object>
                               <packing>
-                                <property name="left_attach">2</property>
-                                <property name="top_attach">0</property>
+                                <property name="left-attach">2</property>
+                                <property name="top-attach">0</property>
                               </packing>
                             </child>
                             <child>
                               <object class="GtkEntry" id="m_y_max">
                                 <property name="visible">True</property>
-                                <property name="can_focus">True</property>
-                                <property name="width_chars">4</property>
-                                <property name="overwrite_mode">True</property>
-                                <property name="placeholder_text" translatable="yes">max</property>
-                                <property name="input_purpose">number</property>
+                                <property name="can-focus">True</property>
+                                <property name="width-chars">4</property>
+                                <property name="overwrite-mode">True</property>
+                                <property name="placeholder-text" translatable="yes">max</property>
+                                <property name="input-purpose">number</property>
+                                <signal name="focus-out-event" handler="m_y_max_focus_out_event_cb" swapped="no"/>
                               </object>
                               <packing>
-                                <property name="left_attach">2</property>
-                                <property name="top_attach">1</property>
+                                <property name="left-attach">2</property>
+                                <property name="top-attach">1</property>
                               </packing>
                             </child>
                             <child>
                               <object class="GtkLabel">
                                 <property name="visible">True</property>
-                                <property name="can_focus">False</property>
-                                <property name="can_default">True</property>
-                                <property name="margin_left">5</property>
+                                <property name="can-focus">False</property>
+                                <property name="can-default">True</property>
+                                <property name="margin-left">5</property>
                                 <property name="label" translatable="yes">Unit</property>
                               </object>
                               <packing>
-                                <property name="left_attach">3</property>
-                                <property name="top_attach">0</property>
+                                <property name="left-attach">3</property>
+                                <property name="top-attach">0</property>
                               </packing>
                             </child>
                             <child>
                               <object class="GtkLabel">
                                 <property name="visible">True</property>
-                                <property name="can_focus">False</property>
-                                <property name="margin_left">5</property>
+                                <property name="can-focus">False</property>
+                                <property name="margin-left">5</property>
                                 <property name="label" translatable="yes">Unit</property>
                               </object>
                               <packing>
-                                <property name="left_attach">3</property>
-                                <property name="top_attach">1</property>
+                                <property name="left-attach">3</property>
+                                <property name="top-attach">1</property>
                               </packing>
                             </child>
                             <child>
                               <object class="GtkEntry" id="m_y2_min">
                                 <property name="visible">True</property>
-                                <property name="can_focus">True</property>
-                                <property name="width_chars">4</property>
-                                <property name="overwrite_mode">True</property>
-                                <property name="placeholder_text" translatable="yes">min</property>
-                                <property name="input_purpose">number</property>
+                                <property name="can-focus">True</property>
+                                <property name="width-chars">4</property>
+                                <property name="overwrite-mode">True</property>
+                                <property name="placeholder-text" translatable="yes">min</property>
+                                <property name="input-purpose">number</property>
+                                <signal name="focus-out-event" handler="m_y2_min_focus_out_event_cb" swapped="no"/>
                               </object>
                               <packing>
-                                <property name="left_attach">1</property>
-                                <property name="top_attach">2</property>
+                                <property name="left-attach">1</property>
+                                <property name="top-attach">2</property>
                               </packing>
                             </child>
                             <child>
                               <object class="GtkEntry" id="m_y2_max">
                                 <property name="visible">True</property>
-                                <property name="can_focus">True</property>
-                                <property name="width_chars">4</property>
-                                <property name="overwrite_mode">True</property>
-                                <property name="placeholder_text" translatable="yes">max</property>
-                                <property name="input_purpose">number</property>
+                                <property name="can-focus">True</property>
+                                <property name="width-chars">4</property>
+                                <property name="overwrite-mode">True</property>
+                                <property name="placeholder-text" translatable="yes">max</property>
+                                <property name="input-purpose">number</property>
+                                <signal name="focus-out-event" handler="m_y2_max_focus_out_event_cb" swapped="no"/>
                               </object>
                               <packing>
-                                <property name="left_attach">2</property>
-                                <property name="top_attach">2</property>
+                                <property name="left-attach">2</property>
+                                <property name="top-attach">2</property>
                               </packing>
                             </child>
                             <child>
                               <object class="GtkLabel">
                                 <property name="visible">True</property>
-                                <property name="can_focus">False</property>
-                                <property name="margin_left">5</property>
+                                <property name="can-focus">False</property>
+                                <property name="margin-left">5</property>
                                 <property name="label" translatable="yes">Unit</property>
                               </object>
                               <packing>
-                                <property name="left_attach">3</property>
-                                <property name="top_attach">2</property>
+                                <property name="left-attach">3</property>
+                                <property name="top-attach">2</property>
                               </packing>
                             </child>
                             <child>
                               <object class="GtkCheckButton" id="m_logscale_x">
                                 <property name="label" translatable="yes">log</property>
                                 <property name="visible">True</property>
-                                <property name="can_focus">True</property>
-                                <property name="receives_default">False</property>
-                                <property name="draw_indicator">True</property>
+                                <property name="can-focus">True</property>
+                                <property name="receives-default">False</property>
+                                <property name="draw-indicator">True</property>
+                                <signal name="toggled" handler="m_logscale_x_toggled_cb" swapped="no"/>
                               </object>
                               <packing>
-                                <property name="left_attach">5</property>
-                                <property name="top_attach">0</property>
+                                <property name="left-attach">5</property>
+                                <property name="top-attach">0</property>
                               </packing>
                             </child>
                             <child>
                               <object class="GtkComboBoxText" id="m_x_unit">
                                 <property name="visible">True</property>
-                                <property name="can_focus">False</property>
+                                <property name="can-focus">False</property>
                                 <property name="active">0</property>
-                                <items>
-                                  <item id="MHz" translatable="yes">MHz</item>
-                                  <item id="kHz" translatable="yes">kHz</item>
-                                  <item id="Hz" translatable="yes">Hz</item>
-                                </items>
+                                <signal name="changed" handler="m_x_unit_changed_cb" swapped="no"/>
                               </object>
                               <packing>
-                                <property name="left_attach">4</property>
-                                <property name="top_attach">0</property>
+                                <property name="left-attach">4</property>
+                                <property name="top-attach">0</property>
                               </packing>
                             </child>
                             <child>
                               <object class="GtkComboBoxText" id="m_y2_unit">
                                 <property name="visible">True</property>
-                                <property name="can_focus">False</property>
+                                <property name="can-focus">False</property>
+                                <signal name="changed" handler="m_y2_unit_changed_cb" swapped="no"/>
                               </object>
                               <packing>
-                                <property name="left_attach">4</property>
-                                <property name="top_attach">2</property>
+                                <property name="left-attach">4</property>
+                                <property name="top-attach">2</property>
                               </packing>
                             </child>
                             <child>
@@ -2420,37 +2481,37 @@ along with N2PK VNA.  If not, see <http://www.gnu.org/licenses/>.
                                 <property name="label" translatable="yes">normalize</property>
                                 <property name="visible">True</property>
                                 <property name="sensitive">False</property>
-                                <property name="can_focus">True</property>
-                                <property name="receives_default">False</property>
-                                <property name="draw_indicator">True</property>
+                                <property name="can-focus">True</property>
+                                <property name="receives-default">False</property>
+                                <property name="draw-indicator">True</property>
                                 <signal name="toggled" handler="m_normalize_toggled_cb" swapped="no"/>
                               </object>
                               <packing>
-                                <property name="left_attach">5</property>
-                                <property name="top_attach">1</property>
+                                <property name="left-attach">5</property>
+                                <property name="top-attach">1</property>
                               </packing>
                             </child>
                             <child>
                               <object class="GtkButton" id="m_replot">
                                 <property name="label" translatable="yes">Replot</property>
                                 <property name="visible">True</property>
-                                <property name="can_focus">True</property>
-                                <property name="receives_default">True</property>
+                                <property name="can-focus">True</property>
+                                <property name="receives-default">True</property>
                                 <signal name="clicked" handler="m_replot_clicked_cb" swapped="no"/>
                               </object>
                               <packing>
-                                <property name="left_attach">5</property>
-                                <property name="top_attach">2</property>
+                                <property name="left-attach">5</property>
+                                <property name="top-attach">2</property>
                               </packing>
                             </child>
                             <child>
                               <object class="GtkComboBoxText" id="m_y_unit">
                                 <property name="visible">True</property>
-                                <property name="can_focus">False</property>
+                                <property name="can-focus">False</property>
                               </object>
                               <packing>
-                                <property name="left_attach">4</property>
-                                <property name="top_attach">1</property>
+                                <property name="left-attach">4</property>
+                                <property name="top-attach">1</property>
                               </packing>
                             </child>
                           </object>
@@ -2463,12 +2524,12 @@ along with N2PK VNA.  If not, see <http://www.gnu.org/licenses/>.
                         <child>
                           <object class="GtkBox">
                             <property name="visible">True</property>
-                            <property name="can_focus">False</property>
+                            <property name="can-focus">False</property>
                             <property name="spacing">5</property>
                             <child>
                               <object class="GtkLabel">
                                 <property name="visible">True</property>
-                                <property name="can_focus">False</property>
+                                <property name="can-focus">False</property>
                                 <property name="label" translatable="yes">Legend Position</property>
                               </object>
                               <packing>
@@ -2480,8 +2541,8 @@ along with N2PK VNA.  If not, see <http://www.gnu.org/licenses/>.
                             <child>
                               <object class="GtkComboBoxText" id="m_legend">
                                 <property name="visible">True</property>
-                                <property name="can_focus">False</property>
-                                <property name="active_id">top right</property>
+                                <property name="can-focus">False</property>
+                                <property name="active-id">top right</property>
                                 <items>
                                   <item id="top left" translatable="yes">top left</item>
                                   <item id="top center" translatable="yes">top center</item>
@@ -2532,151 +2593,152 @@ along with N2PK VNA.  If not, see <http://www.gnu.org/licenses/>.
             <child>
               <object class="GtkBox">
                 <property name="visible">True</property>
-                <property name="can_focus">False</property>
+                <property name="can-focus">False</property>
                 <property name="events"/>
-                <property name="margin_top">10</property>
+                <property name="margin-top">10</property>
                 <property name="orientation">vertical</property>
                 <property name="spacing">5</property>
-                <property name="baseline_position">top</property>
+                <property name="baseline-position">top</property>
                 <child>
                   <object class="GtkBox">
                     <property name="visible">True</property>
-                    <property name="can_focus">False</property>
+                    <property name="can-focus">False</property>
                     <child>
                       <object class="GtkFrame">
                         <property name="visible">True</property>
-                        <property name="can_focus">False</property>
-                        <property name="label_xalign">0</property>
+                        <property name="can-focus">False</property>
+                        <property name="label-xalign">0</property>
                         <child>
                           <object class="GtkAlignment">
                             <property name="visible">True</property>
-                            <property name="can_focus">False</property>
-                            <property name="left_padding">12</property>
+                            <property name="can-focus">False</property>
+                            <property name="left-padding">12</property>
                             <child>
+                              <!-- n-columns=5 n-rows=3 -->
                               <object class="GtkGrid" id="gen_display">
                                 <property name="visible">True</property>
-                                <property name="can_focus">False</property>
-                                <property name="row_spacing">5</property>
-                                <property name="column_spacing">5</property>
+                                <property name="can-focus">False</property>
+                                <property name="row-spacing">5</property>
+                                <property name="column-spacing">5</property>
                                 <child>
                                   <object class="GtkLabel">
-                                    <property name="width_request">100</property>
+                                    <property name="width-request">100</property>
                                     <property name="visible">True</property>
-                                    <property name="can_focus">False</property>
+                                    <property name="can-focus">False</property>
                                     <property name="halign">start</property>
                                     <property name="label" translatable="yes">RF Frequency</property>
                                     <property name="xalign">0</property>
                                   </object>
                                   <packing>
-                                    <property name="left_attach">0</property>
-                                    <property name="top_attach">0</property>
+                                    <property name="left-attach">0</property>
+                                    <property name="top-attach">0</property>
                                   </packing>
                                 </child>
                                 <child>
                                   <object class="GtkLabel">
-                                    <property name="width_request">100</property>
+                                    <property name="width-request">100</property>
                                     <property name="visible">True</property>
-                                    <property name="can_focus">False</property>
+                                    <property name="can-focus">False</property>
                                     <property name="label" translatable="yes">LO Frequency</property>
                                     <property name="xalign">0</property>
                                   </object>
                                   <packing>
-                                    <property name="left_attach">0</property>
-                                    <property name="top_attach">1</property>
+                                    <property name="left-attach">0</property>
+                                    <property name="top-attach">1</property>
                                   </packing>
                                 </child>
                                 <child>
                                   <object class="GtkLabel" id="gen_RF_unit">
                                     <property name="name">gen_display_RF_unit</property>
                                     <property name="visible">True</property>
-                                    <property name="can_focus">False</property>
+                                    <property name="can-focus">False</property>
                                     <property name="label" translatable="yes">MHz</property>
                                     <property name="xalign">0</property>
                                   </object>
                                   <packing>
-                                    <property name="left_attach">2</property>
-                                    <property name="top_attach">0</property>
+                                    <property name="left-attach">2</property>
+                                    <property name="top-attach">0</property>
                                   </packing>
                                 </child>
                                 <child>
                                   <object class="GtkLabel" id="gen_LO_unit">
                                     <property name="name">gen_display_LO_unit</property>
                                     <property name="visible">True</property>
-                                    <property name="can_focus">False</property>
+                                    <property name="can-focus">False</property>
                                     <property name="label" translatable="yes">MHz</property>
                                     <property name="xalign">0</property>
                                   </object>
                                   <packing>
-                                    <property name="left_attach">2</property>
-                                    <property name="top_attach">1</property>
+                                    <property name="left-attach">2</property>
+                                    <property name="top-attach">1</property>
                                   </packing>
                                 </child>
                                 <child>
                                   <object class="GtkLabel">
                                     <property name="visible">True</property>
-                                    <property name="can_focus">False</property>
+                                    <property name="can-focus">False</property>
                                     <property name="label" translatable="yes">LO Phase</property>
                                     <property name="xalign">0</property>
                                   </object>
                                   <packing>
-                                    <property name="left_attach">0</property>
-                                    <property name="top_attach">2</property>
+                                    <property name="left-attach">0</property>
+                                    <property name="top-attach">2</property>
                                   </packing>
                                 </child>
                                 <child>
                                   <object class="GtkLabel">
                                     <property name="visible">True</property>
-                                    <property name="can_focus">False</property>
+                                    <property name="can-focus">False</property>
                                     <property name="label" translatable="yes">Degrees</property>
                                   </object>
                                   <packing>
-                                    <property name="left_attach">2</property>
-                                    <property name="top_attach">2</property>
+                                    <property name="left-attach">2</property>
+                                    <property name="top-attach">2</property>
                                   </packing>
                                 </child>
                                 <child>
                                   <object class="GtkEntry" id="gen_RF_frequency">
                                     <property name="visible">True</property>
-                                    <property name="can_focus">True</property>
-                                    <property name="double_buffered">False</property>
+                                    <property name="can-focus">True</property>
+                                    <property name="double-buffered">False</property>
                                     <property name="editable">False</property>
-                                    <property name="width_chars">9</property>
+                                    <property name="width-chars">9</property>
                                     <property name="xalign">1</property>
-                                    <property name="caps_lock_warning">False</property>
+                                    <property name="caps-lock-warning">False</property>
                                   </object>
                                   <packing>
-                                    <property name="left_attach">1</property>
-                                    <property name="top_attach">0</property>
+                                    <property name="left-attach">1</property>
+                                    <property name="top-attach">0</property>
                                   </packing>
                                 </child>
                                 <child>
                                   <object class="GtkEntry" id="gen_LO_frequency">
                                     <property name="visible">True</property>
-                                    <property name="can_focus">True</property>
-                                    <property name="double_buffered">False</property>
+                                    <property name="can-focus">True</property>
+                                    <property name="double-buffered">False</property>
                                     <property name="editable">False</property>
-                                    <property name="width_chars">9</property>
+                                    <property name="width-chars">9</property>
                                     <property name="xalign">1</property>
-                                    <property name="caps_lock_warning">False</property>
+                                    <property name="caps-lock-warning">False</property>
                                   </object>
                                   <packing>
-                                    <property name="left_attach">1</property>
-                                    <property name="top_attach">1</property>
+                                    <property name="left-attach">1</property>
+                                    <property name="top-attach">1</property>
                                   </packing>
                                 </child>
                                 <child>
                                   <object class="GtkEntry" id="gen_phase">
                                     <property name="visible">True</property>
-                                    <property name="can_focus">True</property>
-                                    <property name="double_buffered">False</property>
+                                    <property name="can-focus">True</property>
+                                    <property name="double-buffered">False</property>
                                     <property name="editable">False</property>
-                                    <property name="width_chars">5</property>
+                                    <property name="width-chars">5</property>
                                     <property name="xalign">1</property>
-                                    <property name="caps_lock_warning">False</property>
+                                    <property name="caps-lock-warning">False</property>
                                   </object>
                                   <packing>
-                                    <property name="left_attach">1</property>
-                                    <property name="top_attach">2</property>
+                                    <property name="left-attach">1</property>
+                                    <property name="top-attach">2</property>
                                   </packing>
                                 </child>
                                 <child>
@@ -2684,13 +2746,13 @@ along with N2PK VNA.  If not, see <http://www.gnu.org/licenses/>.
                                     <property name="label" translatable="yes">Enable</property>
                                     <property name="visible">True</property>
                                     <property name="sensitive">False</property>
-                                    <property name="can_focus">True</property>
-                                    <property name="receives_default">False</property>
-                                    <property name="draw_indicator">True</property>
+                                    <property name="can-focus">True</property>
+                                    <property name="receives-default">False</property>
+                                    <property name="draw-indicator">True</property>
                                   </object>
                                   <packing>
-                                    <property name="left_attach">3</property>
-                                    <property name="top_attach">0</property>
+                                    <property name="left-attach">3</property>
+                                    <property name="top-attach">0</property>
                                   </packing>
                                 </child>
                                 <child>
@@ -2698,13 +2760,13 @@ along with N2PK VNA.  If not, see <http://www.gnu.org/licenses/>.
                                     <property name="label" translatable="yes">Enable</property>
                                     <property name="visible">True</property>
                                     <property name="sensitive">False</property>
-                                    <property name="can_focus">True</property>
-                                    <property name="receives_default">False</property>
-                                    <property name="draw_indicator">True</property>
+                                    <property name="can-focus">True</property>
+                                    <property name="receives-default">False</property>
+                                    <property name="draw-indicator">True</property>
                                   </object>
                                   <packing>
-                                    <property name="left_attach">3</property>
-                                    <property name="top_attach">1</property>
+                                    <property name="left-attach">3</property>
+                                    <property name="top-attach">1</property>
                                   </packing>
                                 </child>
                                 <child>
@@ -2712,28 +2774,28 @@ along with N2PK VNA.  If not, see <http://www.gnu.org/licenses/>.
                                     <property name="label" translatable="yes">Lock to RF</property>
                                     <property name="visible">True</property>
                                     <property name="sensitive">False</property>
-                                    <property name="can_focus">True</property>
-                                    <property name="receives_default">False</property>
-                                    <property name="draw_indicator">True</property>
+                                    <property name="can-focus">True</property>
+                                    <property name="receives-default">False</property>
+                                    <property name="draw-indicator">True</property>
                                   </object>
                                   <packing>
-                                    <property name="left_attach">4</property>
-                                    <property name="top_attach">1</property>
+                                    <property name="left-attach">4</property>
+                                    <property name="top-attach">1</property>
                                   </packing>
                                 </child>
                                 <child>
                                   <object class="GtkButton" id="gen_edit">
                                     <property name="label">gtk-edit</property>
                                     <property name="visible">True</property>
-                                    <property name="can_focus">True</property>
-                                    <property name="receives_default">True</property>
-                                    <property name="use_stock">True</property>
-                                    <property name="always_show_image">True</property>
+                                    <property name="can-focus">True</property>
+                                    <property name="receives-default">True</property>
+                                    <property name="use-stock">True</property>
+                                    <property name="always-show-image">True</property>
                                     <signal name="clicked" handler="gen_edit_clicked_cb" swapped="no"/>
                                   </object>
                                   <packing>
-                                    <property name="left_attach">4</property>
-                                    <property name="top_attach">0</property>
+                                    <property name="left-attach">4</property>
+                                    <property name="top-attach">0</property>
                                   </packing>
                                 </child>
                                 <child>
@@ -2749,7 +2811,7 @@ along with N2PK VNA.  If not, see <http://www.gnu.org/licenses/>.
                         <child type="label">
                           <object class="GtkLabel">
                             <property name="visible">True</property>
-                            <property name="can_focus">False</property>
+                            <property name="can-focus">False</property>
                             <property name="label" translatable="yes">Frequency
 </property>
                           </object>
@@ -2771,14 +2833,14 @@ along with N2PK VNA.  If not, see <http://www.gnu.org/licenses/>.
                 <child>
                   <object class="GtkBox">
                     <property name="visible">True</property>
-                    <property name="can_focus">False</property>
+                    <property name="can-focus">False</property>
                     <child>
                       <object class="GtkCheckButton" id="gen_master_enable">
                         <property name="label" translatable="yes">Master Enable</property>
                         <property name="visible">True</property>
-                        <property name="can_focus">True</property>
-                        <property name="receives_default">False</property>
-                        <property name="draw_indicator">True</property>
+                        <property name="can-focus">True</property>
+                        <property name="receives-default">False</property>
+                        <property name="draw-indicator">True</property>
                         <signal name="toggled" handler="gen_master_enable_toggled_cb" swapped="no"/>
                       </object>
                       <packing>
@@ -2790,12 +2852,12 @@ along with N2PK VNA.  If not, see <http://www.gnu.org/licenses/>.
                     <child>
                       <object class="GtkBox">
                         <property name="visible">True</property>
-                        <property name="can_focus">False</property>
+                        <property name="can-focus">False</property>
                         <child>
                           <object class="GtkLabel">
-                            <property name="width_request">100</property>
+                            <property name="width-request">100</property>
                             <property name="visible">True</property>
-                            <property name="can_focus">False</property>
+                            <property name="can-focus">False</property>
                             <property name="label" translatable="yes">Attenuation</property>
                             <property name="xalign">0</property>
                           </object>
@@ -2809,8 +2871,8 @@ along with N2PK VNA.  If not, see <http://www.gnu.org/licenses/>.
                         <child>
                           <object class="GtkComboBoxText" id="gen_attenuation">
                             <property name="visible">True</property>
-                            <property name="can_focus">False</property>
-                            <property name="tooltip_text" translatable="yes">Control the attenuator (if present)</property>
+                            <property name="can-focus">False</property>
+                            <property name="tooltip-text" translatable="yes">Control the attenuator (if present)</property>
                             <property name="active">0</property>
                             <items>
                               <item translatable="yes">0</item>
@@ -2833,7 +2895,7 @@ along with N2PK VNA.  If not, see <http://www.gnu.org/licenses/>.
                         <child>
                           <object class="GtkLabel">
                             <property name="visible">True</property>
-                            <property name="can_focus">False</property>
+                            <property name="can-focus">False</property>
                             <property name="label" translatable="yes">dB</property>
                           </object>
                           <packing>
@@ -2847,7 +2909,7 @@ along with N2PK VNA.  If not, see <http://www.gnu.org/licenses/>.
                       <packing>
                         <property name="expand">False</property>
                         <property name="fill">False</property>
-                        <property name="pack_type">end</property>
+                        <property name="pack-type">end</property>
                         <property name="position">1</property>
                       </packing>
                     </child>
@@ -2876,33 +2938,30 @@ along with N2PK VNA.  If not, see <http://www.gnu.org/licenses/>.
     </child>
   </object>
   <object class="GtkDialog" id="ack_dialog">
-    <property name="height_request">300</property>
-    <property name="can_focus">False</property>
+    <property name="height-request">300</property>
+    <property name="can-focus">False</property>
     <property name="title" translatable="yes">Instructions</property>
     <property name="modal">True</property>
-    <property name="destroy_with_parent">True</property>
-    <property name="type_hint">dialog</property>
-    <property name="transient_for">appwindow</property>
-    <child type="titlebar">
-      <placeholder/>
-    </child>
+    <property name="destroy-with-parent">True</property>
+    <property name="type-hint">dialog</property>
+    <property name="transient-for">appwindow</property>
     <child internal-child="vbox">
       <object class="GtkBox">
-        <property name="can_focus">False</property>
+        <property name="can-focus">False</property>
         <property name="orientation">vertical</property>
         <property name="spacing">2</property>
         <child internal-child="action_area">
           <object class="GtkButtonBox">
-            <property name="can_focus">False</property>
-            <property name="layout_style">end</property>
+            <property name="can-focus">False</property>
+            <property name="layout-style">end</property>
             <child>
               <object class="GtkButton" id="ack_cancel_button">
                 <property name="label">gtk-cancel</property>
                 <property name="visible">True</property>
-                <property name="can_focus">True</property>
-                <property name="receives_default">True</property>
-                <property name="use_stock">True</property>
-                <property name="always_show_image">True</property>
+                <property name="can-focus">True</property>
+                <property name="receives-default">True</property>
+                <property name="use-stock">True</property>
+                <property name="always-show-image">True</property>
               </object>
               <packing>
                 <property name="expand">True</property>
@@ -2914,9 +2973,9 @@ along with N2PK VNA.  If not, see <http://www.gnu.org/licenses/>.
               <object class="GtkButton" id="ack_ok_button">
                 <property name="label">Continue</property>
                 <property name="visible">True</property>
-                <property name="can_focus">True</property>
-                <property name="receives_default">True</property>
-                <property name="always_show_image">True</property>
+                <property name="can-focus">True</property>
+                <property name="receives-default">True</property>
+                <property name="always-show-image">True</property>
               </object>
               <packing>
                 <property name="expand">True</property>
@@ -2932,16 +2991,17 @@ along with N2PK VNA.  If not, see <http://www.gnu.org/licenses/>.
           </packing>
         </child>
         <child>
+          <!-- n-columns=3 n-rows=3 -->
           <object class="GtkGrid" id="ack_dialog_grid">
             <property name="name">ack_grid</property>
             <property name="visible">True</property>
-            <property name="can_focus">False</property>
-            <property name="margin_left">5</property>
-            <property name="margin_right">5</property>
-            <property name="margin_top">5</property>
-            <property name="margin_bottom">5</property>
-            <property name="row_spacing">5</property>
-            <property name="column_spacing">5</property>
+            <property name="can-focus">False</property>
+            <property name="margin-left">5</property>
+            <property name="margin-right">5</property>
+            <property name="margin-top">5</property>
+            <property name="margin-bottom">5</property>
+            <property name="row-spacing">5</property>
+            <property name="column-spacing">5</property>
             <child>
               <placeholder/>
             </child>
@@ -2984,33 +3044,30 @@ along with N2PK VNA.  If not, see <http://www.gnu.org/licenses/>.
     </action-widgets>
   </object>
   <object class="GtkDialog" id="gen_edit_dialog">
-    <property name="can_focus">False</property>
+    <property name="can-focus">False</property>
     <property name="title" translatable="yes">Generate Settings</property>
     <property name="modal">True</property>
-    <property name="destroy_with_parent">True</property>
-    <property name="type_hint">dialog</property>
+    <property name="destroy-with-parent">True</property>
+    <property name="type-hint">dialog</property>
     <property name="gravity">north</property>
-    <property name="transient_for">appwindow</property>
-    <child type="titlebar">
-      <placeholder/>
-    </child>
+    <property name="transient-for">appwindow</property>
     <child internal-child="vbox">
       <object class="GtkBox">
-        <property name="can_focus">False</property>
+        <property name="can-focus">False</property>
         <property name="orientation">vertical</property>
         <property name="spacing">2</property>
         <child internal-child="action_area">
           <object class="GtkButtonBox">
-            <property name="can_focus">False</property>
-            <property name="layout_style">end</property>
+            <property name="can-focus">False</property>
+            <property name="layout-style">end</property>
             <child>
               <object class="GtkButton" id="gen_edit_cancel">
                 <property name="label">gtk-cancel</property>
                 <property name="visible">True</property>
-                <property name="can_focus">True</property>
-                <property name="receives_default">True</property>
-                <property name="use_stock">True</property>
-                <property name="always_show_image">True</property>
+                <property name="can-focus">True</property>
+                <property name="receives-default">True</property>
+                <property name="use-stock">True</property>
+                <property name="always-show-image">True</property>
               </object>
               <packing>
                 <property name="expand">True</property>
@@ -3022,10 +3079,10 @@ along with N2PK VNA.  If not, see <http://www.gnu.org/licenses/>.
               <object class="GtkButton" id="gen_edit_apply">
                 <property name="label">gtk-apply</property>
                 <property name="visible">True</property>
-                <property name="can_focus">True</property>
-                <property name="receives_default">True</property>
-                <property name="use_stock">True</property>
-                <property name="always_show_image">True</property>
+                <property name="can-focus">True</property>
+                <property name="receives-default">True</property>
+                <property name="use-stock">True</property>
+                <property name="always-show-image">True</property>
               </object>
               <packing>
                 <property name="expand">True</property>
@@ -3041,80 +3098,81 @@ along with N2PK VNA.  If not, see <http://www.gnu.org/licenses/>.
           </packing>
         </child>
         <child>
+          <!-- n-columns=5 n-rows=3 -->
           <object class="GtkGrid">
             <property name="visible">True</property>
-            <property name="can_focus">False</property>
+            <property name="can-focus">False</property>
             <child>
               <object class="GtkCheckButton" id="gen_set_LO_enable">
                 <property name="label" translatable="yes">Enable</property>
                 <property name="visible">True</property>
-                <property name="can_focus">True</property>
-                <property name="receives_default">False</property>
+                <property name="can-focus">True</property>
+                <property name="receives-default">False</property>
                 <property name="active">True</property>
-                <property name="draw_indicator">True</property>
+                <property name="draw-indicator">True</property>
               </object>
               <packing>
-                <property name="left_attach">3</property>
-                <property name="top_attach">1</property>
+                <property name="left-attach">3</property>
+                <property name="top-attach">1</property>
               </packing>
             </child>
             <child>
               <object class="GtkCheckButton" id="gen_set_lock_to_RF">
                 <property name="label" translatable="yes">Lock to RF</property>
                 <property name="visible">True</property>
-                <property name="can_focus">True</property>
-                <property name="receives_default">False</property>
+                <property name="can-focus">True</property>
+                <property name="receives-default">False</property>
                 <property name="active">True</property>
-                <property name="draw_indicator">True</property>
+                <property name="draw-indicator">True</property>
                 <signal name="toggled" handler="gen_set_lock_to_RF_toggled_cb" swapped="no"/>
               </object>
               <packing>
-                <property name="left_attach">4</property>
-                <property name="top_attach">1</property>
+                <property name="left-attach">4</property>
+                <property name="top-attach">1</property>
               </packing>
             </child>
             <child>
               <object class="GtkLabel">
                 <property name="visible">True</property>
-                <property name="can_focus">False</property>
+                <property name="can-focus">False</property>
                 <property name="label" translatable="yes">Degrees</property>
               </object>
               <packing>
-                <property name="left_attach">2</property>
-                <property name="top_attach">2</property>
+                <property name="left-attach">2</property>
+                <property name="top-attach">2</property>
               </packing>
             </child>
             <child>
               <object class="GtkEntry" id="gen_set_phase">
                 <property name="visible">True</property>
-                <property name="can_focus">True</property>
-                <property name="tooltip_text" translatable="yes">Set the phase of LO relative to RF in degrees</property>
-                <property name="width_chars">6</property>
-                <property name="shadow_type">none</property>
-                <property name="caps_lock_warning">False</property>
-                <property name="input_purpose">number</property>
+                <property name="can-focus">True</property>
+                <property name="tooltip-text" translatable="yes">Set the phase of LO relative to RF in degrees</property>
+                <property name="width-chars">6</property>
+                <property name="shadow-type">none</property>
+                <property name="caps-lock-warning">False</property>
+                <property name="input-purpose">number</property>
               </object>
               <packing>
-                <property name="left_attach">1</property>
-                <property name="top_attach">2</property>
+                <property name="left-attach">1</property>
+                <property name="top-attach">2</property>
               </packing>
             </child>
             <child>
               <object class="GtkLabel">
                 <property name="visible">True</property>
-                <property name="can_focus">False</property>
+                <property name="can-focus">False</property>
                 <property name="label" translatable="yes">LO Phase</property>
                 <property name="xalign">0</property>
               </object>
               <packing>
-                <property name="left_attach">0</property>
-                <property name="top_attach">2</property>
+                <property name="left-attach">0</property>
+                <property name="top-attach">2</property>
               </packing>
             </child>
             <child>
               <object class="GtkComboBoxText" id="gen_set_RF_unit">
                 <property name="visible">True</property>
-                <property name="can_focus">False</property>
+                <property name="can-focus">False</property>
                 <property name="active">2</property>
                 <items>
                   <item translatable="yes">Hz</item>
@@ -3123,14 +3181,14 @@ along with N2PK VNA.  If not, see <http://www.gnu.org/licenses/>.
                 </items>
               </object>
               <packing>
-                <property name="left_attach">2</property>
-                <property name="top_attach">0</property>
+                <property name="left-attach">2</property>
+                <property name="top-attach">0</property>
               </packing>
             </child>
             <child>
               <object class="GtkComboBoxText" id="gen_set_LO_unit">
                 <property name="visible">True</property>
-                <property name="can_focus">False</property>
+                <property name="can-focus">False</property>
                 <property name="active">2</property>
                 <items>
                   <item translatable="yes">Hz</item>
@@ -3139,78 +3197,78 @@ along with N2PK VNA.  If not, see <http://www.gnu.org/licenses/>.
                 </items>
               </object>
               <packing>
-                <property name="left_attach">2</property>
-                <property name="top_attach">1</property>
+                <property name="left-attach">2</property>
+                <property name="top-attach">1</property>
               </packing>
             </child>
             <child>
               <object class="GtkEntry" id="gen_set_RF_frequency">
                 <property name="visible">True</property>
-                <property name="can_focus">True</property>
-                <property name="tooltip_text" translatable="yes">Set the RF Out frequency</property>
-                <property name="width_chars">9</property>
-                <property name="caps_lock_warning">False</property>
-                <property name="input_purpose">number</property>
+                <property name="can-focus">True</property>
+                <property name="tooltip-text" translatable="yes">Set the RF Out frequency</property>
+                <property name="width-chars">9</property>
+                <property name="caps-lock-warning">False</property>
+                <property name="input-purpose">number</property>
               </object>
               <packing>
-                <property name="left_attach">1</property>
-                <property name="top_attach">0</property>
+                <property name="left-attach">1</property>
+                <property name="top-attach">0</property>
               </packing>
             </child>
             <child>
               <object class="GtkEntry" id="gen_set_LO_frequency">
                 <property name="visible">True</property>
-                <property name="can_focus">True</property>
-                <property name="tooltip_text" translatable="yes">Set the local oscillator frequency </property>
-                <property name="width_chars">9</property>
-                <property name="shadow_type">none</property>
-                <property name="caps_lock_warning">False</property>
-                <property name="input_purpose">number</property>
+                <property name="can-focus">True</property>
+                <property name="tooltip-text" translatable="yes">Set the local oscillator frequency </property>
+                <property name="width-chars">9</property>
+                <property name="shadow-type">none</property>
+                <property name="caps-lock-warning">False</property>
+                <property name="input-purpose">number</property>
               </object>
               <packing>
-                <property name="left_attach">1</property>
-                <property name="top_attach">1</property>
+                <property name="left-attach">1</property>
+                <property name="top-attach">1</property>
               </packing>
             </child>
             <child>
               <object class="GtkLabel">
-                <property name="width_request">100</property>
+                <property name="width-request">100</property>
                 <property name="visible">True</property>
-                <property name="can_focus">False</property>
+                <property name="can-focus">False</property>
                 <property name="halign">start</property>
                 <property name="label" translatable="yes">RF Frequency</property>
                 <property name="xalign">0</property>
               </object>
               <packing>
-                <property name="left_attach">0</property>
-                <property name="top_attach">0</property>
+                <property name="left-attach">0</property>
+                <property name="top-attach">0</property>
               </packing>
             </child>
             <child>
               <object class="GtkLabel">
-                <property name="width_request">100</property>
+                <property name="width-request">100</property>
                 <property name="visible">True</property>
-                <property name="can_focus">False</property>
+                <property name="can-focus">False</property>
                 <property name="label" translatable="yes">LO Frequency</property>
                 <property name="xalign">0</property>
               </object>
               <packing>
-                <property name="left_attach">0</property>
-                <property name="top_attach">1</property>
+                <property name="left-attach">0</property>
+                <property name="top-attach">1</property>
               </packing>
             </child>
             <child>
               <object class="GtkCheckButton" id="gen_set_RF_enable">
                 <property name="label" translatable="yes">Enable</property>
                 <property name="visible">True</property>
-                <property name="can_focus">True</property>
-                <property name="receives_default">False</property>
+                <property name="can-focus">True</property>
+                <property name="receives-default">False</property>
                 <property name="active">True</property>
-                <property name="draw_indicator">True</property>
+                <property name="draw-indicator">True</property>
               </object>
               <packing>
-                <property name="left_attach">3</property>
-                <property name="top_attach">0</property>
+                <property name="left-attach">3</property>
+                <property name="top-attach">0</property>
               </packing>
             </child>
             <child>

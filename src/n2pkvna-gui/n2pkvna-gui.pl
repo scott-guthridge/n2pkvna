@@ -35,6 +35,7 @@ our $N2PKVNA_UI	= "%%UIDIR%%/n2pkvna.glade";
 our $VERSION    = "%%VERSION%%";
 
 use constant MaxFrequency => 75.0e+6;
+use constant NumberRE => qr/^[-+]?([0-9]+(\.[0-9]*)?|\.[0-9]+)([eE][-+][0-9]+)?/;
 
 #
 # Default calibration standards
@@ -90,10 +91,21 @@ my %CurrentSettings = (
     m_parameter		=> "sri",
     m_parameter_busy	=> 0,
     m_title		=> {},	# by root parameter
-    m_range_x		=> [ undef, undef, "MHz" ],
     m_ranges_busy	=> undef,
-    m_range_y		=> {},	# by unit
-    m_range_y2		=> {},
+    m_x_ranges		=> {
+	F => [ "", "", "MHz", undef ],	# frequency
+    },
+    m_y_ranges		=> {
+	B => [ "", "", undef ],		# bell
+	R => [ "", "", "Ω"   ],		# impedance
+	Y => [ "", "", "S"   ],		# admittance
+	Z => [ "", "", "Ω"   ],		# impedance
+    },
+    m_y2_ranges		=> {
+	A => [ "", "", "degrees" ],	# angle
+	C => [ "", "", "nF"      ],	# capacitance
+	L => [ "", "", "μH"      ]	# inductance
+    },
     gen_RF_frequency	=> 10.0e+6,
     gen_LO_frequency	=> 10.0e+6,
     gen_RF_unit_index	=> 2,
@@ -168,7 +180,7 @@ sub run_command_dialog {
 	$dialog->destroy();
 	return undef;
     }
-    
+
     #
     # My context structure
     #
@@ -394,12 +406,17 @@ sub attenuate_command {
 # Units and multipliers.
 #
 my %Units = (
+    A => [
+	"degrees",
+	"radians"
+    ],
     B => [
 	"dB"
     ],
-    angle => [
-	"degrees",
-	"radians"
+    F => [
+	"Hz",
+	"kHz",
+	"MHz"
     ],
     R => [
 	"mΩ",
@@ -450,6 +467,9 @@ my %UnitToScale = (
 );
 
 my %BaseUnitNames = (
+    A   => "Angle",
+    B   => "dB",
+    F   => "Frequency",
     C	=> "Capacitance",
     L	=> "Inductance",
     R	=> "Resistance",
@@ -458,46 +478,129 @@ my %BaseUnitNames = (
 );
 
 #
-# ParameterToUnits: convert from parameter name to y and y2 units
+# ParameterToBaseUnits: convert from parameter name to y and y2 units
 #
-my %ParameterToUnits = (
-    sri		=> [ "1", undef   ],
-    sma		=> [ "1", "angle" ],
-    sdb		=> [ "B", "angle" ],
-    tri		=> [ "1", undef   ],
-    tdb		=> [ "B", "angle" ],
-    tma		=> [ "1", "angle" ],
-    uri		=> [ "1", undef   ],
-    uma		=> [ "1", "angle" ],
-    udb		=> [ "B", "angle" ],
-    zri		=> [ "Z", undef   ],
-    zri_n	=> [ "1", undef   ],
-    zma		=> [ "Z", "angle" ],
-    zma_n	=> [ "1", "angle" ],
-    yri		=> [ "Y", undef   ],
-    yri_n	=> [ "1", undef   ],
-    yma		=> [ "Y", "angle" ],
-    yma_n	=> [ "1", "angle" ],
-    hri_n	=> [ "1", undef   ],
-    hma_n	=> [ "1", "angle" ],
-    gri_n	=> [ "1", undef   ],
-    gma_n	=> [ "1", "angle" ],
-    ari_n	=> [ "1", undef   ],
-    ama_n	=> [ "1", "angle" ],
-    bri_n	=> [ "1", undef   ],
-    bma_n	=> [ "1", "angle" ],
-    zinri	=> [ "Z", undef   ],
-    zinri_n	=> [ "1", undef   ],
-    zinma	=> [ "Z", "angle" ],
-    zinma_n	=> [ "1", "angle" ],
-    prc		=> [ "R", "C"     ],
-    src		=> [ "R", "C"     ],
-    prl		=> [ "R", "L"     ],
-    srl		=> [ "R", "L"     ],
-    rl		=> [ "B", undef   ],
-    il		=> [ "B", undef   ],
-    vswr	=> [ "1", undef   ],
+my %ParameterToBaseUnits = (
+    sri		=> [ "F",  "1", undef ],
+    sma		=> [ "F",  "1", "A"   ],
+    sdb		=> [ "F",  "B", "A"   ],
+    tri		=> [ "F",  "1", undef ],
+    tdb		=> [ "F",  "B", "A"   ],
+    tma		=> [ "F",  "1", "A"   ],
+    uri		=> [ "F",  "1", undef ],
+    uma		=> [ "F",  "1", "A"   ],
+    udb		=> [ "F",  "B", "A"   ],
+    zri		=> [ "F",  "Z", undef ],
+    zri_n	=> [ "F",  "1", undef ],
+    zma		=> [ "F",  "Z", "A"   ],
+    zma_n	=> [ "F",  "1", "A"   ],
+    yri		=> [ "F",  "Y", undef ],
+    yri_n	=> [ "F",  "1", undef ],
+    yma		=> [ "F",  "Y", "A"   ],
+    yma_n	=> [ "F",  "1", "A"   ],
+    hri_n	=> [ "F",  "1", undef ],
+    hma_n	=> [ "F",  "1", "A"   ],
+    gri_n	=> [ "F",  "1", undef ],
+    gma_n	=> [ "F",  "1", "A"   ],
+    ari_n	=> [ "F",  "1", undef ],
+    ama_n	=> [ "F",  "1", "A"   ],
+    bri_n	=> [ "F",  "1", undef ],
+    bma_n	=> [ "F",  "1", "A"   ],
+    zinri	=> [ "F",  "Z", undef ],
+    zinri_n	=> [ "F",  "1", undef ],
+    zinma	=> [ "F",  "Z", "A"   ],
+    zinma_n	=> [ "F",  "1", "A"   ],
+    prc		=> [ "F",  "R", "C"   ],
+    src		=> [ "F",  "R", "C"   ],
+    prl		=> [ "F",  "R", "L"   ],
+    srl		=> [ "F",  "R", "L"   ],
+    rl		=> [ "F",  "B", undef ],
+    il		=> [ "F",  "B", undef ],
+    vswr	=> [ "F",  "1", undef ],
 );
+
+#
+# parameter_to_x_ranges: given a parameter name, return ranges & units
+# Return:
+#   ([x_min, x_max, x_unit, logscale], x_base_unit)
+#
+#   x_min, x_max are empty string if not set, never undef
+#   x_unit is the current unit or undef
+#   logscale is 0, 1 or undef if not yet set
+#
+sub parameter_to_x_ranges {
+    my $parameter = shift;
+    my $cur = \%CurrentSettings;
+
+    my $base_units = $ParameterToBaseUnits{$parameter};
+    die "$parameter" unless defined($base_units);
+    my $x_base_unit = $base_units->[0];
+    my $ranges;
+    if ($x_base_unit ne "1") {
+	$ranges = $cur->{m_x_ranges}{$x_base_unit};
+	die $x_base_unit unless defined($ranges);
+    } elsif (!defined($ranges = $cur->{m_x_ranges}{$parameter})) {
+	$ranges = [ "", "", undef, undef ];
+	$cur->{m_x_ranges}{$parameter} = $ranges;
+    }
+    return ($ranges, $x_base_unit);
+}
+
+#
+# parameter_to_y_ranges: given a parameter name, return ranges & units
+# Return:
+#   ([y_min, y_max, y_unit], y_base_unit)
+#
+#   y_min, y_max are empty string if not set, never undef
+#   y_unit is the current unit or undef
+#
+sub parameter_to_y_ranges {
+    my $parameter = shift;
+    my $cur = \%CurrentSettings;
+
+    my $base_units = $ParameterToBaseUnits{$parameter};
+    die "$parameter" unless defined($base_units);
+    my $y_base_unit = $base_units->[1];
+    my $ranges;
+    if ($y_base_unit ne "1") {
+	$ranges = $cur->{m_y_ranges}{$y_base_unit};
+	die $y_base_unit unless defined($ranges);
+    } elsif (!defined($ranges = $cur->{m_y_ranges}{$parameter})) {
+	$ranges = [ "", "", undef ];
+	$cur->{m_y_ranges}{$parameter} = $ranges;
+    }
+    return ($ranges, $y_base_unit);
+}
+
+#
+# parameter_to_y2_ranges: given a parameter name, return ranges & units
+# Return:
+#   ([y2_min, y2_max, y2_unit], y2_base_unit) or (undef, undef)
+#
+#   y2_min, y2_max are empty string if not set, never undef
+#   y2_unit is the current unit or undef
+#   returns both as undef if there is no y2 parameter
+#
+sub parameter_to_y2_ranges {
+    my $parameter = shift;
+    my $cur = \%CurrentSettings;
+
+    my $base_units = $ParameterToBaseUnits{$parameter};
+    die "$parameter" unless defined($base_units);
+    my $y2_base_unit = $base_units->[2];
+    if (!defined($y2_base_unit)) {
+	return (undef, undef);
+    }
+    my $ranges;
+    if ($y2_base_unit ne "1") {
+	$ranges = $cur->{m_y2_ranges}{$y2_base_unit};
+	die $y2_base_unit unless defined($ranges);
+    } elsif (!defined($ranges = $cur->{m_y2_ranges}{$parameter})) {
+	$ranges = [ "", "", undef ];
+	$cur->{m_y2_ranges}{$parameter} = $ranges;
+    }
+    return ($ranges, $y2_base_unit);
+}
 
 #
 # normalize_Hz: convert Hz to scaled version + unit index
@@ -1543,26 +1646,6 @@ sub m_init_titles {
 }
 
 #
-# m_init_y_ranges
-#
-sub m_init_y_ranges {
-    my $cur = \%CurrentSettings;
-
-    $cur->{m_range_y} = {
-	1 => [ undef, undef, undef ],		# dimensionless
-	B => [ undef, undef, "dB" ],		# bell
-	R => [ undef, undef, "Ω"  ],		# impedance
-	Y => [ undef, undef, "S"  ],		# admittance
-	Z => [ undef, undef, "Ω"  ],		# impedance
-    },
-    $cur->{m_range_y2} = {
-	angle => [ undef, undef, "degrees" ],	# angle
-	C     => [ undef, undef, "nF"     ],	# capacitance
-	L     => [ undef, undef, "μH"     ]	# inductance
-    },
-}
-
-#
 # m_build_select_calibration: build the select calibration combo box
 #
 sub m_build_select_calibration() {
@@ -1630,7 +1713,7 @@ sub m_select_calibration_changed_cb() {
 	$m_fmax_unit->set_active(1);
     }
     $m_steps->set_text($cal->{frequencies});
-					     
+
     my $frequency_spacing = $cal->{properties}{frequencySpacing};
     $m_log->set_active(defined($frequency_spacing) &&
 	    $frequency_spacing eq "log");
@@ -1820,7 +1903,7 @@ sub update_m_parameter {
     if ($normalize) {
 	$parameter .= "_n";
     }
-    die "$parameter" unless defined($ParameterToUnits{$parameter});
+    die "$parameter" unless defined($ParameterToBaseUnits{$parameter});
     $cur->{m_parameter} = $parameter;
 }
 
@@ -1834,58 +1917,94 @@ sub build_m_range_units {
 	return;
     }
     $cur->{m_ranges_busy} = 1;
-    my $parameter = $cur->{m_parameter};
-    my $yunits    = $ParameterToUnits{$parameter};
-    die unless defined $yunits;
+    my $parameter  = $cur->{m_parameter};
 
-    my $m_y_min   = $builder->get_object("m_y_min");
-    my $m_y_max   = $builder->get_object("m_y_max");
-    my $m_y_unit  = $builder->get_object("m_y_unit");
-    my $m_y2_min  = $builder->get_object("m_y2_min");
-    my $m_y2_max  = $builder->get_object("m_y2_max");
-    my $m_y2_unit = $builder->get_object("m_y2_unit");
+    my $m_logscale_x = $builder->get_object("m_logscale_x");
+    my $m_x_min      = $builder->get_object("m_x_min");
+    my $m_x_max      = $builder->get_object("m_x_max");
+    my $m_x_unit     = $builder->get_object("m_x_unit");
+    my $m_y_min      = $builder->get_object("m_y_min");
+    my $m_y_max      = $builder->get_object("m_y_max");
+    my $m_y_unit     = $builder->get_object("m_y_unit");
+    my $m_y2_min     = $builder->get_object("m_y2_min");
+    my $m_y2_max     = $builder->get_object("m_y2_max");
+    my $m_y2_unit    = $builder->get_object("m_y2_unit");
 
-    my $unit;
-    my ($min, $max, $u);
-    $m_y_unit->remove_all();
-    if (defined($yunits->[0]) && defined($unit = $Units{$yunits->[0]})) {
-	foreach my $entry (@{$unit}) {
-	    $m_y_unit->append($entry, $entry);
+    #
+    # Set m_x_min, m_x_max, m_x_unit and m_logscale_x
+    #
+    my $units;
+    {
+	my ($x_ranges, $x_base_unit) = &parameter_to_x_ranges($parameter);
+	$m_x_unit->remove_all();
+	if (defined($units = $Units{$x_base_unit})) {
+	    foreach my $entry (@{$units}) {
+		$m_x_unit->append($entry, $entry);
+	    }
 	}
-	$min = $cur->{m_range_y}{$yunits->[0]}[0];
-	$max = $cur->{m_range_y}{$yunits->[0]}[1];
-	$u   = $cur->{m_range_y}{$yunits->[0]}[2];
-    } else {
-	$min = undef;
-	$max = undef;
-	$u   = undef;
-    }
-    $m_y_min->set_text(defined($min) ? $min : "");
-    $m_y_max->set_text(defined($max) ? $max : "");
-    if (defined($u)) {
-	$m_y_unit->set_active_id($u);
-    }
-    $m_y_unit->show();
-
-    $m_y2_unit->remove_all();
-    if (defined($yunits->[1]) && defined($unit = $Units{$yunits->[1]})) {
-	foreach my $entry (@{$unit}) {
-	    $m_y2_unit->append($entry, $entry);
+	my ($x_min, $x_max, $x_unit, $x_logscale) = @{$x_ranges};
+	$m_x_min->set_text($x_min);
+	$m_x_max->set_text($x_max);
+	if (defined($x_unit)) {
+	    $m_x_unit->set_active_id($x_unit);
+	} else {
+	    $m_x_unit->set_active(-1);
 	}
-	$min = $cur->{m_range_y2}{$yunits->[1]}[0];
-	$max = $cur->{m_range_y2}{$yunits->[1]}[1];
-	$u   = $cur->{m_range_y2}{$yunits->[1]}[2];
-    } else {
-	$min = undef;
-	$max = undef;
-	$u   = undef;
+	$m_logscale_x->set_active($x_logscale);
+	$m_logscale_x->set_sensitive($x_base_unit eq "F");
     }
-    $m_y2_min->set_text(defined($min) ? $min : "");
-    $m_y2_max->set_text(defined($max) ? $max : "");
-    if (defined($u)) {
-	$m_y2_unit->set_active_id($u);
+
+    #
+    # Set m_y_min, m_y_max, and m_y_unit
+    #
+    {
+	my ($y_ranges, $y_base_unit) = &parameter_to_y_ranges($parameter);
+	$m_y_unit->remove_all();
+	if (defined($units = $Units{$y_base_unit})) {
+	    foreach my $entry (@{$units}) {
+		$m_y_unit->append($entry, $entry);
+	    }
+	}
+	my ($y_min, $y_max, $y_unit) = @{$y_ranges};
+	$m_y_min->set_text($y_min);
+	$m_y_max->set_text($y_max);
+	if (defined($y_unit)) {
+	    $m_y_unit->set_active_id($y_unit);
+	} else {
+	    $m_y_unit->set_active(-1);
+	}
     }
-    $m_y2_unit->show();
+
+    #
+    # Set m_y2_min, m_y2_max and m_y2_unit
+    #
+    {
+	my ($y2_ranges, $y2_base_unit) = &parameter_to_y2_ranges($parameter);
+	my ($y2_min, $y2_max, $y2_unit) = ("", "", undef);
+	$m_y2_unit->remove_all();
+	if (defined($y2_base_unit)) {
+	    if (defined($units = $Units{$y2_base_unit})) {
+		foreach my $entry (@{$units}) {
+		    $m_y2_unit->append($entry, $entry);
+		}
+	    }
+	    ($y2_min, $y2_max, $y2_unit) = @{$y2_ranges};
+	    $m_y2_min->set_text($y2_min);
+	    $m_y2_max->set_text($y2_max);
+	    $m_y2_min->set_sensitive(1);
+	    $m_y2_max->set_sensitive(1);
+	} else {
+	    $m_y2_min->set_sensitive(0);
+	    $m_y2_max->set_sensitive(0);
+	}
+	$m_y2_min->set_text($y2_min);
+	$m_y2_max->set_text($y2_max);
+	if (defined($y2_unit)) {
+	    $m_y2_unit->set_active_id($y2_unit);
+	} else {
+	    $m_y2_unit->set_active(-1);
+	}
+    }
     $cur->{m_ranges_busy} = undef;
 }
 
@@ -1990,19 +2109,211 @@ sub m_coordinates_changed_cb {
 }
 
 #
-# m_legend_changed_cb
+# m_x_min_focus_out_event_cb: respond to change in m_x_min
 #
-sub m_legend_changed_cb {
-    &m_plot();
+sub m_x_min_focus_out_event_cb {
+    my ($widget, $data) = @_;
+    my $cur = \%CurrentSettings;
+    my $parameter = $cur->{m_parameter};
+    my ($x_ranges, $x_base_unit) = &parameter_to_x_ranges($parameter);
+
+    my $m_x_min = $builder->get_object("m_x_min");
+
+    my $text = $m_x_min->get_text();
+    $text =~ s/^\s+(.*)\s+$/$1/;
+    if ($text eq "" || $text =~ NumberRE) {
+	$x_ranges->[0] = $text;
+    } else {
+	if ($cur->{m_ranges_busy}) {
+	    return;
+	}
+	$cur->{m_ranges_busy} = 1;
+	$m_x_min->set_text($x_ranges->[0]);
+	$cur->{m_ranges_busy} = undef;
+    }
 }
 
 #
-# m_replot_clicked_cb: handle the replot button
+# m_x_max_focus_out_event_cb: respond to change in m_x_max
 #
-sub m_replot_clicked_cb {
+sub m_x_max_focus_out_event_cb {
     my ($widget, $data) = @_;
+    my $cur = \%CurrentSettings;
+    my $parameter = $cur->{m_parameter};
+    my ($x_ranges, $x_base_unit) = &parameter_to_x_ranges($parameter);
 
-    &m_plot();
+    my $m_x_max = $builder->get_object("m_x_max");
+
+    my $text = $m_x_max->get_text();
+    $text =~ s/^\s+(.*)\s+$/$1/;
+    if ($text eq "" || $text =~ NumberRE) {
+	$x_ranges->[1] = $text;
+    } else {
+	if ($cur->{m_ranges_busy}) {
+	    return;
+	}
+	$cur->{m_ranges_busy} = 1;
+	$m_x_max->set_text($x_ranges->[1]);
+	$cur->{m_ranges_busy} = undef;
+    }
+}
+
+#
+# m_x_unit_changed_cb: respond to change in m_x_unit
+#
+sub m_x_unit_changed_cb {
+    my ($widget) = @_;
+    my $cur = \%CurrentSettings;
+    if ($cur->{m_ranges_busy}) {
+	return;
+    }
+    my $parameter = $cur->{m_parameter};
+    my ($x_ranges, $x_base_unit) = &parameter_to_x_ranges($parameter);
+
+    my $m_x_unit = $builder->get_object("m_x_unit");
+    my $id = $m_x_unit->get_active_id();
+    if (defined($id)) {
+	$x_ranges->[2] = $id;
+    }
+}
+
+#
+# m_logscale_x_toggled_cb: respond to change in logscale checkbox
+#
+sub m_logscale_x_toggled_cb {
+    my ($widget, $data) = @_;
+    my $cur = \%CurrentSettings;
+    my $parameter = $cur->{m_parameter};
+    my ($x_ranges, $x_base_unit) = &parameter_to_x_ranges($parameter);
+
+    my $m_logscale_x = $builder->get_object("m_logscale_x");
+    $x_ranges->[3] = $m_logscale_x->get_active();
+}
+
+#
+# m_y_min_focus_out_event_cb: respond to change in m_y_min
+#
+sub m_y_min_focus_out_event_cb {
+    my ($widget, $data) = @_;
+    my $cur = \%CurrentSettings;
+    my $parameter = $cur->{m_parameter};
+    my ($y_ranges, $y_base_unit) = &parameter_to_y_ranges($parameter);
+
+    my $m_y_min = $builder->get_object("m_y_min");
+
+    my $text = $m_y_min->get_text();
+    $text =~ s/^\s+(.*)\s+$/$1/;
+    if ($text eq "" || $text =~ NumberRE) {
+	$y_ranges->[0] = $text;
+    } else {
+	if ($cur->{m_ranges_busy}) {
+	    return;
+	}
+	$cur->{m_ranges_busy} = 1;
+	$m_y_min->set_text($y_ranges->[0]);
+	$cur->{m_ranges_busy} = undef;
+    }
+}
+
+#
+# m_y_max_focus_out_event_cb: respond to change in m_y_max
+#
+sub m_y_max_focus_out_event_cb {
+    my ($widget, $data) = @_;
+    my $cur = \%CurrentSettings;
+    my $parameter = $cur->{m_parameter};
+    my ($y_ranges, $y_base_unit) = &parameter_to_y_ranges($parameter);
+
+    my $m_y_max = $builder->get_object("m_y_max");
+
+    my $text = $m_y_max->get_text();
+    $text =~ s/^\s+(.*)\s+$/$1/;
+    if ($text eq "" || $text =~ NumberRE) {
+	$y_ranges->[1] = $text;
+    } else {
+	if ($cur->{m_ranges_busy}) {
+	    return;
+	}
+	$cur->{m_ranges_busy} = 1;
+	$m_y_max->set_text($y_ranges->[1]);
+	$cur->{m_ranges_busy} = undef;
+    }
+}
+
+#
+# m_y_min_focus_out_event_cb: respond to change in m_y_unit
+#
+sub m_y_unit_changed_cb {
+    my ($widget) = @_;
+    my $cur = \%CurrentSettings;
+    my $parameter = $cur->{m_parameter};
+    my ($y_ranges, $y_base_unit) = &parameter_to_y_ranges($parameter);
+
+    my $m_y_unit  = $builder->get_object("m_y_unit");
+    $y_ranges->[2] = $m_y_unit->get_active_id();
+}
+
+#
+# m_y2_min_focus_out_event_cb: respond to change in m_y2_min
+#
+sub m_y2_min_focus_out_event_cb {
+    my ($widget, $data) = @_;
+    my $cur = \%CurrentSettings;
+    my $parameter = $cur->{m_parameter};
+    my ($y2_ranges, $y2_base_unit) = &parameter_to_y2_ranges($parameter);
+
+    my $m_y2_min = $builder->get_object("m_y2_min");
+
+    my $text = $m_y2_min->get_text();
+    $text =~ s/^\s+(.*)\s+$/$1/;
+    if ($text eq "" || $text =~ NumberRE) {
+	$y2_ranges->[0] = $text;
+    } else {
+	if ($cur->{m_ranges_busy}) {
+	    return;
+	}
+	$cur->{m_ranges_busy} = 1;
+	$m_y2_min->set_text($y2_ranges->[0]);
+	$cur->{m_ranges_busy} = undef;
+    }
+}
+
+#
+# m_y2_max_focus_out_event_cb: respond to change in m_y2_max
+#
+sub m_y2_max_focus_out_event_cb {
+    my ($widget, $data) = @_;
+    my $cur = \%CurrentSettings;
+    my $parameter = $cur->{m_parameter};
+    my ($y2_ranges, $y2_base_unit) = &parameter_to_y2_ranges($parameter);
+
+    my $m_y2_max = $builder->get_object("m_y2_max");
+
+    my $text = $m_y2_max->get_text();
+    $text =~ s/^\s+(.*)\s+$/$1/;
+    if ($text eq "" || $text =~ NumberRE) {
+	$y2_ranges->[1] = $text;
+    } else {
+	if ($cur->{m_ranges_busy}) {
+	    return;
+	}
+	$cur->{m_ranges_busy} = 1;
+	$m_y2_max->set_text($y2_ranges->[1]);
+	$cur->{m_ranges_busy} = undef;
+    }
+}
+
+#
+# m_y2_min_focus_out_event_cb: respond to change in m_y2_unit
+#
+sub m_y2_unit_changed_cb {
+    my ($widget) = @_;
+    my $cur = \%CurrentSettings;
+    my $parameter = $cur->{m_parameter};
+    my ($y2_ranges, $y2_base_unit) = &parameter_to_y2_ranges($parameter);
+
+    my $m_y2_unit  = $builder->get_object("m_y2_unit");
+    $y2_ranges->[2] = $m_y2_unit->get_active_id();
 }
 
 #
@@ -2019,6 +2330,22 @@ sub m_normalize_toggled_cb {
     &update_m_parameter();
     &build_m_range_units();
     --$cur->{m_parameter_busy};
+}
+
+#
+# m_legend_changed_cb
+#
+sub m_legend_changed_cb {
+    &m_plot();
+}
+
+#
+# m_replot_clicked_cb: handle the replot button
+#
+sub m_replot_clicked_cb {
+    my ($widget, $data) = @_;
+
+    &m_plot();
 }
 
 #
@@ -2063,7 +2390,6 @@ sub m_plot {
 
     my $conversions = $cur->{m_conversions};
     my $parameter = $cur->{m_parameter};
-    my $yunits    = $ParameterToUnits{$parameter};
     my $datafile;
     my $plotfile;
     my $svgfile;
@@ -2075,15 +2401,9 @@ sub m_plot {
     my $m_graph   = $builder->get_object("m_graph");
     my $m_x_min   = $builder->get_object("m_x_min");
     my $m_x_max   = $builder->get_object("m_x_max");
-    my $m_x_unit  = $builder->get_object("m_x_unit");
     my $m_y_min   = $builder->get_object("m_y_min");
     my $m_y_max   = $builder->get_object("m_y_max");
-    my $m_y_unit  = $builder->get_object("m_y_unit");
-    my $m_y2_min  = $builder->get_object("m_y2_min");
-    my $m_y2_max  = $builder->get_object("m_y2_max");
-    my $m_y2_unit = $builder->get_object("m_y2_unit");
     my $m_legend  = $builder->get_object("m_legend");
-    my $m_logscale_x  = $builder->get_object("m_logscale_x");
 
     #
     # If conversions isn't defined, instantiate one for the temporary
@@ -2100,6 +2420,26 @@ sub m_plot {
     $datafile = $conversions->convert($parameter, \&run_command_dialog);
     $plotfile = $conversions->getdir() . "/plot";
     $svgfile = $conversions->getdir() . "/plot.svg";
+
+    #
+    # Get ranges and units.
+    #
+    my ($x_ranges, $x_base_unit) = &parameter_to_x_ranges($parameter);
+    my ($y_ranges, $y_base_unit) = &parameter_to_y_ranges($parameter);
+    my ($y2_ranges, $y2_base_unit) = &parameter_to_y2_ranges($parameter);
+
+    #
+    # Break out the ranges and units.
+    #
+    my ($x_min, $x_max, $x_unit, $x_logscale) = @{$x_ranges};
+    my ($y_min, $y_max, $y_unit) = @{$y_ranges};
+    my ($y2_min, $y2_max, $y2_unit) = ("", "", undef);
+    if (defined($y2_ranges)) {
+	($y2_min, $y2_max, $y2_unit) = @{$y2_ranges};
+    }
+    my $x_scale = defined($x_unit) ? $UnitToScale{$x_unit} : 1.0;
+    my $y_scale = defined($y_unit) ? $UnitToScale{$y_unit} : 1.0;
+    my $y2_scale = defined($y2_unit) ? $UnitToScale{$y2_unit} : 1.0;
 
     #
     # Open plot file, set terminal and set global plot options.
@@ -2124,234 +2464,201 @@ sub m_plot {
 	}
 
 	#
-	# Get xrange and set xlabel.
+	# Set xlabel and x ranges.
 	#
-	my $xunit = $m_x_unit->get_active_id();
-	my $xscale = $UnitToScale{$xunit};
-	my $xmin  = $m_x_min->get_text();
-	my $xmax  = $m_x_max->get_text();
-	printf PLOT ("set xlabel 'Frequency (%s)'\n", $xunit);
-	if ($m_logscale_x->get_active()) {
+	if (defined($BaseUnitNames{$x_base_unit})) {
+	    printf PLOT ("set xlabel '%s", $BaseUnitNames{$x_base_unit});
+	    if (defined($x_unit)) {
+		printf PLOT (" (%s)", $x_unit);
+	    }
+	    printf PLOT ("'\n");
+	}
+	if ($x_logscale) {
 	    printf PLOT ("set logscale x\n");
 	}
-	$ranges .= " [";
-	if (defined($xmin) > 0) {
-	    $ranges .= $xmin;
-	}
-	$ranges .= ":";
-	if (defined($xmax) > 0) {
-	    $ranges .= $xmax;
-	}
-	$ranges .= "]";
+	$ranges .= " [$x_min:$x_max]";
 
 	#
-	# Get yrange and set ylabel.
+	# Set ylabel and y ranges.
 	#
-	my $y_base_unit = $yunits->[0];
-	my $yunit = $m_y_unit->get_active_id();
-	my $yscale = defined($yunit) ? $UnitToScale{$yunit} : 1.0;
-	my $ymin  = $m_y_min->get_text();
-	my $ymax  = $m_y_max->get_text();
 	if (defined($BaseUnitNames{$y_base_unit})) {
-	    printf PLOT ("set ylabel '%s (%s)'\n",
-		    $BaseUnitNames{$y_base_unit},
-		    $m_y_unit->get_active_id());
-	} elsif ($y_base_unit eq "B") {
-	    printf PLOT ("set ylabel 'dB'\n");
+	    printf PLOT ("set ylabel '%s", $BaseUnitNames{$y_base_unit});
+	    if (defined($y_unit)) {
+		printf PLOT (" (%s)", $y_unit);
+	    }
+	    printf PLOT ("'\n");
 	}
-	$ranges .= " [";
-	if (defined($ymin)) {
-	    $ranges .= $ymin;
-	}
-	$ranges .= ":";
-	if (defined($ymax) > 0) {
-	    $ranges .= $ymax;
-	}
-	$ranges .= "]";
+	$ranges .= " [$y_min:$y_max]";
 
 	#
-	# Handle y2 if it exists.
+	# Set y2label and range if y2 exists.
 	#
-	my $y2scale = 1.0;
-	if (defined($yunits->[1])) {
-	    my $y2_base_unit = $yunits->[1];
-	    my $y2unit = $m_y2_unit->get_active_id();
-	    my $y2min  = $m_y2_min->get_text();
-	    my $y2max  = $m_y2_max->get_text();
-	    $y2scale = defined($y2unit) ? $UnitToScale{$y2unit} : 1.0;
+	if (defined($y2_base_unit)) {
 	    if (defined($BaseUnitNames{$y2_base_unit})) {
-		printf PLOT ("set y2label '%s (%s)'\n",
-			$BaseUnitNames{$y2_base_unit},
-			$m_y2_unit->get_active_id());
-	    } elsif ($y2_base_unit eq "angle") {
-		my $label = $m_y2_unit->get_active_id();
-
-		$label =~ s/^./\u$&/;
-		printf PLOT ("set y2label '%s'\n", $label);
+		printf PLOT ("set y2label '%s",
+			$BaseUnitNames{$y2_base_unit});
+		if (defined($y2_unit)) {
+		    printf PLOT (" (%s)'", $y2_unit);
+		}
+		printf PLOT ("'\n");
 	    }
 	    printf PLOT ("set y2tics\n");
-	    if (defined($y2min) || defined($y2max)) {
-		printf PLOT ("set y2range [");
-		if (defined($y2min)) {
-		    printf PLOT ("%s", $y2min);
-		}
-		printf PLOT (":");
-		if (defined($y2max)) {
-		    printf PLOT ("%s", $y2max);
-		}
-		printf PLOT ("]\n");
+	    if ($y2_min ne "" || $y2_max ne "") {
+		printf PLOT ("set y2range [%s:%s]\n", $y2_min, $y2_max);
 	    }
 	}
-	die unless defined($xscale);
-	die unless defined($yscale);
-	die unless defined($y2scale);
+
+	#
+	# Plot the points.
+	#
 	printf PLOT ("set key %s\n", $m_legend->get_active_id());
 	my $key = $conversions->{ports} . $parameter;
 
 	if ($key =~ m/^1([syz])ri/) {
 	    my $prefix = $1;
 
-	    printf PLOT ("plot %s '%s' using (\$1/${xscale}):(\$2/${yscale}) title '%s11_r', \\\n",
+	    printf PLOT ("plot %s '%s' using " .
+		    "(\$1/${x_scale}):(\$2/${y_scale}) title '%s11_r', \\\n",
 		    $ranges, $datafile, $prefix);
-	    printf PLOT ("    '' using (\$1/${xscale}):(\$3/${yscale}) title '%s11_i'\n", $prefix);
+	    printf PLOT ("    '' using (\$1/${x_scale}):(\$3/${y_scale}) title '%s11_i'\n", $prefix);
 
 	} elsif ($key =~ m/^2([stuzyhgab])ri/) {
 	    my $prefix = $1;
 
 	    printf PLOT ("plot %s '%s' " .
-		    "using (\$1/${xscale}):(\$2/${yscale}) title '%s11_r' lt 1 dt solid, \\\n",
+		    "using (\$1/${x_scale}):(\$2/${y_scale}) title '%s11_r' lt 1 dt solid, \\\n",
 		    $ranges, $datafile, $prefix);
 	    printf PLOT ("    '' " .
-		    "using (\$1/${xscale}):(\$3/${yscale}) title '%s11_i' lt 1 dt 2, \\\n", $prefix);
+		    "using (\$1/${x_scale}):(\$3/${y_scale}) title '%s11_i' lt 1 dt 2, \\\n", $prefix);
 	    printf PLOT ("    '' " .
-		    "using (\$1/${xscale}):(\$4/${yscale}) title '%s12_r' lt 2 dt solid, \\\n", $prefix);
+		    "using (\$1/${x_scale}):(\$4/${y_scale}) title '%s12_r' lt 2 dt solid, \\\n", $prefix);
 	    printf PLOT ("    '' " .
-		    "using (\$1/${xscale}):(\$5/${yscale}) title '%s12_i' lt 2 dt 2, \\\n", $prefix);
+		    "using (\$1/${x_scale}):(\$5/${y_scale}) title '%s12_i' lt 2 dt 2, \\\n", $prefix);
 	    printf PLOT ("    '' " .
-		    "using (\$1/${xscale}):(\$6/${yscale}) title '%s21_r' lt 3 dt solid, \\\n", $prefix);
+		    "using (\$1/${x_scale}):(\$6/${y_scale}) title '%s21_r' lt 3 dt solid, \\\n", $prefix);
 	    printf PLOT ("    '' " .
-		    "using (\$1/${xscale}):(\$7/${yscale}) title '%s21_i' lt 3 dt 2, \\\n", $prefix);
+		    "using (\$1/${x_scale}):(\$7/${y_scale}) title '%s21_i' lt 3 dt 2, \\\n", $prefix);
 	    printf PLOT ("    '' " .
-		    "using (\$1/${xscale}):(\$8/${yscale}) title '%s22_r' lt 4 dt solid, \\\n", $prefix);
+		    "using (\$1/${x_scale}):(\$8/${y_scale}) title '%s22_r' lt 4 dt solid, \\\n", $prefix);
 	    printf PLOT ("    '' " .
-		    "using (\$1/${xscale}):(\$9/${yscale}) title '%s22_i' lt 4 dt 2\n", $prefix);
+		    "using (\$1/${x_scale}):(\$9/${y_scale}) title '%s22_i' lt 4 dt 2\n", $prefix);
 
 	} elsif ($key =~ m/^1([syz])(ma|db)/) {
 	    my $prefix = $1;
 
-	    printf PLOT ("plot %s '%s' using (\$1/${xscale}):(\$2/${yscale}) title '%s11_m', \\\n",
+	    printf PLOT ("plot %s '%s' using (\$1/${x_scale}):(\$2/${y_scale}) title '%s11_m', \\\n",
 		    $ranges, $datafile, $prefix);
-	    printf PLOT ("    '' using (\$1/${xscale}):(\$3/${y2scale}) axes x1y2 title '%s11_a'\n", $prefix);
+	    printf PLOT ("    '' using (\$1/${x_scale}):(\$3/${y2_scale}) axes x1y2 title '%s11_a'\n", $prefix);
 
 	} elsif ($key =~ m/^2([stuzyhgab])(ma|db)/) {
 	    my $prefix = $1;
 
 	    printf PLOT ("plot %s '%s' " .
-		    "using (\$1/${xscale}):(\$2/${yscale}) title '%s11_m' lt 1 dt solid, \\\n",
+		    "using (\$1/${x_scale}):(\$2/${y_scale}) title '%s11_m' lt 1 dt solid, \\\n",
 		    $ranges, $datafile, $prefix);
 	    printf PLOT ("    '' " .
-		    "using (\$1/${xscale}):(\$3/${y2scale}) axes x1y2 title '%s11_a' lt 1 dt 2, \\\n", $prefix);
+		    "using (\$1/${x_scale}):(\$3/${y2_scale}) axes x1y2 title '%s11_a' lt 1 dt 2, \\\n", $prefix);
 	    printf PLOT ("    '' " .
-		    "using (\$1/${xscale}):(\$4/${yscale}) title '%s12_m' lt 2 dt solid, \\\n", $prefix);
+		    "using (\$1/${x_scale}):(\$4/${y_scale}) title '%s12_m' lt 2 dt solid, \\\n", $prefix);
 	    printf PLOT ("    '' " .
-		    "using (\$1/${xscale}):(\$5/${y2scale}) axes x1y2 title '%s12_a' lt 2 dt 2, \\\n", $prefix);
+		    "using (\$1/${x_scale}):(\$5/${y2_scale}) axes x1y2 title '%s12_a' lt 2 dt 2, \\\n", $prefix);
 	    printf PLOT ("    '' " .
-		    "using (\$1/${xscale}):(\$6/${yscale}) title '%s21_m' lt 3 dt solid, \\\n", $prefix);
+		    "using (\$1/${x_scale}):(\$6/${y_scale}) title '%s21_m' lt 3 dt solid, \\\n", $prefix);
 	    printf PLOT ("    '' " .
-		    "using (\$1/${xscale}):(\$7/${y2scale}) axes x1y2 title '%s21_a' lt 3 dt 2, \\\n", $prefix);
+		    "using (\$1/${x_scale}):(\$7/${y2_scale}) axes x1y2 title '%s21_a' lt 3 dt 2, \\\n", $prefix);
 	    printf PLOT ("    '' " .
-		    "using (\$1/${xscale}):(\$8/${yscale}) title '%s22_m' lt 4 dt solid, \\\n", $prefix);
+		    "using (\$1/${x_scale}):(\$8/${y_scale}) title '%s22_m' lt 4 dt solid, \\\n", $prefix);
 	    printf PLOT ("    '' " .
-		    "using (\$1/${xscale}):(\$9/${y2scale}) axes x1y2 title '%s22_a' lt 4 dt 2\n", $prefix);
+		    "using (\$1/${x_scale}):(\$9/${y2_scale}) axes x1y2 title '%s22_a' lt 4 dt 2\n", $prefix);
 
 	} elsif ($key =~ m/^1zinri/) {
-	    printf PLOT ("plot %s '%s' using (\$1/${xscale}):(\$2/${yscale}) title 'Zin_r', \\\n",
+	    printf PLOT ("plot %s '%s' using (\$1/${x_scale}):(\$2/${y_scale}) title 'Zin_r', \\\n",
 		    $ranges, $datafile);
-	    printf PLOT ("    '' using (\$1/${xscale}):(\$3/${yscale}) title 'Zin_i'\n");
+	    printf PLOT ("    '' using (\$1/${x_scale}):(\$3/${y_scale}) title 'Zin_i'\n");
 
 	} elsif ($key =~ m/^2zinri/) {
 	    printf PLOT ("plot %s '%s' " .
-		    "using (\$1/${xscale}):(\$2/${yscale}) title 'Zin1_r' lt 1 dt solid, \\\n",
+		    "using (\$1/${x_scale}):(\$2/${y_scale}) title 'Zin1_r' lt 1 dt solid, \\\n",
 		    $ranges, $datafile);
 	    printf PLOT ("    '' " .
-		    "using (\$1/${xscale}):(\$3/${yscale}) title 'Zin1_i' lt 1 dt 2, \\\n");
+		    "using (\$1/${x_scale}):(\$3/${y_scale}) title 'Zin1_i' lt 1 dt 2, \\\n");
 	    printf PLOT ("    '' " .
-		    "using (\$1/${xscale}):(\$4/${yscale}) title 'Zin2_r' lt 2 dt solid, \\\n");
+		    "using (\$1/${x_scale}):(\$4/${y_scale}) title 'Zin2_r' lt 2 dt solid, \\\n");
 	    printf PLOT ("    '' " .
-		    "using (\$1/${xscale}):(\$5/${yscale}) title 'Zin2_i' lt 2 dt 2\n");
+		    "using (\$1/${x_scale}):(\$5/${y_scale}) title 'Zin2_i' lt 2 dt 2\n");
 
 	} elsif ($key =~ m/^1zinma/) {
-	    printf PLOT ("plot %s '%s' using (\$1/${xscale}):(\$2/${yscale}) title 'Zin_m', \\\n",
+	    printf PLOT ("plot %s '%s' using (\$1/${x_scale}):(\$2/${y_scale}) title 'Zin_m', \\\n",
 		    $ranges, $datafile);
-	    printf PLOT ("    '' using (\$1/${xscale}):(\$3/${y2scale}) axes x1y2 title 'Zin_a'\n");
+	    printf PLOT ("    '' using (\$1/${x_scale}):(\$3/${y2_scale}) axes x1y2 title 'Zin_a'\n");
 
 	} elsif ($key =~ m/^2zinma/) {
 	    printf PLOT ("plot %s '%s' " .
-		    "using (\$1/${xscale}):(\$2/${yscale}) title 'Zin1_m' lt 1 dt solid, \\\n",
+		    "using (\$1/${x_scale}):(\$2/${y_scale}) title 'Zin1_m' lt 1 dt solid, \\\n",
 		    $ranges, $datafile);
 	    printf PLOT ("    '' " .
-		    "using (\$1/${xscale}):(\$3/${y2scale}) axes x1y2 title 'Zin1_a' lt 1 dt 2, \\\n");
+		    "using (\$1/${x_scale}):(\$3/${y2_scale}) axes x1y2 title 'Zin1_a' lt 1 dt 2, \\\n");
 	    printf PLOT ("    '' " .
-		    "using (\$1/${xscale}):(\$4/${yscale}) title 'Zin2_m' lt 2 dt solid, \\\n");
+		    "using (\$1/${x_scale}):(\$4/${y_scale}) title 'Zin2_m' lt 2 dt solid, \\\n");
 	    printf PLOT ("    '' " .
-		    "using (\$1/${xscale}):(\$5/${y2scale}) axes x1y2 title 'Zin2_a' lt 2 dt 2\n");
+		    "using (\$1/${x_scale}):(\$5/${y2_scale}) axes x1y2 title 'Zin2_a' lt 2 dt 2\n");
 
 	} elsif ($key =~ m/^1[ps]rc/) {
-	    printf PLOT ("plot %s '%s' using (\$1/${xscale}):(\$2/${yscale}) title 'R', \\\n",
+	    printf PLOT ("plot %s '%s' using (\$1/${x_scale}):(\$2/${y_scale}) title 'R', \\\n",
 		    $ranges, $datafile);
-	    printf PLOT ("    '' using (\$1/${xscale}):(\$3/${y2scale}) axes x1y2 title 'C'\n");
+	    printf PLOT ("    '' using (\$1/${x_scale}):(\$3/${y2_scale}) axes x1y2 title 'C'\n");
 
 	} elsif ($key =~ m/^2[ps]rc/) {
 	    printf PLOT ("plot %s '%s' " .
-		    "using (\$1/${xscale}):(\$2/${yscale}) title 'R1' lt 1 dt solid, \\\n",
+		    "using (\$1/${x_scale}):(\$2/${y_scale}) title 'R1' lt 1 dt solid, \\\n",
 		    $ranges, $datafile);
 	    printf PLOT ("    '' " .
-		    "using (\$1/${xscale}):(\$3/${y2scale}) axes x1y2 title 'C1' lt 1 dt 2, \\\n");
+		    "using (\$1/${x_scale}):(\$3/${y2_scale}) axes x1y2 title 'C1' lt 1 dt 2, \\\n");
 	    printf PLOT ("    '' " .
-		    "using (\$1/${xscale}):(\$4/${yscale}) title 'R2' lt 2 dt solid, \\\n");
+		    "using (\$1/${x_scale}):(\$4/${y_scale}) title 'R2' lt 2 dt solid, \\\n");
 	    printf PLOT ("    '' " .
-		    "using (\$1/${xscale}):(\$5/${y2scale}) axes x1y2 title 'C2' lt 2 dt 2\n");
+		    "using (\$1/${x_scale}):(\$5/${y2_scale}) axes x1y2 title 'C2' lt 2 dt 2\n");
 
 	} elsif ($key =~ m/^1[ps]rl/) {
-	    printf PLOT ("plot %s '%s' using (\$1/${xscale}):(\$2/${yscale}) title 'R', \\\n",
+	    printf PLOT ("plot %s '%s' using (\$1/${x_scale}):(\$2/${y_scale}) title 'R', \\\n",
 		    $ranges, $datafile);
-	    printf PLOT ("    '' using (\$1/${xscale}):(\$3/${y2scale}) axes x1y2 title 'L'\n");
+	    printf PLOT ("    '' using (\$1/${x_scale}):(\$3/${y2_scale}) axes x1y2 title 'L'\n");
 
 	} elsif ($key =~ m/^2[ps]rl/) {
 	    printf PLOT ("plot %s '%s' " .
-		    "using (\$1/${xscale}):(\$2/${yscale}) title 'R1' lt 1 dt solid, \\\n",
+		    "using (\$1/${x_scale}):(\$2/${y_scale}) title 'R1' lt 1 dt solid, \\\n",
 		    $ranges, $datafile);
 	    printf PLOT ("    '' " .
-		    "using (\$1/${xscale}):(\$3/${y2scale}) axes x1y2 title 'L1' lt 1 dt 2, \\\n");
+		    "using (\$1/${x_scale}):(\$3/${y2_scale}) axes x1y2 title 'L1' lt 1 dt 2, \\\n");
 	    printf PLOT ("    '' " .
-		    "using (\$1/${xscale}):(\$4/${yscale}) title 'R2' lt 2 dt solid, \\\n");
+		    "using (\$1/${x_scale}):(\$4/${y_scale}) title 'R2' lt 2 dt solid, \\\n");
 	    printf PLOT ("    '' " .
-		    "using (\$1/${xscale}):(\$5/${y2scale}) axes x1y2 title 'L2' lt 2 dt 2\n");
+		    "using (\$1/${x_scale}):(\$5/${y2_scale}) axes x1y2 title 'L2' lt 2 dt 2\n");
 
 	} elsif ($key eq "1rl" || $key eq "1vswr") {
-	    printf PLOT ("plot %s '%s' using (\$1/${xscale}):(\$2/${yscale}) notitle\n",
+	    printf PLOT ("plot %s '%s' using (\$1/${x_scale}):(\$2/${y_scale}) notitle\n",
 		    $ranges, $datafile);
 
 	} elsif ($key eq "2rl") {
 	    printf PLOT ("plot %s '%s' " .
-		    "using (\$1/${xscale}):(\$2/${yscale}) title 'RL1', \\\n",
+		    "using (\$1/${x_scale}):(\$2/${y_scale}) title 'RL1', \\\n",
 		    $ranges, $datafile);
 	    printf PLOT ("    '' " .
-		    "using (\$1/${xscale}):(\$3/${yscale}) title 'RL2'\n");
+		    "using (\$1/${x_scale}):(\$3/${y_scale}) title 'RL2'\n");
 
 	} elsif ($key eq "2il") {
 	    printf PLOT ("plot %s '%s' " .
-		    "using (\$1/${xscale}):(\$2/${yscale}) title 'IL12', \\\n",
+		    "using (\$1/${x_scale}):(\$2/${y_scale}) title 'IL12', \\\n",
 		    $ranges, $datafile);
 	    printf PLOT ("    '' " .
-		    "using (\$1/${xscale}):(\$3/${yscale}) title 'IL21'\n");
+		    "using (\$1/${x_scale}):(\$3/${y_scale}) title 'IL21'\n");
 
 	} elsif ($key eq "2vswr") {
 	    printf PLOT ("plot %s '%s' " .
-		    "using (\$1/${xscale}):(\$2/${yscale}) title 'VSWR1', \\\n",
+		    "using (\$1/${x_scale}):(\$2/${y_scale}) title 'VSWR1', \\\n",
 		    $ranges, $datafile);
 	    printf PLOT ("    '' " .
-		    "using (\$1/${xscale}):(\$3/${yscale}) title 'VSWR2'\n");
+		    "using (\$1/${x_scale}):(\$3/${y_scale}) title 'VSWR2'\n");
 
 	} else {
 	    die "$key";
@@ -3211,7 +3518,6 @@ if (!defined($CurrentSettings{standards_2port})) {
 &cal_build_setup();
 &m_build_select_calibration();
 &m_init_titles();
-&m_init_y_ranges();
 {
     my $m_parameters = $builder->get_object("m_parameters");
     my $stack1 = $builder->get_object("stack1");
@@ -3375,7 +3681,7 @@ sub new {
 	#     closed		connection to command closed and cleaned up
 	state		=> "closed",
 
-	# 
+	#
 	# Child PID, and input and output (to this program) streams
 	#
 	thread		=> undef,
