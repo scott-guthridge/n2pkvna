@@ -212,6 +212,7 @@ my %CurrentSettings = (
 	C => [ "", "", "nF"      ],	# capacitance
 	L => [ "", "", "μH"      ]	# inductance
     },
+    m_smith_ranges      => undef,
     gen_RF_frequency	=> 10.0e+6,
     gen_LO_frequency	=> 10.0e+6,
     gen_RF_unit_index	=> 2,
@@ -590,6 +591,7 @@ my %ParameterToBaseUnits = (
     sri		=> [ "F",  "1", undef ],
     sma		=> [ "F",  "1", "A"   ],
     sdb		=> [ "F",  "B", "A"   ],
+    ssmith      => [ "1",  "1", undef ],
     tri		=> [ "F",  "1", undef ],
     tdb		=> [ "F",  "B", "A"   ],
     tma		=> [ "F",  "1", "A"   ],
@@ -1838,7 +1840,6 @@ sub m_start_scan_clicked_cb {
     push(@Cmd, "-f", sprintf("%e:%e", $fmin / 1.0e+6, $fmax / 1.0e+6));
     push(@Cmd, "-n", $m_steps->get_text());
     push(@Cmd, "-o", $convert->getdir() . "/sri.npd");
-    push(@Cmd, "-x");
     if ($m_symmetrical->get_active()) {
 	push(@Cmd, "-y");
     }
@@ -1866,6 +1867,7 @@ sub m_start_scan_command_cb {
     $convert->set_ready($ports);
     $cur->{m_conversions} = $convert;
     $m_logscale_x->set_active($m_log->get_active());
+    $cur->{m_smith_ranges} = undef;
 
     &m_plot();
 }
@@ -2166,6 +2168,9 @@ sub build_m_coordinates {
     }
     if ($root_parameter =~ m/^[stu]$/) {
 	$m_coordinates->append("db", "dB-Angle");
+    }
+    if ($root_parameter eq "s") {
+	$m_coordinates->append("smith", "Smith Chart");
     }
     $m_coordinates->set_active_id($settings->{coordinates});
     $refcount->release();
@@ -2504,6 +2509,99 @@ sub m_graph_draw_cb {
     return FALSE;
 }
 
+sub smith_grid {
+    my ($plot, $xmin, $xmax, $ymin, $ymax) = @_;
+    my $PI = 3.14159265358979323844;
+    my $SGRID_OPTS = "notitle dt 2 lc rgb 'gray'";
+
+    #
+    # Set up parametric plot.
+    #
+    printf $plot ("set parametric\n");
+    printf $plot ("set size ratio -1\n");
+    printf $plot ("set xrange [%g:%g]\n", $xmin, $xmax);
+    printf $plot ("set yrange [%g:%g]\n", $ymin, $ymax);
+    printf $plot ("set trange [-pi:pi]\n");
+    printf $plot ("set xlabel 'real'\n");
+    printf $plot ("set ylabel 'imaginary'\n");
+
+    #
+    # Draw the unit circle in heavy black.
+    #
+    printf $plot ("plot (cos(t)),(sin(t)) notitle lc rgb 'black' lt 2, \\\n");
+
+    #
+    # Draw circles of constant resistance.
+    #
+    my @RValues = (-5.0, -2.0, -1.0, -0.5, -0.2, 0.0, 0.2, 0.5, 1.0, 2.0, 5.0);
+    foreach my $R (@RValues) {
+	#
+	# Suppress the R == -1 (vertical line) assuming that it coincides
+	# with a grid line.
+	#
+	if ($R == -1.0) {
+	    next;
+	}
+
+	#
+	# Special-case R == 0, which is the unit circle we drew above.
+	#
+	if ($R == 0.0) {
+	    next;
+	}
+
+	#
+	# Calculate center and radius of circle.
+	#
+	my $x0 = $R / ($R + 1);
+	my $r  = 1.0 / sqrt(1.0 + 2.0 * $R + $R * $R);	# radius
+
+	#
+	# Hide negative resistance if the top or bottom point of the
+	# circle lies outside the bounds.
+	#
+	if ($R < 0.0) {
+	    if ($R > -1.0) {
+		if ($x0 - $r < $xmin) {
+		    next;
+		}
+	    } else {
+		if ($x0 + $r > $xmax) {
+		    next;
+		}
+	    }
+	    if ($r > $ymax && -$r < $ymin) {
+		next;
+	    }
+	}
+	printf $plot ("    (%g+%g*cos(t)),(%g*sin(t)) %s, \\\n",
+	    $x0, $r, $r, $SGRID_OPTS);
+    }
+
+    #
+    # Draw circles of constant reactance.
+    #
+    my @XValues = (-5.0, -2.0, -1.0, -0.5, -0.2, 0.0, 0.2, 0.5, 1.0, 2.0, 5.0);
+    foreach my $X (@XValues) {
+	#
+	# Suppress the X == 0 (horizontal line), assuming it coincides
+	# with a grid line.
+	#
+	if ($X == 0) {
+	    next;
+	}
+
+	#
+	# Calculate center and radius of circle.
+	#
+	my $x0 = 1.0;
+	my $y0 = 1.0 / $X;
+	my $r  = abs($y0);
+	printf $plot ("    (%g+%g*cos(t)),(%g+%g*sin(t)) %s, \\\n",
+	    $x0, $r, $y0, $r, $SGRID_OPTS);
+    }
+}
+
 #
 # m_plot: plot the graph
 #
@@ -2551,6 +2649,79 @@ sub m_plot {
     my ($y2_ranges, $y2_base_unit) = &parameter_to_y2_ranges($parameter);
 
     #
+    # If Smith chart and ranges are not defined, set them.
+    #
+    if ($parameter eq "ssmith") {
+	#
+	# If smith_ranges not yet known, find them.
+	#
+	my $ref = $cur->{smith_ranges};
+	if (!defined($ref) && defined($datafile)) {
+	    $cur->{smith_ranges} = $ref = {
+		xmin => -1.0,
+		xmax => +1.0,
+		ymin => -1.0,
+		ymax => +1.0,
+	    };
+	    open(my $data_fd, "<${datafile}") || die "${datafile}: $!";
+	    while (<$data_fd>) {
+		chop;
+		if (/^#/) {
+		    next;
+		}
+		my @F = split;
+		if ($conversions->{ports} == 1) {
+		    die "$_" unless scalar(@F) == 3;
+		} else {
+		    die "$_" unless scalar(@F) == 9;
+		}
+		for (my $i = 0; $i < $conversions->{ports}; ++$i) {
+		    my $x_idx = $conversions->{ports} * $i + $i + 1;
+		    my $y_idx = $x_idx + 1;
+		    die "$_" unless $#F >= $y_idx;
+		    my $x = $F[$x_idx];
+		    my $y = $F[$y_idx];
+		    if ($x < $ref->{xmin}) {
+			$ref->{xmin} = $x;
+		    }
+		    if ($x > $ref->{xmax}) {
+			$ref->{xmax} = $x;
+		    }
+		    if ($y < $ref->{ymin}) {
+			$ref->{ymin} = $y;
+		    }
+		    if ($y > $ref->{ymax}) {
+			$ref->{ymax} = $y;
+		    }
+		}
+	    }
+	    close($data_fd);
+	    $x_ranges->[0] = "";	# clear to force reset below
+	    $x_ranges->[1] = "";
+	    $y_ranges->[0] = "";
+	    $y_ranges->[1] = "";
+	}
+	if (defined($ref)) {
+	    if ($x_ranges->[0] eq "") {
+		$x_ranges->[0] = $ref->{xmin};
+		$m_x_min->set_text($ref->{xmin});
+	    }
+	    if ($x_ranges->[1] eq "") {
+		$x_ranges->[1] = $ref->{xmax};
+		$m_x_max->set_text($ref->{xmax});
+	    }
+	    if ($y_ranges->[0] eq "") {
+		$y_ranges->[0] = $ref->{ymin};
+		$m_y_min->set_text($ref->{ymin});
+	    }
+	    if ($y_ranges->[1] eq "") {
+		$y_ranges->[1] = $ref->{ymax};
+		$m_y_max->set_text($ref->{ymax});
+	    }
+	}
+    }
+
+    #
     # Break out the ranges and units.
     #
     my ($x_min, $x_max, $x_unit, $x_logscale) = @{$x_ranges};
@@ -2586,47 +2757,52 @@ sub m_plot {
 	}
 
 	#
-	# Set xlabel and x ranges.
+	# If not Smith...
 	#
-	if (defined($BaseUnitNames{$x_base_unit})) {
-	    printf PLOT ("set xlabel '%s", $BaseUnitNames{$x_base_unit});
-	    if (defined($x_unit)) {
-		printf PLOT (" (%s)", $x_unit);
-	    }
-	    printf PLOT ("'\n");
-	}
-	if ($x_logscale) {
-	    printf PLOT ("set logscale x\n");
-	}
-	$ranges .= " [$x_min:$x_max]";
-
-	#
-	# Set ylabel and y ranges.
-	#
-	if (defined($BaseUnitNames{$y_base_unit})) {
-	    printf PLOT ("set ylabel '%s", $BaseUnitNames{$y_base_unit});
-	    if (defined($y_unit)) {
-		printf PLOT (" (%s)", $y_unit);
-	    }
-	    printf PLOT ("'\n");
-	}
-	$ranges .= " [$y_min:$y_max]";
-
-	#
-	# Set y2label and range if y2 exists.
-	#
-	if (defined($y2_base_unit)) {
-	    if (defined($BaseUnitNames{$y2_base_unit})) {
-		printf PLOT ("set y2label '%s",
-			$BaseUnitNames{$y2_base_unit});
-		if (defined($y2_unit)) {
-		    printf PLOT (" (%s)'", $y2_unit);
+	if ($parameter ne "ssmith") {
+	    #
+	    # Set xlabel and x ranges.
+	    #
+	    if (defined($BaseUnitNames{$x_base_unit})) {
+		printf PLOT ("set xlabel '%s", $BaseUnitNames{$x_base_unit});
+		if (defined($x_unit)) {
+		    printf PLOT (" (%s)", $x_unit);
 		}
 		printf PLOT ("'\n");
 	    }
-	    printf PLOT ("set y2tics\n");
-	    if ($y2_min ne "" || $y2_max ne "") {
-		printf PLOT ("set y2range [%s:%s]\n", $y2_min, $y2_max);
+	    if ($x_logscale) {
+		printf PLOT ("set logscale x\n");
+	    }
+	    $ranges .= " [$x_min:$x_max]";
+
+	    #
+	    # Set ylabel and y ranges.
+	    #
+	    if (defined($BaseUnitNames{$y_base_unit})) {
+		printf PLOT ("set ylabel '%s", $BaseUnitNames{$y_base_unit});
+		if (defined($y_unit)) {
+		    printf PLOT (" (%s)", $y_unit);
+		}
+		printf PLOT ("'\n");
+	    }
+	    $ranges .= " [$y_min:$y_max]";
+
+	    #
+	    # Set y2label and range if y2 exists.
+	    #
+	    if (defined($y2_base_unit)) {
+		if (defined($BaseUnitNames{$y2_base_unit})) {
+		    printf PLOT ("set y2label '%s",
+			    $BaseUnitNames{$y2_base_unit});
+		    if (defined($y2_unit)) {
+			printf PLOT (" (%s)'", $y2_unit);
+		    }
+		    printf PLOT ("'\n");
+		}
+		printf PLOT ("set y2tics\n");
+		if ($y2_min ne "" || $y2_max ne "") {
+		    printf PLOT ("set y2range [%s:%s]\n", $y2_min, $y2_max);
+		}
 	    }
 	}
 
@@ -2692,6 +2868,18 @@ sub m_plot {
 		    "using (\$1/${x_scale}):(\$8/${y_scale}) title '%s22_m' lt 4 dt solid, \\\n", $prefix);
 	    printf PLOT ("    '' " .
 		    "using (\$1/${x_scale}):(\$9/${y2_scale}) axes x1y2 title '%s22_a' lt 4 dt 2\n", $prefix);
+
+	} elsif ($key eq "1ssmith" || $key eq "2ssmith") {
+	    &smith_grid(\*PLOT, $x_min, $x_max, $y_min, $y_max);
+	    printf PLOT ("    '%s' using 2:3 title 'S11' " .
+			 "with points lt 1 pt 7 ps 0.5",
+		    $datafile);
+	    if ($conversions->{ports} == 2) {
+		printf PLOT (", \\\n");
+		printf PLOT ("    '' using 8:9 title 'S22' " .
+			     "with points lt 2 pt 7 ps 0.5");
+	    }
+	    printf PLOT ("\n");
 
 	} elsif ($key =~ m/^1zinri/) {
 	    printf PLOT ("plot %s '%s' using (\$1/${x_scale}):(\$2/${y_scale}) title 'Zin_r', \\\n",
@@ -3793,6 +3981,9 @@ sub convert {
     my $type      = shift;
     my $dialog    = shift;
 
+    if ($type eq "ssmith") {
+	$type = "sri";
+    }
     if (defined($self->{typeset}{$type})) {
 	return $self->{directory} . "/" . $type . ".npd";
     }
