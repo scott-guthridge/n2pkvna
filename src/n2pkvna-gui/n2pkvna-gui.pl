@@ -1607,12 +1607,12 @@ sub m_select_calibration_changed_cb() {
 	return;
     }
     $cur->{m_cal} = $cal;
-    my $m_fmin      	= $builder->get_object("m_fmin");
-    my $m_fmin_unit 	= $builder->get_object("m_fmin_unit");
-    my $m_fmax      	= $builder->get_object("m_fmax");
-    my $m_fmax_unit 	= $builder->get_object("m_fmax_unit");
-    my $m_steps     	= $builder->get_object("m_steps");
-    my $m_log       	= $builder->get_object("m_log");
+    my $m_fmin		= $builder->get_object("m_fmin");
+    my $m_fmin_unit	= $builder->get_object("m_fmin_unit");
+    my $m_fmax		= $builder->get_object("m_fmax");
+    my $m_fmax_unit	= $builder->get_object("m_fmax_unit");
+    my $m_steps		= $builder->get_object("m_steps");
+    my $m_log		= $builder->get_object("m_log");
     my $m_symmetrical	= $builder->get_object("m_symmetrical");
 
     if ($cal->{fmin} >= 1.0e+6) {
@@ -1630,7 +1630,7 @@ sub m_select_calibration_changed_cb() {
 	$m_fmax_unit->set_active(1);
     }
     $m_steps->set_text($cal->{frequencies});
-    					     
+					     
     my $frequency_spacing = $cal->{properties}{frequencySpacing};
     $m_log->set_active(defined($frequency_spacing) &&
 	    $frequency_spacing eq "log");
@@ -1727,7 +1727,7 @@ sub add_file_filters {
 #
 sub m_load_clicked_cb {
     my $cur = \%CurrentSettings;
-    my $m_logscale_x  		= $builder->get_object("m_logscale_x");
+    my $m_logscale_x = $builder->get_object("m_logscale_x");
 
     my $dialog = Gtk3::FileChooserNative->new(
 	    "Load Network Parameters From File",
@@ -2409,17 +2409,17 @@ sub gen_command {
 #
 sub update_gen_display {
     my $cur = \%CurrentSettings;
-    my $gen_display	 	= $builder->get_object("gen_display");
-    my $gen_RF_frequency 	= $builder->get_object("gen_RF_frequency");
-    my $gen_LO_frequency 	= $builder->get_object("gen_LO_frequency");
-    my $gen_RF_unit      	= $builder->get_object("gen_RF_unit");
-    my $gen_LO_unit      	= $builder->get_object("gen_LO_unit");
-    my $gen_RF_enable    	= $builder->get_object("gen_RF_enable");
-    my $gen_LO_enable    	= $builder->get_object("gen_LO_enable");
-    my $gen_phase        	= $builder->get_object("gen_phase");
-    my $gen_lock_to_RF   	= $builder->get_object("gen_lock_to_RF");
+    my $gen_display		= $builder->get_object("gen_display");
+    my $gen_RF_frequency	= $builder->get_object("gen_RF_frequency");
+    my $gen_LO_frequency	= $builder->get_object("gen_LO_frequency");
+    my $gen_RF_unit		= $builder->get_object("gen_RF_unit");
+    my $gen_LO_unit		= $builder->get_object("gen_LO_unit");
+    my $gen_RF_enable		= $builder->get_object("gen_RF_enable");
+    my $gen_LO_enable		= $builder->get_object("gen_LO_enable");
+    my $gen_phase		= $builder->get_object("gen_phase");
+    my $gen_lock_to_RF		= $builder->get_object("gen_lock_to_RF");
     my $gen_master_enable	= $builder->get_object("gen_master_enable");
-    my $gen_attenuation   	= $builder->get_object("gen_attenuation");
+    my $gen_attenuation		= $builder->get_object("gen_attenuation");
     my $text;
 
     #
@@ -3373,7 +3373,7 @@ sub new {
 	#     needsmeasuredF	needs a measured frequency value
 	#     exited		program has exited
 	#     closed		connection to command closed and cleaned up
-        state		=> "closed",
+	state		=> "closed",
 
 	# 
 	# Child PID, and input and output (to this program) streams
