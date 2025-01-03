@@ -1916,7 +1916,7 @@ sub m_load_clicked_cb {
 	my $convert = N2PKVNAConvert->new();
 	my $directory = $convert->{directory};
 	my $outputfile = $directory . "/sri.npd";
-	my @Cmd = ("convert", "-xp", "Sri", $filename, $outputfile);
+	my @Cmd = ("convert", "-p", "Sri", $filename, $outputfile);
 	if (!&run_command_dialog(\@Cmd, undef, undef, undef, undef)) {
 	    return;
 	}
@@ -1954,6 +1954,11 @@ sub m_save_clicked_cb {
     if ($refcount->check_hold()) {
 	return;
     }
+    my $parameter = $cur->{m_parameter};
+    if ($parameter eq "smith") {
+	$parameter = "sri";
+    }
+    $parameter =~ s/_n$//;	# remove normalize suffix
     my $convert = $cur->{m_conversions};
     if (!defined($convert) || !defined($convert->{typeset}{sri})) {
 	return;
@@ -1968,12 +1973,11 @@ sub m_save_clicked_cb {
     my $res = $dialog->run();
     if ($res eq "ok" || $res == -3) {
 	my $m_parameters  = $builder->get_object("m_parameters");
-	my $parameter_id  = $m_parameters->get_active_id();
 	my $directory = $convert->{directory};
 	my $inputfile = $directory . "/sri.npd";
 
 	my $filename = $dialog->get_filename();
-	my @Cmd = ("convert", "-p", $parameter_id);
+	my @Cmd = ("convert", "-p", $parameter);
 	push(@Cmd, $inputfile, $filename);
 	&run_command_dialog(\@Cmd, undef, undef, undef, undef);
     }
