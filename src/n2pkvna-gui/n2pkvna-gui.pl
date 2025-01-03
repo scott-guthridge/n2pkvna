@@ -73,7 +73,11 @@ my %CurrentSettings = (
     standards_1port	=> [],
     standards_2port	=> [],
     page		=> "setup",
-    busy		=> undef,
+    busy		=> {
+	setup_edit => 0,
+	cal_main   => 0,
+	m_main     => 0,
+    },
     setup_edit_name	=> undef,
     setup_edit_data	=> undef,
     setup_edit_extra	=> undef,
@@ -89,9 +93,94 @@ my %CurrentSettings = (
     m_graph_width	=> 640,
     m_graph_height	=> 480,
     m_parameter		=> "sri",
-    m_parameter_busy	=> 0,
     m_title		=> {},	# by root parameter
-    m_ranges_busy	=> undef,
+    m_parameter_settings => {
+	s => {
+	    title       => 'S Parameters',
+	    coordinates => 'ri',
+	    # normalize always off
+	},
+	t => {
+	    title       => 'T Parameters',
+	    coordinates => 'ri',
+	    # normalize always off
+	},
+	u => {
+	    title       => 'U Parameters',
+	    coordinates => 'ri',
+	    # normalize always off
+	},
+	z => {
+	    title       => 'Z Parameters',
+	    coordinates => 'ri',
+	    normalize   => 0,
+	},
+	y => {
+	    title       => 'Y Parameters',
+	    coordinates => 'ri',
+	    normalize   => 0,
+	},
+	h => {
+	    title       => 'H Parameters',
+	    coordinates => 'ri',
+	    # normalize always on
+	},
+	g => {
+	    title       => 'G Parameters',
+	    coordinates => 'ri',
+	    # normalize always on
+	},
+	a => {
+	    title       => 'A Parameters',
+	    coordinates => 'ri',
+	    # normalize always on
+	},
+	b => {
+	    title       => 'B Parameters',
+	    coordinates => 'ri',
+	    # normalize always on
+	},
+	zin => {
+	    title       => 'Input Impedance',
+	    coordinates => 'ri',
+	    normalize   => 1,
+	},
+	prc => {
+	    title       => 'Parallel RC Equivalent',
+	    # no coordinate options
+	    # normalize always off
+	},
+	prl => {
+	    title       => 'Parallel RL Equivalent',
+	    # no coordinate options
+	    # normalize always off
+	},
+	src => {
+	    title       => 'Series RC Equivalent',
+	    # no coordinate options
+	    # normalize always off
+	},
+	srl => {
+	    title       => 'Series RL Equivalent',
+	    # no coordinate options
+	    # normalize always off
+	},
+	rl => {
+	    title       => 'Return Loss',
+	    # no coordinate options
+	    # normalize always off
+	},
+	il => {
+	    title       => 'Insertion Loss',
+	    # no coordinate options
+	    # normalize always off
+	},
+	vswr => {
+	    title       => 'Voltage Standing Wave Ratio',
+	    # no coordinate options
+	    # normalize always off
+	},
+    },
     m_x_ranges		=> {
 	F => [ "", "", "MHz", undef ],	# frequency
     },
@@ -656,9 +745,11 @@ sub setup_fcal_back_clicked_cb {
 
 sub setup_init_menu {
     my $cur = \%CurrentSettings;
+    my $refcount = RefCount->new(\$cur->{busy}{setup_edit});
     my $setup_create_name = $builder->get_object("setup_create_name");
     my $setup_edit_name   = $builder->get_object("setup_edit_name");
 
+    $refcount->hold();
     $setup_create_name->set_text("");
     $setup_edit_name->remove_all();
     my @setup_names = sort { $a cmp $b } keys(%{$cur->{properties}{setups}});
@@ -667,6 +758,7 @@ sub setup_init_menu {
     foreach my $name (@setup_names) {
 	$setup_edit_name->append($name, $name);
     }
+    $refcount->release();
 }
 
 sub setup_edit_clicked_cb {
@@ -918,12 +1010,12 @@ sub setup_build_detector_combobox {
 
 sub setup_build_table {
     my $cur = \%CurrentSettings;
+    my $refcount = RefCount->new(\$cur->{busy}{setup_edit});
     my $setup  = $cur->{setup_edit_data};
     my $steps = scalar(@{$setup->{steps}});
     my $extra = $cur->{setup_edit_extra};
     my $msteps = $extra->{msteps};
     my $table = $builder->get_object("setup_table");
-    die unless $cur->{busy};
 
     $setup->{dimensions} =~ m/^(\d)x(\d)$/;
     my $rows    = $1;
@@ -932,6 +1024,7 @@ sub setup_build_table {
     #
     # Clear old table.
     #
+    $refcount->hold();
     while ($table->get_child_at(0, 0) || $table->get_child_at(2, 0)) {
 	$table->remove_row(0);
     }
@@ -1066,6 +1159,7 @@ sub setup_build_table {
 	}
     }
     $table->show_all();
+    $refcount->release();
 }
 
 sub setup_update_names {
@@ -1090,14 +1184,13 @@ sub setup_hide_toggled_cb {
 sub setup_dimensions_changed_cb {
     my $widget = shift;
     my $cur = \%CurrentSettings;
-    if (!$cur->{busy}) {
-	$cur->{busy} = 1;
+    my $refcount = RefCount->new(\$cur->{busy}{setup_edit});
+    if (!$refcount->check_hold()) {
 	my $setup = $cur->{setup_edit_data};
 	$setup->{dimensions} = $widget->get_active_id();
 	&setup_fix_vectors();
 	&setup_update_names();
 	&setup_build_table();
-	$cur->{busy} = undef;
     }
 }
 
@@ -1105,8 +1198,8 @@ sub setup_msteps_value_changed_cb {
     my $widget = shift;
     my $cur = \%CurrentSettings;
     my $extra = $cur->{setup_edit_extra};
-    if (!$cur->{busy}) {
-	$cur->{busy} = 1;
+    my $refcount = RefCount->new(\$cur->{busy}{setup_edit});
+    if (!$refcount->check_hold()) {
 	my $setup = $cur->{setup_edit_data};
 	my $msteps = $widget->get_value();
 	my $steps = ($msteps > 0) ? $msteps : 1;
@@ -1137,15 +1230,14 @@ sub setup_msteps_value_changed_cb {
 	$cur->{setup_edit_extra}{msteps} = $msteps;
 	&setup_update_names();
 	&setup_build_table();
-	$cur->{busy} = undef;
     }
 }
 
 sub setup_det1_toggled_cb {
     my $widget = shift;
     my $cur = \%CurrentSettings;
-    if (!$cur->{busy}) {
-	$cur->{busy} = 1;
+    my $refcount = RefCount->new(\$cur->{busy}{setup_edit});
+    if (!$refcount->check_hold()) {
 	my $n_detectors = $widget->get_active() ? 1 : 2;
 	my $setup = $cur->{setup_edit_data};
 	foreach my $step (@{$setup->{steps}}) {
@@ -1156,15 +1248,14 @@ sub setup_det1_toggled_cb {
 	$cur->{setup_edit_extra}{n_detectors} = $n_detectors;
 	&setup_update_names();
 	&setup_build_table();
-	$cur->{busy} = undef;
     }
 }
 
 sub setup_use_switch_toggled_cb {
     my $widget = shift;
     my $cur = \%CurrentSettings;
-    if (!$cur->{busy}) {
-	$cur->{busy} = 1;
+    my $refcount = RefCount->new(\$cur->{busy}{setup_edit});
+    if (!$refcount->check_hold()) {
 	my $setup = $cur->{setup_edit_data};
 	my $use_switch = $widget->get_active();
 	if (!$use_switch) {
@@ -1178,37 +1269,34 @@ sub setup_use_switch_toggled_cb {
 	&setup_fix_vectors();
 	&setup_update_names();
 	&setup_build_table();
-	$cur->{busy} = undef;
     }
 }
 
 sub setup_use_RFIV_toggled_cb {
     my $widget = shift;
     my $cur = \%CurrentSettings;
-    if (!$cur->{busy}) {
-	$cur->{busy} = 1;
+    my $refcount = RefCount->new(\$cur->{busy}{setup_edit});
+    if (!$refcount->check_hold()) {
 	my $use_RFIV = $widget->get_active();
 	my $setup = $cur->{setup_edit_data};
 	$cur->{setup_edit_extra}{use_RFIV} = $use_RFIV;
 	&setup_fix_vectors();
 	&setup_update_names();
 	&setup_build_table();
-	$cur->{busy} = undef;
     }
 }
 
 sub setup_use_references_toggled_cb {
     my $widget = shift;
     my $cur = \%CurrentSettings;
-    if (!$cur->{busy}) {
-	$cur->{busy} = 1;
+    my $refcount = RefCount->new(\$cur->{busy}{setup_edit});
+    if (!$refcount->check_hold()) {
 	my $use_references = $widget->get_active();
 	my $setup = $cur->{setup_edit_data};
 	$cur->{setup_edit_extra}{use_references} = $use_references;
 	&setup_fix_vectors();
 	&setup_update_names();
 	&setup_build_table();
-	$cur->{busy} = undef;
     }
 }
 
@@ -1234,15 +1322,14 @@ sub setup_delete_clicked_cb {
     my $step_i   = $arg->[0];
     my $switch_i = $arg->[1];
     my $cur = \%CurrentSettings;
-    if (!$cur->{busy}) {
-	$cur->{busy} = 1;
+    my $refcount = RefCount->new(\$cur->{busy}{setup_edit});
+    if (!$refcount->check_hold()) {
 	my $setup = $cur->{setup_edit_data};
 	my $step = $setup->{steps}[$step_i];
 	my $measurements = $step->{measurements};
 	splice(@{$measurements}, $switch_i, 1);
 	&setup_update_names();
 	&setup_build_table();
-	$cur->{busy} = undef;
     }
 }
 
@@ -1250,8 +1337,8 @@ sub setup_add_clicked_cb {
     my $widget = shift;
     my $step_i = shift;
     my $cur = \%CurrentSettings;
-    if (!$cur->{busy}) {
-	$cur->{busy} = 1;
+    my $refcount = RefCount->new(\$cur->{busy}{setup_edit});
+    if (!$refcount->check_hold()) {
 	my $setup = $cur->{setup_edit_data};
 	my $step = $setup->{steps}[$step_i];
 	my $measurements = $step->{measurements};
@@ -1269,7 +1356,6 @@ sub setup_add_clicked_cb {
 	});
 	&setup_update_names();
 	&setup_build_table();
-	$cur->{busy} = undef;
     }
 }
 
@@ -1277,9 +1363,10 @@ sub setup_init_editor {
     my $name  = shift;
     my $setup = shift;
     my $cur = \%CurrentSettings;
+    my $refcount = RefCount->new(\$cur->{busy}{setup_edit});
     my %extra;
 
-    $cur->{busy} = 1;
+    $refcount->hold();
     $cur->{setup_edit_data}  = clone($setup);
     $cur->{setup_edit_extra} = \%extra;
 
@@ -1394,7 +1481,7 @@ sub setup_init_editor {
 
     &setup_build_table();
     $setup_editor->show_all();
-    $cur->{busy} = undef;
+    $refcount->release();
 }
 
 sub setup_cancel_clicked_cb {
@@ -1402,6 +1489,7 @@ sub setup_cancel_clicked_cb {
     my $arg    = shift;
     my $cur = \%CurrentSettings;
     my $setup = $builder->get_object("setup");
+
     $cur->{setup_edit_name} = undef;
     $cur->{setup_edit_data} = undef;
     $cur->{setup_edit_extra} = undef;
@@ -1597,11 +1685,9 @@ sub setup_save_clicked_cb {
 	return;
     }
     $cur->{properties}{setups}{$setup_name} = $data;
-    $cur->{busy} = 1;
     &setup_init_menu();
     &setup_build_table();
     &cal_build_setup();
-    $cur->{busy} = undef;
 
     $cur->{setup_edit_name} = undef;
     $cur->{setup_edit_data} = undef;
@@ -1648,10 +1734,12 @@ sub m_init_titles {
 #
 # m_build_select_calibration: build the select calibration combo box
 #
-sub m_build_select_calibration() {
+sub m_build_select_calibration {
     my $m_select_calibration = $builder->get_object("m_select_calibration");
     my $cur = \%CurrentSettings;
+    my $refcount = RefCount->new(\$cur->{busy}{m_main});
 
+    $refcount->hold();
     $m_select_calibration->remove_all();
     $m_select_calibration->append_text("Select Calibration");
     $m_select_calibration->set_active(0);
@@ -1659,14 +1747,19 @@ sub m_build_select_calibration() {
 	$m_select_calibration->append_text(
 		$cur->{calibration_files}[$i]{calfile});
     }
+    $refcount->release();
 }
 
 #
 # m_select_calibration_chanbed_cb: handle calibration selection
 #
-sub m_select_calibration_changed_cb() {
+sub m_select_calibration_changed_cb {
     my ($widget, $data) = @_;
     my $cur = \%CurrentSettings;
+    my $refcount = RefCount->new(\$cur->{busy}{m_main});
+    if ($refcount->check_hold()) {
+	return;
+    }
 
     if ($widget->get_active() == 0) {
 	return;
@@ -1731,6 +1824,10 @@ sub m_select_calibration_changed_cb() {
 sub m_start_scan_clicked_cb {
     my ($widget, $data) = @_;
     my $cur = \%CurrentSettings;
+    my $refcount = RefCount->new(\$cur->{busy}{m_main});
+    if ($refcount->check_hold()) {
+	return;
+    }
 
     my $m_select_calibration	= $builder->get_object("m_select_calibration");
     my $m_fmin			= $builder->get_object("m_fmin");
@@ -1775,8 +1872,9 @@ sub m_start_scan_clicked_cb {
 sub m_start_scan_command_cb {
     my $convert = shift;
     my $result  = shift;
-
     my $cur = \%CurrentSettings;
+    # Must allow this callback in the context of another.
+
     my $m_log		= $builder->get_object("m_log");
     my $m_logscale_x	= $builder->get_object("m_logscale_x");
 
@@ -1810,6 +1908,10 @@ sub add_file_filters {
 #
 sub m_load_clicked_cb {
     my $cur = \%CurrentSettings;
+    my $refcount = RefCount->new(\$cur->{busy}{m_main});
+    if ($refcount->check_hold()) {
+	return;
+    }
     my $m_logscale_x = $builder->get_object("m_logscale_x");
 
     my $dialog = Gtk3::FileChooserNative->new(
@@ -1859,8 +1961,11 @@ sub m_load_clicked_cb {
 #
 sub m_save_clicked_cb {
     my $cur = \%CurrentSettings;
+    my $refcount = RefCount->new(\$cur->{busy}{m_main});
+    if ($refcount->check_hold()) {
+	return;
+    }
     my $convert = $cur->{m_conversions};
-
     if (!defined($convert) || !defined($convert->{typeset}{sri})) {
 	return;
     }
@@ -1912,11 +2017,7 @@ sub update_m_parameter {
 #
 sub build_m_range_units {
     my $cur = \%CurrentSettings;
-
-    if ($cur->{m_ranges_busy}) {
-	return;
-    }
-    $cur->{m_ranges_busy} = 1;
+    my $refcount = RefCount->new(\$cur->{busy}{m_main});
     my $parameter  = $cur->{m_parameter};
 
     my $m_logscale_x = $builder->get_object("m_logscale_x");
@@ -1933,6 +2034,7 @@ sub build_m_range_units {
     #
     # Set m_x_min, m_x_max, m_x_unit and m_logscale_x
     #
+    $refcount->hold();
     my $units;
     {
 	my ($x_ranges, $x_base_unit) = &parameter_to_x_ranges($parameter);
@@ -2005,7 +2107,7 @@ sub build_m_range_units {
 	    $m_y2_unit->set_active(-1);
 	}
     }
-    $cur->{m_ranges_busy} = undef;
+    $refcount->release();
 }
 
 #
@@ -2014,14 +2116,13 @@ sub build_m_range_units {
 sub m_parameters_changed_cb {
     my ($widget, $data) = @_;
     my $cur = \%CurrentSettings;
+    my $refcount = RefCount->new(\$cur->{busy}{m_main});
+    if ($refcount->check_hold()) {
+	return;
+    }
     my $m_parameters = $builder->get_object("m_parameters");
     my $m_title      = $builder->get_object("m_title");
     my $m_normalize  = $builder->get_object("m_normalize");
-
-    #
-    # Increment the busy count to detect re-entry.
-    #
-    ++$cur->{m_parameter_busy};
 
     #
     # Update the title from the shadowed entry.
@@ -2056,8 +2157,6 @@ sub m_parameters_changed_cb {
     &update_m_parameter();
     &build_m_range_units();
     &m_plot();
-
-    --$cur->{m_parameter_busy};
 }
 
 #
@@ -2068,8 +2167,11 @@ sub build_m_coordinates {
     my $original_id = $m_coordinates->get_active_id();
     my $m_parameters = $builder->get_object("m_parameters");
     my $parameter_id = $m_parameters->get_active_id();
+    my $cur = \%CurrentSettings;
+    my $refcount = RefCount->new(\$cur->{busy}{m_main});
     my %Allowed;
 
+    $refcount->hold();
     $m_coordinates->remove_all();
     if ($parameter_id =~ m/^[abghstuyz]$/ || $parameter_id eq "zin") {
 	$m_coordinates->append("ri", "Real-Imaginary");
@@ -2089,6 +2191,7 @@ sub build_m_coordinates {
 	$m_coordinates->set_active_id("db");
     }
     $m_coordinates->show();
+    $refcount->release();
 }
 
 #
@@ -2097,15 +2200,14 @@ sub build_m_coordinates {
 sub m_coordinates_changed_cb {
     my ($widget, $data) = @_;
     my $cur = \%CurrentSettings;
-
-    if ($cur->{m_parameter_busy}) {
+    my $refcount = RefCount->new(\$cur->{busy}{m_main});
+    if ($refcount->check_hold()) {
 	return;
     }
-    ++$cur->{m_parameter_busy};
+
     &update_m_parameter();
     &build_m_range_units();
     &m_plot();
-    --$cur->{m_parameter_busy};
 }
 
 #
@@ -2114,6 +2216,10 @@ sub m_coordinates_changed_cb {
 sub m_x_min_focus_out_event_cb {
     my ($widget, $data) = @_;
     my $cur = \%CurrentSettings;
+    my $refcount = RefCount->new(\$cur->{busy}{m_main});
+    if ($refcount->check_hold()) {
+	return;
+    }
     my $parameter = $cur->{m_parameter};
     my ($x_ranges, $x_base_unit) = &parameter_to_x_ranges($parameter);
 
@@ -2124,12 +2230,7 @@ sub m_x_min_focus_out_event_cb {
     if ($text eq "" || $text =~ NumberRE) {
 	$x_ranges->[0] = $text;
     } else {
-	if ($cur->{m_ranges_busy}) {
-	    return;
-	}
-	$cur->{m_ranges_busy} = 1;
 	$m_x_min->set_text($x_ranges->[0]);
-	$cur->{m_ranges_busy} = undef;
     }
 }
 
@@ -2139,6 +2240,10 @@ sub m_x_min_focus_out_event_cb {
 sub m_x_max_focus_out_event_cb {
     my ($widget, $data) = @_;
     my $cur = \%CurrentSettings;
+    my $refcount = RefCount->new(\$cur->{busy}{m_main});
+    if ($refcount->check_hold()) {
+	return;
+    }
     my $parameter = $cur->{m_parameter};
     my ($x_ranges, $x_base_unit) = &parameter_to_x_ranges($parameter);
 
@@ -2149,12 +2254,7 @@ sub m_x_max_focus_out_event_cb {
     if ($text eq "" || $text =~ NumberRE) {
 	$x_ranges->[1] = $text;
     } else {
-	if ($cur->{m_ranges_busy}) {
-	    return;
-	}
-	$cur->{m_ranges_busy} = 1;
 	$m_x_max->set_text($x_ranges->[1]);
-	$cur->{m_ranges_busy} = undef;
     }
 }
 
@@ -2164,7 +2264,8 @@ sub m_x_max_focus_out_event_cb {
 sub m_x_unit_changed_cb {
     my ($widget) = @_;
     my $cur = \%CurrentSettings;
-    if ($cur->{m_ranges_busy}) {
+    my $refcount = RefCount->new(\$cur->{busy}{m_main});
+    if ($refcount->check_hold()) {
 	return;
     }
     my $parameter = $cur->{m_parameter};
@@ -2183,6 +2284,10 @@ sub m_x_unit_changed_cb {
 sub m_logscale_x_toggled_cb {
     my ($widget, $data) = @_;
     my $cur = \%CurrentSettings;
+    my $refcount = RefCount->new(\$cur->{busy}{m_main});
+    if ($refcount->check_hold()) {
+	return;
+    }
     my $parameter = $cur->{m_parameter};
     my ($x_ranges, $x_base_unit) = &parameter_to_x_ranges($parameter);
 
@@ -2196,6 +2301,10 @@ sub m_logscale_x_toggled_cb {
 sub m_y_min_focus_out_event_cb {
     my ($widget, $data) = @_;
     my $cur = \%CurrentSettings;
+    my $refcount = RefCount->new(\$cur->{busy}{m_main});
+    if ($refcount->check_hold()) {
+	return;
+    }
     my $parameter = $cur->{m_parameter};
     my ($y_ranges, $y_base_unit) = &parameter_to_y_ranges($parameter);
 
@@ -2206,12 +2315,7 @@ sub m_y_min_focus_out_event_cb {
     if ($text eq "" || $text =~ NumberRE) {
 	$y_ranges->[0] = $text;
     } else {
-	if ($cur->{m_ranges_busy}) {
-	    return;
-	}
-	$cur->{m_ranges_busy} = 1;
 	$m_y_min->set_text($y_ranges->[0]);
-	$cur->{m_ranges_busy} = undef;
     }
 }
 
@@ -2221,6 +2325,10 @@ sub m_y_min_focus_out_event_cb {
 sub m_y_max_focus_out_event_cb {
     my ($widget, $data) = @_;
     my $cur = \%CurrentSettings;
+    my $refcount = RefCount->new(\$cur->{busy}{m_main});
+    if ($refcount->check_hold()) {
+	return;
+    }
     my $parameter = $cur->{m_parameter};
     my ($y_ranges, $y_base_unit) = &parameter_to_y_ranges($parameter);
 
@@ -2231,12 +2339,7 @@ sub m_y_max_focus_out_event_cb {
     if ($text eq "" || $text =~ NumberRE) {
 	$y_ranges->[1] = $text;
     } else {
-	if ($cur->{m_ranges_busy}) {
-	    return;
-	}
-	$cur->{m_ranges_busy} = 1;
 	$m_y_max->set_text($y_ranges->[1]);
-	$cur->{m_ranges_busy} = undef;
     }
 }
 
@@ -2246,6 +2349,10 @@ sub m_y_max_focus_out_event_cb {
 sub m_y_unit_changed_cb {
     my ($widget) = @_;
     my $cur = \%CurrentSettings;
+    my $refcount = RefCount->new(\$cur->{busy}{m_main});
+    if ($refcount->check_hold()) {
+	return;
+    }
     my $parameter = $cur->{m_parameter};
     my ($y_ranges, $y_base_unit) = &parameter_to_y_ranges($parameter);
 
@@ -2259,6 +2366,10 @@ sub m_y_unit_changed_cb {
 sub m_y2_min_focus_out_event_cb {
     my ($widget, $data) = @_;
     my $cur = \%CurrentSettings;
+    my $refcount = RefCount->new(\$cur->{busy}{m_main});
+    if ($refcount->check_hold()) {
+	return;
+    }
     my $parameter = $cur->{m_parameter};
     my ($y2_ranges, $y2_base_unit) = &parameter_to_y2_ranges($parameter);
 
@@ -2269,12 +2380,7 @@ sub m_y2_min_focus_out_event_cb {
     if ($text eq "" || $text =~ NumberRE) {
 	$y2_ranges->[0] = $text;
     } else {
-	if ($cur->{m_ranges_busy}) {
-	    return;
-	}
-	$cur->{m_ranges_busy} = 1;
 	$m_y2_min->set_text($y2_ranges->[0]);
-	$cur->{m_ranges_busy} = undef;
     }
 }
 
@@ -2284,6 +2390,10 @@ sub m_y2_min_focus_out_event_cb {
 sub m_y2_max_focus_out_event_cb {
     my ($widget, $data) = @_;
     my $cur = \%CurrentSettings;
+    my $refcount = RefCount->new(\$cur->{busy}{m_main});
+    if ($refcount->check_hold()) {
+	return;
+    }
     my $parameter = $cur->{m_parameter};
     my ($y2_ranges, $y2_base_unit) = &parameter_to_y2_ranges($parameter);
 
@@ -2294,12 +2404,7 @@ sub m_y2_max_focus_out_event_cb {
     if ($text eq "" || $text =~ NumberRE) {
 	$y2_ranges->[1] = $text;
     } else {
-	if ($cur->{m_ranges_busy}) {
-	    return;
-	}
-	$cur->{m_ranges_busy} = 1;
 	$m_y2_max->set_text($y2_ranges->[1]);
-	$cur->{m_ranges_busy} = undef;
     }
 }
 
@@ -2309,6 +2414,10 @@ sub m_y2_max_focus_out_event_cb {
 sub m_y2_unit_changed_cb {
     my ($widget) = @_;
     my $cur = \%CurrentSettings;
+    my $refcount = RefCount->new(\$cur->{busy}{m_main});
+    if ($refcount->check_hold()) {
+	return;
+    }
     my $parameter = $cur->{m_parameter};
     my ($y2_ranges, $y2_base_unit) = &parameter_to_y2_ranges($parameter);
 
@@ -2322,20 +2431,23 @@ sub m_y2_unit_changed_cb {
 sub m_normalize_toggled_cb {
     my ($widget, $data) = @_;
     my $cur = \%CurrentSettings;
-
-    if ($cur->{m_parameter_busy}) {
+    my $refcount = RefCount->new(\$cur->{busy}{m_main});
+    if ($refcount->check_hold()) {
 	return;
     }
-    ++$cur->{m_parameter_busy};
     &update_m_parameter();
     &build_m_range_units();
-    --$cur->{m_parameter_busy};
 }
 
 #
 # m_legend_changed_cb
 #
 sub m_legend_changed_cb {
+    my $cur = \%CurrentSettings;
+    my $refcount = RefCount->new(\$cur->{busy}{m_main});
+    if ($refcount->check_hold()) {
+	return;
+    }
     &m_plot();
 }
 
@@ -2344,7 +2456,11 @@ sub m_legend_changed_cb {
 #
 sub m_replot_clicked_cb {
     my ($widget, $data) = @_;
-
+    my $cur = \%CurrentSettings;
+    my $refcount = RefCount->new(\$cur->{busy}{m_main});
+    if ($refcount->check_hold()) {
+	return;
+    }
     &m_plot();
 }
 
@@ -2353,6 +2469,10 @@ sub m_replot_clicked_cb {
 #
 sub m_graph_size_allocate_cb {
     my $cur = \%CurrentSettings;
+    my $refcount = RefCount->new(\$cur->{busy}{m_main});
+    if ($refcount->check_hold()) {
+	return;
+    }
     my $m_graph = $builder->get_object("m_graph");
     my $rectangle = $m_graph->get_allocation();
     my $height = $rectangle->{height};
@@ -2373,8 +2493,11 @@ sub m_graph_size_allocate_cb {
 #
 sub m_graph_draw_cb {
     my ($widget, $cairo, $arg) = @_;
-
     my $cur = \%CurrentSettings;
+    my $refcount = RefCount->new(\$cur->{busy}{m_main});
+    if ($refcount->check_hold()) {
+	return;
+    }
     if (defined(my $pixbuf = $cur->{m_pixbuf})) {
 	Gtk3::Gdk::cairo_set_source_pixbuf($cairo, $pixbuf, 0, 0);
 	$cairo->paint();
@@ -2680,7 +2803,7 @@ sub m_plot {
     system("gnuplot ${plotfile}");
     $cur->{m_pixbuf} = Gtk3::Gdk::Pixbuf->new_from_file($svgfile);
     $m_graph->queue_draw();
-    #$m_graph->show();
+    $m_graph->show();
     return 0;
 }
 
@@ -2955,9 +3078,11 @@ sub stack1_notify_visible_child_name_cb {
 sub cal_build_setup {
     my $cur = \%CurrentSettings;
     my $setups = $cur->{properties}{setups};
+    my $refcount = RefCount->new(\$cur->{busy}{cal_main});
     my @setup_names = keys(%{$setups});
     my $cal_setup = $builder->get_object("cal_setup");
 
+    $refcount->hold();
     $cal_setup->remove_all();
     if (scalar(@setup_names) == 0) {
 	$cal_setup->append(undef, "VNA Set-up Required");
@@ -2970,13 +3095,17 @@ sub cal_build_setup {
     $cal_setup->set_active(0);
     $cal_setup->show();
     &cal_build_type();
+    $refcount->release();
 }
 
 sub cal_setup_changed_cb {
     my $widget = shift;
     my $arg    = shift;
     my $cur = \%CurrentSettings;
-
+    my $refcount = RefCount->new(\$cur->{busy}{cal_main});
+    if ($refcount->check_hold()) {
+	return;
+    }
     $cur->{cal_setup} = $widget->get_active_id();
     &cal_build_type();
 }
@@ -3004,6 +3133,7 @@ sub cal_build_type {
 	}
     }
     my %allowed;
+    # ZZ: Suppress cal_type_changed_cb callbacks while changing?
     $cal_type->remove_all();
     if (defined($rows) && defined($columns)) {
 	if ($rows <= $columns) {
@@ -3539,6 +3669,65 @@ if (!defined($CurrentSettings{standards_2port})) {
 
 $appwindow->show_all();
 Gtk3->main();
+
+
+###############################################################################
+# Package RefCount
+###############################################################################
+
+package RefCount;
+use Carp;
+
+
+sub new {
+    my $proto       = shift;
+    my $counter_ref = shift;
+    my $class = ref($proto) || $proto;
+
+    my $self = {
+	counter_ref => $counter_ref,
+	held        => undef,
+    };
+    bless($self, $class);
+    return $self;
+}
+
+sub check_hold {
+    my $self = shift;
+
+    die if $self->{held};
+    if (${$self->{counter_ref}} > 0) {
+	return 1;
+    }
+    ++${$self->{counter_ref}};
+    $self->{held} = 1;
+    return 0;
+}
+
+sub hold {
+    my $self = shift;
+
+    die if $self->{held};
+    ++${$self->{counter_ref}};
+    $self->{held} = 1;
+}
+
+sub release {
+    my $self = shift;
+
+    die unless $self->{held};
+    die unless ${$self->{counter_ref}};
+    --${$self->{counter_ref}};
+    $self->{held} = undef;
+}
+
+sub DESTROY {
+    my $self = shift;
+
+    if ($self->{held}) {
+	$self->release();
+    }
+}
 
 
 ###############################################################################
