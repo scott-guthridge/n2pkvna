@@ -101,6 +101,12 @@ my %CurrentSettings = (
 	    coordinates => 'ri',
 	    # normalize always off
 	},
+	smith => {
+	    title       => '',
+	    legend	=> 'top left',
+	    # no coordinate options
+	    # normalize always off
+	},
 	t => {
 	    title       => 'T Parameters',
 	    legend	=> 'top right',
@@ -591,7 +597,7 @@ my %ParameterToBaseUnits = (
     sri		=> [ "F",  "1", undef ],
     sma		=> [ "F",  "1", "A"   ],
     sdb		=> [ "F",  "B", "A"   ],
-    ssmith      => [ "1",  "1", undef ],
+    smith       => [ "1",  "1", undef ],
     tri		=> [ "F",  "1", undef ],
     tdb		=> [ "F",  "B", "A"   ],
     tma		=> [ "F",  "1", "A"   ],
@@ -2169,9 +2175,6 @@ sub build_m_coordinates {
     if ($root_parameter =~ m/^[stu]$/) {
 	$m_coordinates->append("db", "dB-Angle");
     }
-    if ($root_parameter eq "s") {
-	$m_coordinates->append("smith", "Smith Chart");
-    }
     $m_coordinates->set_active_id($settings->{coordinates});
     $refcount->release();
 }
@@ -2652,7 +2655,7 @@ sub m_plot {
     # If Smith chart and ranges are not defined, set them.
     #
     my $smith_ranges = $cur->{smith_ranges};
-    if ($parameter eq "ssmith") {
+    if ($parameter eq "smith") {
 	#
 	# If smith_ranges not yet known, find them.
 	#
@@ -2719,7 +2722,7 @@ sub m_plot {
     #
     # If Smith, fill in $x_min, $x_max, $y_min, $y_max, if not specified.
     #
-    if ($parameter eq "ssmith" && defined($smith_ranges)) {
+    if ($parameter eq "smith" && defined($smith_ranges)) {
 	if ($x_min eq "") {
 	    $x_min = $smith_ranges->{xmin};
 	}
@@ -2759,7 +2762,7 @@ sub m_plot {
 	#
 	# If not Smith...
 	#
-	if ($parameter ne "ssmith") {
+	if ($parameter ne "smith") {
 	    #
 	    # Set xlabel and x ranges.
 	    #
@@ -2869,7 +2872,7 @@ sub m_plot {
 	    printf PLOT ("    '' " .
 		    "using (\$1/${x_scale}):(\$9/${y2_scale}) axes x1y2 title '%s22_a' lt 4 dt 2\n", $prefix);
 
-	} elsif ($key eq "1ssmith" || $key eq "2ssmith") {
+	} elsif ($key eq "1smith" || $key eq "2smith") {
 	    &smith_grid(\*PLOT, $x_min, $x_max, $y_min, $y_max);
 	    printf PLOT ("    '%s' using 2:3 title 'S11' " .
 			 "with points lt 1 pt 7 ps 0.5",
@@ -3981,7 +3984,7 @@ sub convert {
     my $type      = shift;
     my $dialog    = shift;
 
-    if ($type eq "ssmith") {
+    if ($type eq "smith") {
 	$type = "sri";
     }
     if (defined($self->{typeset}{$type})) {

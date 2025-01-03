@@ -2220,6 +2220,7 @@ along with N2PK VNA.  If not, see <http://www.gnu.org/licenses/>.
                             <property name="can-focus">False</property>
                             <items>
                               <item id="s" translatable="yes">S</item>
+                              <item id="smith" translatable="yes">Smith Chart</item>
                               <item id="t" translatable="yes">T</item>
                               <item id="u" translatable="yes">U</item>
                               <item id="z" translatable="yes">Z</item>
