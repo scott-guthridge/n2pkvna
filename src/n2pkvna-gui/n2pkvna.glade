@@ -2108,7 +2108,7 @@ along with N2PK VNA.  If not, see <http://www.gnu.org/licenses/>.
                           <object class="GtkLabel">
                             <property name="visible">True</property>
                             <property name="can-focus">False</property>
-                            <property name="label" translatable="yes">Parameters</property>
+                            <property name="label" translatable="yes">Plot</property>
                             <property name="width-chars">10</property>
                             <property name="xalign">0</property>
                           </object>
@@ -2219,17 +2219,17 @@ along with N2PK VNA.  If not, see <http://www.gnu.org/licenses/>.
                             <property name="visible">True</property>
                             <property name="can-focus">False</property>
                             <items>
-                              <item id="s" translatable="yes">S</item>
+                              <item id="s" translatable="yes">S Parameters</item>
                               <item id="smith" translatable="yes">Smith Chart</item>
-                              <item id="t" translatable="yes">T</item>
-                              <item id="u" translatable="yes">U</item>
-                              <item id="z" translatable="yes">Z</item>
-                              <item id="y" translatable="yes">Y</item>
-                              <item id="h" translatable="yes">H</item>
-                              <item id="g" translatable="yes">G</item>
-                              <item id="a" translatable="yes">A</item>
-                              <item id="b" translatable="yes">B</item>
-                              <item id="zin" translatable="yes">Zin</item>
+                              <item id="t" translatable="yes">T Parameters</item>
+                              <item id="u" translatable="yes">U Parameters</item>
+                              <item id="z" translatable="yes">Z Parameters</item>
+                              <item id="y" translatable="yes">Y Parameters</item>
+                              <item id="h" translatable="yes">H Parameters</item>
+                              <item id="g" translatable="yes">G Parameters</item>
+                              <item id="a" translatable="yes">A Parameters</item>
+                              <item id="b" translatable="yes">B Parameters</item>
+                              <item id="zin" translatable="yes">Input Impedances</item>
                               <item id="prc" translatable="yes">Parallel RC Equivalent</item>
                               <item id="prl" translatable="yes">Parallel RL Equiavalent</item>
                               <item id="src" translatable="yes">Series RC Equivalent</item>
