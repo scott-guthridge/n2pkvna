@@ -97,86 +97,103 @@ my %CurrentSettings = (
     m_parameter_settings => {
 	s => {
 	    title       => 'S Parameters',
+	    legend	=> 'top right',
 	    coordinates => 'ri',
 	    # normalize always off
 	},
 	t => {
 	    title       => 'T Parameters',
+	    legend	=> 'top right',
 	    coordinates => 'ri',
 	    # normalize always off
 	},
 	u => {
 	    title       => 'U Parameters',
+	    legend	=> 'top right',
 	    coordinates => 'ri',
 	    # normalize always off
 	},
 	z => {
 	    title       => 'Z Parameters',
+	    legend	=> 'top right',
 	    coordinates => 'ri',
 	    normalize   => 0,
 	},
 	y => {
 	    title       => 'Y Parameters',
+	    legend	=> 'top right',
 	    coordinates => 'ri',
 	    normalize   => 0,
 	},
 	h => {
 	    title       => 'H Parameters',
+	    legend	=> 'top right',
 	    coordinates => 'ri',
 	    # normalize always on
 	},
 	g => {
 	    title       => 'G Parameters',
+	    legend	=> 'top right',
 	    coordinates => 'ri',
 	    # normalize always on
 	},
 	a => {
 	    title       => 'A Parameters',
+	    legend	=> 'top right',
 	    coordinates => 'ri',
 	    # normalize always on
 	},
 	b => {
 	    title       => 'B Parameters',
+	    legend	=> 'top right',
 	    coordinates => 'ri',
 	    # normalize always on
 	},
 	zin => {
 	    title       => 'Input Impedance',
+	    legend	=> 'top right',
 	    coordinates => 'ri',
 	    normalize   => 1,
 	},
 	prc => {
 	    title       => 'Parallel RC Equivalent',
+	    legend	=> 'top right',
 	    # no coordinate options
 	    # normalize always off
 	},
 	prl => {
 	    title       => 'Parallel RL Equivalent',
+	    legend	=> 'top right',
 	    # no coordinate options
 	    # normalize always off
 	},
 	src => {
 	    title       => 'Series RC Equivalent',
+	    legend	=> 'top right',
 	    # no coordinate options
 	    # normalize always off
 	},
 	srl => {
 	    title       => 'Series RL Equivalent',
+	    legend	=> 'top right',
 	    # no coordinate options
 	    # normalize always off
 	},
 	rl => {
 	    title       => 'Return Loss',
+	    legend	=> 'top right',
 	    # no coordinate options
 	    # normalize always off
 	},
 	il => {
 	    title       => 'Insertion Loss',
+	    legend	=> 'top right',
 	    # no coordinate options
 	    # normalize always off
 	},
 	vswr => {
 	    title       => 'Voltage Standing Wave Ratio',
+	    legend	=> 'top right',
 	    # no coordinate options
 	    # normalize always off
 	},
@@ -1696,42 +1713,6 @@ sub setup_save_clicked_cb {
 }
 
 #
-# m_init_titles: reset graph titles to the defaults
-#
-sub m_init_titles {
-    my $cur = \%CurrentSettings;
-    my $m_parameters = $builder->get_object("m_parameters");
-    my $m_title = $builder->get_object("m_title");
-
-    $cur->{m_title} = {
-	s	=> 'S Parameters',
-	t	=> 'T Parameters',
-	u	=> 'U Parameters',
-	z	=> 'Z Parameters',
-	y	=> 'Y Parameters',
-	h	=> 'H Parameters',
-	g	=> 'G Parameters',
-	a	=> 'A Parameters',
-	b	=> 'B Parameters',
-	zin	=> 'Input Impedance',
-	prc	=> 'Parallel RC Equivalent',
-	prl	=> 'Parallel RL Equivalent',
-	src	=> 'Series RC Equivalent',
-	srl	=> 'Series RL Equivalent',
-	rl	=> 'Return Loss',
-	il	=> 'Insertion Loss',
-	vswr	=> 'Voltage Standing Wave Ratio',
-    };
-    my $root_parameter = $m_parameters->get_active_id();
-    if (defined($root_parameter)) {
-	die "$root_parameter" unless
-	    defined($cur->{m_title}{$root_parameter});
-	$m_title->set_text($cur->{m_title}{$root_parameter});
-	$m_title->show();
-    }
-}
-
-#
 # m_build_select_calibration: build the select calibration combo box
 #
 sub m_build_select_calibration {
@@ -2123,15 +2104,14 @@ sub m_parameters_changed_cb {
     my $m_parameters = $builder->get_object("m_parameters");
     my $m_title      = $builder->get_object("m_title");
     my $m_normalize  = $builder->get_object("m_normalize");
+    my $m_legend     = $builder->get_object("m_legend");
 
     #
     # Update the title from the shadowed entry.
     #
     my $root_parameter = $m_parameters->get_active_id();
-    if (defined($root_parameter)) {
-	$m_title->set_text($cur->{m_title}{$root_parameter});
-	$m_title->show();
-    }
+    my $settings = $cur->{m_parameter_settings}{$root_parameter};
+    $m_title->set_text($settings->{title});
 
     #
     # Rebuild the coordinates comboBox.
@@ -2143,6 +2123,7 @@ sub m_parameters_changed_cb {
     #
     if ($root_parameter =~ m/^[zy]$/ || $root_parameter eq "zin") {
 	$m_normalize->set_sensitive(1);
+	$m_normalize->set_active($settings->{normalize});
     } elsif ($root_parameter =~ m/^[abgh]$/) {
 	$m_normalize->set_sensitive(0);
 	$m_normalize->set_active(1);
@@ -2150,6 +2131,11 @@ sub m_parameters_changed_cb {
 	$m_normalize->set_sensitive(0);
 	$m_normalize->set_active(0);
     }
+
+    #
+    # Update the legend position.
+    #
+    $m_legend->set_active_id($settings->{legend});
 
     #
     # Rebuild the coordinates comboBox and range units, and replot.
@@ -2163,34 +2149,25 @@ sub m_parameters_changed_cb {
 # build_m_coordinates build the parameters combo-box based on parameter
 #
 sub build_m_coordinates {
-    my $m_coordinates = $builder->get_object("m_coordinates");
-    my $original_id = $m_coordinates->get_active_id();
-    my $m_parameters = $builder->get_object("m_parameters");
-    my $parameter_id = $m_parameters->get_active_id();
     my $cur = \%CurrentSettings;
     my $refcount = RefCount->new(\$cur->{busy}{m_main});
-    my %Allowed;
+
+    my $m_parameters = $builder->get_object("m_parameters");
+    my $m_coordinates = $builder->get_object("m_coordinates");
+
+    my $root_parameter = $m_parameters->get_active_id();
+    my $settings = $cur->{m_parameter_settings}{$root_parameter};
 
     $refcount->hold();
     $m_coordinates->remove_all();
-    if ($parameter_id =~ m/^[abghstuyz]$/ || $parameter_id eq "zin") {
+    if ($root_parameter =~ m/^[abghstuyz]$/ || $root_parameter eq "zin") {
 	$m_coordinates->append("ri", "Real-Imaginary");
 	$m_coordinates->append("ma", "Magnitude-Angle");
-	$Allowed{ri} = 1;
-	$Allowed{ma} = 1;
     }
-    if ($parameter_id =~ m/^[stu]$/) {
+    if ($root_parameter =~ m/^[stu]$/) {
 	$m_coordinates->append("db", "dB-Angle");
-	$Allowed{db} = 1;
     }
-    if (defined($original_id) && exists($Allowed{$original_id})) {
-	$m_coordinates->set_active_id($original_id);
-    } elsif ($Allowed{ri}) {
-	$m_coordinates->set_active_id("ri");
-    } elsif ($Allowed{db}) {
-	$m_coordinates->set_active_id("db");
-    }
-    $m_coordinates->show();
+    $m_coordinates->set_active_id($settings->{coordinates});
     $refcount->release();
 }
 
@@ -2198,13 +2175,21 @@ sub build_m_coordinates {
 # m_coordinates_changed_cb: respond to coordinate changes
 #
 sub m_coordinates_changed_cb {
-    my ($widget, $data) = @_;
+    my ($m_coordinates, $data) = @_;
     my $cur = \%CurrentSettings;
     my $refcount = RefCount->new(\$cur->{busy}{m_main});
     if ($refcount->check_hold()) {
 	return;
     }
+    my $coordinates = $m_coordinates->get_active_id();
+    if (!defined($coordinates)) {
+	return;
+    }
+    my $m_parameters = $builder->get_object("m_parameters");
 
+    my $root_parameter = $m_parameters->get_active_id();
+    my $settings = $cur->{m_parameter_settings}{$root_parameter};
+    $settings->{coordinates} = $coordinates;
     &update_m_parameter();
     &build_m_range_units();
     &m_plot();
@@ -2435,19 +2420,33 @@ sub m_normalize_toggled_cb {
     if ($refcount->check_hold()) {
 	return;
     }
+
+    my $m_parameters = $builder->get_object("m_parameters");
+    my $m_normalize  = $builder->get_object("m_normalize");
+
+    my $root_parameter = $m_parameters->get_active_id();
+    my $settings = $cur->{m_parameter_settings}{$root_parameter};
+    die unless exists($settings->{normalize});
+    $settings->{normalize} = $m_normalize->get_active();
     &update_m_parameter();
     &build_m_range_units();
+    &m_plot();
 }
 
 #
 # m_legend_changed_cb
 #
 sub m_legend_changed_cb {
+    my ($m_legend, $data) = @_;
     my $cur = \%CurrentSettings;
     my $refcount = RefCount->new(\$cur->{busy}{m_main});
     if ($refcount->check_hold()) {
 	return;
     }
+    my $m_parameters = $builder->get_object("m_parameters");
+    my $root_parameter = $m_parameters->get_active_id();
+    my $settings = $cur->{m_parameter_settings}{$root_parameter};
+    $settings->{legend} = $m_legend->get_active_id();
     &m_plot();
 }
 
@@ -3647,7 +3646,6 @@ if (!defined($CurrentSettings{standards_2port})) {
 &setup_init_menu();
 &cal_build_setup();
 &m_build_select_calibration();
-&m_init_titles();
 {
     my $m_parameters = $builder->get_object("m_parameters");
     my $stack1 = $builder->get_object("stack1");
