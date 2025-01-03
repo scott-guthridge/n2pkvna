@@ -2509,6 +2509,7 @@ along with N2PK VNA.  If not, see <http://www.gnu.org/licenses/>.
                               <object class="GtkComboBoxText" id="m_y_unit">
                                 <property name="visible">True</property>
                                 <property name="can-focus">False</property>
+                                <signal name="changed" handler="m_y_unit_changed_cb" swapped="no"/>
                               </object>
                               <packing>
                                 <property name="left-attach">4</property>
