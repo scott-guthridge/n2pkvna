@@ -2651,13 +2651,13 @@ sub m_plot {
     #
     # If Smith chart and ranges are not defined, set them.
     #
+    my $smith_ranges = $cur->{smith_ranges};
     if ($parameter eq "ssmith") {
 	#
 	# If smith_ranges not yet known, find them.
 	#
-	my $ref = $cur->{smith_ranges};
-	if (!defined($ref) && defined($datafile)) {
-	    $cur->{smith_ranges} = $ref = {
+	if (!defined($smith_ranges) && defined($datafile)) {
+	    $cur->{smith_ranges} = $smith_ranges = {
 		xmin => -1.0,
 		xmax => +1.0,
 		ymin => -1.0,
@@ -2681,17 +2681,17 @@ sub m_plot {
 		    die "$_" unless $#F >= $y_idx;
 		    my $x = $F[$x_idx];
 		    my $y = $F[$y_idx];
-		    if ($x < $ref->{xmin}) {
-			$ref->{xmin} = $x;
+		    if ($x < $smith_ranges->{xmin}) {
+			$smith_ranges->{xmin} = $x;
 		    }
-		    if ($x > $ref->{xmax}) {
-			$ref->{xmax} = $x;
+		    if ($x > $smith_ranges->{xmax}) {
+			$smith_ranges->{xmax} = $x;
 		    }
-		    if ($y < $ref->{ymin}) {
-			$ref->{ymin} = $y;
+		    if ($y < $smith_ranges->{ymin}) {
+			$smith_ranges->{ymin} = $y;
 		    }
-		    if ($y > $ref->{ymax}) {
-			$ref->{ymax} = $y;
+		    if ($y > $smith_ranges->{ymax}) {
+			$smith_ranges->{ymax} = $y;
 		    }
 		}
 	    }
@@ -2700,24 +2700,6 @@ sub m_plot {
 	    $x_ranges->[1] = "";
 	    $y_ranges->[0] = "";
 	    $y_ranges->[1] = "";
-	}
-	if (defined($ref)) {
-	    if ($x_ranges->[0] eq "") {
-		$x_ranges->[0] = $ref->{xmin};
-		$m_x_min->set_text($ref->{xmin});
-	    }
-	    if ($x_ranges->[1] eq "") {
-		$x_ranges->[1] = $ref->{xmax};
-		$m_x_max->set_text($ref->{xmax});
-	    }
-	    if ($y_ranges->[0] eq "") {
-		$y_ranges->[0] = $ref->{ymin};
-		$m_y_min->set_text($ref->{ymin});
-	    }
-	    if ($y_ranges->[1] eq "") {
-		$y_ranges->[1] = $ref->{ymax};
-		$m_y_max->set_text($ref->{ymax});
-	    }
 	}
     }
 
@@ -2733,6 +2715,24 @@ sub m_plot {
     my $x_scale = defined($x_unit) ? $UnitToScale{$x_unit} : 1.0;
     my $y_scale = defined($y_unit) ? $UnitToScale{$y_unit} : 1.0;
     my $y2_scale = defined($y2_unit) ? $UnitToScale{$y2_unit} : 1.0;
+
+    #
+    # If Smith, fill in $x_min, $x_max, $y_min, $y_max, if not specified.
+    #
+    if ($parameter eq "ssmith" && defined($smith_ranges)) {
+	if ($x_min eq "") {
+	    $x_min = $smith_ranges->{xmin};
+	}
+	if ($x_max eq "") {
+	    $x_max = $smith_ranges->{xmax};
+	}
+	if ($y_min eq "") {
+	    $y_min = $smith_ranges->{ymin};
+	}
+	if ($y_max eq "") {
+	    $y_max = $smith_ranges->{ymax};
+	}
+    }
 
     #
     # Open plot file, set terminal and set global plot options.
