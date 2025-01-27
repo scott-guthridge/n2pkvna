@@ -2879,12 +2879,12 @@ sub m_plot {
 	} elsif ($key eq "1smith" || $key eq "2smith") {
 	    &smith_grid(\*PLOT, $x_min, $x_max, $y_min, $y_max);
 	    printf PLOT ("    '%s' using 2:3 title 'S11' " .
-			 "with points lt 1 pt 7 ps 0.5",
+			 "with linespoints lt 1 pt 7 ps 0.5",
 		    $datafile);
 	    if ($conversions->{ports} == 2) {
 		printf PLOT (", \\\n");
 		printf PLOT ("    '' using 8:9 title 'S22' " .
-			     "with points lt 2 pt 7 ps 0.5");
+			     "with linespoints lt 2 pt 7 ps 0.5");
 	    }
 	    printf PLOT ("\n");
 
