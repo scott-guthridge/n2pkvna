@@ -8,7 +8,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
     - name: Checkout Code
-      uses: actions/checkout@v3
+      uses: actions/checkout@v4
     - name: Install Dependencies
       run: |
         sudo apt-get update
@@ -36,7 +36,7 @@ jobs:
         draft: false
         prerelease: false
     - name: Upload Release Assets
-      uses: alexellis/upload-assets@0.4.0
+      uses: alexellis/upload-assets@0.4.1
       env:
         GITHUB_TOKEN: ${{ github.token }}
       with:
