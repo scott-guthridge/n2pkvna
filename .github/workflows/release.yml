@@ -45,5 +45,6 @@ jobs:
            "deb/*.deb",
            "deb/*.dsc",
            "n2pkvna-*.tar.gz",
+           "rpm/noarch/*.rpm",
            "rpm/x86_64/*.rpm",
            "rpm/*.src.rpm"]
