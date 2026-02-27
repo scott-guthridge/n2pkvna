@@ -7,7 +7,7 @@ License: GPLv3+
 URL: http://www.rompromity.net/libvna/test+measurement/index.html
 Source: %{name}-%{version}.tar.gz
 Provides: libn2pkvna.so
-BuildRequires: libvna-devel >= 0.3.0, libusbx-devel
+BuildRequires: libvna-devel >= 0.5.2, libusbx-devel
 Requires: fxload, libvna >= 0.3.0
 
 %define source_date_epoch_from_changelog 0
